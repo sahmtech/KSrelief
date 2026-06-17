@@ -1,0 +1,27 @@
+KSrelief — Cloudways Upload Guide
+=================================
+
+1) Upload ksrelief-deploy.zip to ~/public_html and extract:
+   unzip -o ksrelief-deploy.zip -d ~/public_html
+
+2) Set Cloudways Webroot to: public_html/public
+
+3) PHP version: 8.2 or 8.3
+
+4) Create .env on server:
+   cp .env.cloudways.example .env
+   nano .env
+   (fill DB_* and APP_URL, then save)
+
+5) Run post-deploy script:
+   chmod +x deploy/post-deploy.sh
+   bash deploy/post-deploy.sh
+
+6) Login:
+   Email: superadmin@ksrelife.com
+   Password: ks123456relife
+
+Notes:
+- Do NOT upload vendor/ or node_modules/ — composer installs vendor on server.
+- public/build/ is already included in the zip (CSS/JS ready).
+- If composer fails, delete config/sanctum.php if it exists (old file).

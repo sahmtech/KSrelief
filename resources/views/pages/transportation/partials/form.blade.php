@@ -40,24 +40,24 @@
                       :value="old('arrival_time', ($trip && $trip->arrivalTimeLabel() !== '—') ? $trip->arrivalTimeLabel() : '')" />
     </div>
     <div class="col-md-3">
-        <x-form-input :label="__('transportation.fields.from_location')" name="from_location_id" type="select" required>
-            <option value="">{{ __('common.select') }}</option>
-            @foreach($locations as $location)
-                <option value="{{ $location->id }}" @selected((string) old('from_location_id', $trip?->from_location_id) === (string) $location->id)>
-                    {{ $location->name }} ({{ $location->type }})
-                </option>
-            @endforeach
-        </x-form-input>
+        <x-transportation-location-select
+            name="from_location_id"
+            :label="__('transportation.fields.from_location')"
+            :selected-id="old('from_location_id', $trip?->from_location_id)"
+            :selected-label="$trip?->fromLocation ? $trip->fromLocation->name.' ('.__('settings.transportation_types.'.$trip->fromLocation->type).')' : null"
+            :locations="collect($locations)"
+            required
+        />
     </div>
     <div class="col-md-3">
-        <x-form-input :label="__('transportation.fields.to_location')" name="to_location_id" type="select" required>
-            <option value="">{{ __('common.select') }}</option>
-            @foreach($locations as $location)
-                <option value="{{ $location->id }}" @selected((string) old('to_location_id', $trip?->to_location_id) === (string) $location->id)>
-                    {{ $location->name }} ({{ $location->type }})
-                </option>
-            @endforeach
-        </x-form-input>
+        <x-transportation-location-select
+            name="to_location_id"
+            :label="__('transportation.fields.to_location')"
+            :selected-id="old('to_location_id', $trip?->to_location_id)"
+            :selected-label="$trip?->toLocation ? $trip->toLocation->name.' ('.__('settings.transportation_types.'.$trip->toLocation->type).')' : null"
+            :locations="collect($locations)"
+            required
+        />
     </div>
     <div class="col-md-4">
         <x-form-input :label="__('transportation.fields.vehicle_number')" name="vehicle_number" type="text"

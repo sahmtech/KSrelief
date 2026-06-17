@@ -150,4 +150,15 @@ return [
         'assigned_trips' => 'Assigned Trips',
         'upcoming' => 'Upcoming Trips',
     ],
+
+    'locations' => [
+        'add' => 'Add location',
+        'add_title' => 'Add Transportation Location',
+        'add_hint' => 'Add a new location if it is not listed.',
+        'search_placeholder' => 'Search or select location...',
+        'no_results' => 'No locations found',
+        'searching' => 'Searching...',
+        'type_to_search' => 'Type to search',
+        'validation_required' => 'Name and type are required.',
+    ],
 ];

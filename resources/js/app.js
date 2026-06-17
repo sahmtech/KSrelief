@@ -16,6 +16,7 @@ import Swal from 'sweetalert2';
 window.Swal = Swal;
 
 import { initLocationPickers } from './location-picker';
+import { initTransportationLocationPickers } from './transportation-location-picker';
 import { initSpecialtyPickers } from './specialty-picker';
 import { initActivityParticipantMultiselects } from './activity-participants';
 import { initTableDropdowns, resetTableDropdowns } from './table-dropdown';
@@ -243,6 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     initLocationPickers();
+    initTransportationLocationPickers();
     initSpecialtyPickers();
     initActivityParticipantMultiselects();
     initTableDropdowns();

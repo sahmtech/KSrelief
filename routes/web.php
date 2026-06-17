@@ -19,6 +19,7 @@ use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\ActivityParticipantController;
 use App\Http\Controllers\TransportationPassengerController;
+use App\Http\Controllers\TransportationLocationLookupController;
 use App\Http\Controllers\TransportationTripController;
 use Illuminate\Support\Facades\Route;
 
@@ -295,6 +296,12 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [TransportationTripController::class, 'index'])
                 ->middleware('permission:transportation.view')
                 ->name('index');
+            Route::get('locations/search', [TransportationLocationLookupController::class, 'search'])
+                ->middleware('permission:transportation.view')
+                ->name('locations.search');
+            Route::post('locations', [TransportationLocationLookupController::class, 'store'])
+                ->middleware('role_or_permission:transportation.create|transport_location.create')
+                ->name('locations.store');
             Route::get('create', [TransportationTripController::class, 'create'])
                 ->middleware('permission:transportation.create')
                 ->name('create');
