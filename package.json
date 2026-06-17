@@ -1,0 +1,33 @@
+{
+    "$schema": "https://www.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite"
+    },
+    "dependencies": {
+        "@popperjs/core": "^2.11.8",
+        "@tabler/icons-webfont": "^3.34.0",
+        "apexcharts": "^4.7.0",
+        "bootstrap": "^5.3.6",
+        "datatables.net": "^2.3.2",
+        "datatables.net-bs5": "^2.3.2",
+        "jquery": "^3.7.1",
+        "select2": "^4.0.13",
+        "select2-bootstrap-5-theme": "^1.3.0",
+        "sweetalert2": "^11.22.2",
+        "@fullcalendar/core": "^6.1.17",
+        "@fullcalendar/daygrid": "^6.1.17",
+        "@fullcalendar/timegrid": "^6.1.17",
+        "@fullcalendar/list": "^6.1.17",
+        "@fullcalendar/interaction": "^6.1.17"
+    },
+    "devDependencies": {
+        "axios": "^1.11.0",
+        "concurrently": "^9.0.1",
+        "laravel-vite-plugin": "^2.0.0",
+        "sass": "^1.89.2",
+        "vite": "^7.0.7"
+    }
+}

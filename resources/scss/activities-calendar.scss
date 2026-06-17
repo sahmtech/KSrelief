@@ -1,0 +1,16 @@
+.activities-calendar {
+    min-height: 650px;
+    padding: 1rem;
+
+    .fc {
+        --fc-border-color: #e2e8f0;
+        --fc-today-bg-color: rgba(15, 118, 110, 0.08);
+        font-family: inherit;
+    }
+
+    .fc-event {
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 0.8125rem;
+    }
+}

@@ -1,0 +1,42 @@
+<?php
+
+return [
+    'add_new' => 'Add New',
+    'add' => 'Add',
+    'edit' => 'Edit',
+    'delete' => 'Delete',
+    'save' => 'Save',
+    'save_changes' => 'Save Changes',
+    'cancel' => 'Cancel',
+    'close' => 'Close',
+    'export' => 'Export',
+    'export_report' => 'Export Report',
+    'view_all' => 'View All',
+    'select' => 'Select',
+    'notes' => 'Notes',
+    'details' => 'Details',
+    'created_at' => 'Created At',
+    'are_you_sure' => 'Are you sure?',
+    'create' => 'Create',
+    'change_password' => 'Change Password',
+    'module_placeholder' => 'This module is ready for implementation. Business logic, data models, and CRUD operations will be added in the next development phase.',
+    'status' => [
+        'active' => 'Active',
+        'pending' => 'Pending',
+        'inactive' => 'Inactive',
+        'completed' => 'Completed',
+    ],
+    'datatable' => [
+        'search' => '',
+        'search_placeholder' => 'Search...',
+        'length_menu' => 'Show _MENU_ entries',
+        'info' => 'Showing _START_ to _END_ of _TOTAL_ entries',
+        'empty_table' => 'No data available',
+        'zero_records' => 'No matching records found',
+    ],
+    'confirm' => [
+        'title' => 'Confirm Action',
+        'message' => 'Are you sure you want to proceed?',
+        'yes' => 'Yes, proceed',
+    ],
+];

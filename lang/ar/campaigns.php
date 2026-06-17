@@ -1,0 +1,147 @@
+<?php
+
+return [
+    'title' => 'الحملات',
+    'subtitle' => 'إدارة الحملات الطبية الخيرية',
+    'add' => 'حملة جديدة',
+    'create_title' => 'إنشاء حملة',
+    'create_subtitle' => 'تعريف حملة طبية جديدة',
+    'edit_title' => 'تعديل حملة',
+    'edit_subtitle' => 'تحديث معلومات الحملة',
+    'show_title' => 'تفاصيل الحملة',
+    'show_subtitle' => 'نظرة عامة وإحصائيات الحملة',
+
+    'stats' => [
+        'total' => 'إجمالي الحملات',
+        'active' => 'الحملات النشطة',
+        'completed' => 'الحملات المكتملة',
+        'cancelled' => 'الحملات الملغاة',
+        'upcoming' => 'الحملات القادمة',
+    ],
+
+    'sections' => [
+        'basic' => 'المعلومات الأساسية',
+        'details' => 'تفاصيل الحملة',
+        'schedule' => 'الجدول الزمني',
+        'expected' => 'النتائج المتوقعة',
+        'overview' => 'نظرة عامة',
+        'future_stats' => 'إحصائيات تشغيلية',
+    ],
+
+    'fields' => [
+        'name' => 'اسم الحملة',
+        'code' => 'رمز الحملة',
+        'objective' => 'الهدف',
+        'target_group' => 'الفئة المستهدفة',
+        'country' => 'الدولة',
+        'city' => 'المدينة',
+        'specialty' => 'التخصص الطبي',
+        'start_date' => 'تاريخ البداية',
+        'end_date' => 'تاريخ النهاية',
+        'shifts_count' => 'عدد الورديات',
+        'expected_patients' => 'المرضى المتوقعين',
+        'status' => 'الحالة',
+        'description' => 'الوصف',
+        'created_by' => 'أنشئت بواسطة',
+        'updated_by' => 'عُدّلت بواسطة',
+        'created_at' => 'تاريخ الإنشاء',
+        'updated_at' => 'تاريخ التحديث',
+    ],
+
+    'status' => [
+        'draft' => 'مسودة',
+        'planned' => 'مخططة',
+        'active' => 'نشطة',
+        'completed' => 'مكتملة',
+        'cancelled' => 'ملغاة',
+    ],
+
+    'table' => [
+        'name' => 'الاسم',
+        'country' => 'الدولة',
+        'city' => 'المدينة',
+        'specialty' => 'التخصص',
+        'start_date' => 'البداية',
+        'end_date' => 'النهاية',
+        'shifts' => 'الورديات',
+        'expected_patients' => 'المرضى المتوقعين',
+        'status' => 'الحالة',
+        'created_by' => 'أنشئت بواسطة',
+        'actions' => 'الإجراءات',
+    ],
+
+    'filters' => [
+        'title' => 'البحث والتصفية',
+        'search' => 'بحث',
+        'search_placeholder' => 'ابحث بالاسم أو الهدف أو الفئة المستهدفة...',
+        'status' => 'الحالة',
+        'country' => 'الدولة',
+        'city' => 'المدينة',
+        'specialty' => 'التخصص',
+        'start_from' => 'من تاريخ',
+        'end_to' => 'إلى تاريخ',
+        'all_statuses' => 'كل الحالات',
+        'all_countries' => 'كل الدول',
+        'all_cities' => 'كل المدن',
+        'all_specialties' => 'كل التخصصات',
+        'apply' => 'تطبيق',
+        'reset' => 'إعادة تعيين',
+    ],
+
+    'actions' => [
+        'view' => 'عرض',
+        'edit' => 'تعديل',
+        'delete' => 'حذف',
+        'change_status' => 'تغيير الحالة',
+    ],
+
+    'future_stats' => [
+        'patients' => 'المرضى',
+        'members' => 'الأعضاء',
+        'attendance' => 'سجلات الحضور',
+        'trips' => 'رحلات النقل',
+        'activities' => 'الأنشطة',
+        'placeholder' => 'قريباً',
+    ],
+
+    'tabs' => [
+        'overview' => 'نظرة عامة',
+        'team' => 'فريق الحملة',
+        'patients' => 'المرضى',
+        'attendance' => 'الحضور',
+        'transportation' => 'النقل',
+        'activities' => 'الأنشطة',
+    ],
+
+    'wizard' => [
+        'title' => 'معالج إعداد الحملة',
+        'subtitle' => 'إعداد الحملة على خطوات (قريباً)',
+        'steps' => [
+            'details' => 'تفاصيل الحملة',
+            'members' => 'تعيين الأعضاء',
+            'patients_import' => 'استيراد المرضى',
+            'transportation' => 'تخطيط النقل',
+            'activities' => 'تخطيط الأنشطة',
+        ],
+    ],
+
+    'messages' => [
+        'created' => 'تم إنشاء الحملة بنجاح.',
+        'updated' => 'تم تحديث الحملة بنجاح.',
+        'deleted' => 'تم حذف الحملة بنجاح.',
+        'status_changed' => 'تم تحديث حالة الحملة بنجاح.',
+        'confirm_delete' => 'هل أنت متأكد من حذف هذه الحملة؟ لا يمكن التراجع عن هذا الإجراء.',
+        'empty' => 'لا توجد حملات.',
+        'locked_completed' => 'الحملات المكتملة أو الملغاة تتطلب صلاحية الإغلاق للتعديل.',
+    ],
+
+    'placeholders' => [
+        'name' => 'أدخل اسم الحملة',
+        'objective' => 'صف هدف الحملة',
+        'target_group' => 'مثال: أطفال، مسنين، لاجئين',
+        'description' => 'ملاحظات أو سياق إضافي',
+        'select_country' => 'اختر الدولة',
+        'select_city' => 'اختر المدينة',
+        'select_specialty' => 'اختر التخصص',
+    ],
+];

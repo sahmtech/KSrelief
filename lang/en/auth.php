@@ -1,0 +1,31 @@
+<?php
+
+return [
+    'login' => 'Sign In',
+    'logout' => 'Sign Out',
+    'welcome_back' => 'Welcome back',
+    'sign_in_subtitle' => 'Sign in to your :name account',
+    'email' => 'Email Address',
+    'email_placeholder' => 'you@organization.com',
+    'password' => 'Password',
+    'password_placeholder' => 'Enter your password',
+    'remember_me' => 'Remember me',
+    'forgot_password' => 'Forgot password?',
+    'forgot_password_title' => 'Forgot password?',
+    'forgot_password_subtitle' => "Enter your email and we'll send you a reset link",
+    'send_reset_link' => 'Send Reset Link',
+    'back_to_sign_in' => 'Back to sign in',
+    'reset_password' => 'Reset Password',
+    'reset_password_subtitle' => 'Choose a new password for your account',
+    'new_password' => 'New Password',
+    'new_password_placeholder' => 'Minimum 8 characters',
+    'confirm_password' => 'Confirm Password',
+    'confirm_password_placeholder' => 'Re-enter your password',
+    'failed' => 'These credentials do not match our records.',
+
+    'brand_heading' => 'International Charity Medical Campaign Management',
+    'brand_description' => 'Empowering international charity medical campaigns with enterprise-grade tools.',
+    'feature_campaigns' => 'Campaign lifecycle management',
+    'feature_staff' => 'Medical staff coordination',
+    'feature_patients' => 'Patient tracking & reporting',
+];

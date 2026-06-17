@@ -1,0 +1,132 @@
+// RTL layout overrides
+
+[dir="rtl"] {
+    .datatable-wrapper .dt-container div.dt-search {
+        text-align: start;
+    }
+
+    .user-timeline {
+        padding-left: 0;
+        padding-right: 1.5rem;
+
+        &::before {
+            left: auto;
+            right: 5px;
+        }
+
+        &__item::before {
+            left: auto;
+            right: -1.5rem;
+        }
+    }
+
+    .admin-sidebar {
+        left: auto;
+        right: 0;
+    }
+
+    .admin-main {
+        margin-left: 0;
+        margin-right: $sidebar-width;
+    }
+
+    .admin-sidebar__collapse-toggle[aria-expanded="true"] .chevron {
+        transform: rotate(180deg);
+    }
+
+    .admin-sidebar__link--child {
+        padding-left: 0.875rem;
+        padding-right: 2.25rem;
+
+        &::before {
+            left: auto;
+            right: 1.25rem;
+        }
+    }
+
+    .admin-navbar__search i {
+        left: auto;
+        right: 0.75rem;
+    }
+
+    .admin-navbar__search input {
+        padding-left: 0.875rem;
+        padding-right: 2.25rem;
+    }
+
+    .breadcrumb-admin__item + &::before {
+        content: '\\';
+    }
+
+    .me-1, .me-2 {
+        margin-right: 0 !important;
+        margin-left: 0.25rem !important;
+    }
+
+    .me-2 {
+        margin-left: 0.5rem !important;
+    }
+
+    .ms-auto {
+        margin-left: 0 !important;
+        margin-right: auto !important;
+    }
+
+    .text-start {
+        text-align: right !important;
+    }
+
+    .text-end {
+        text-align: left !important;
+    }
+
+    .auth-card__feature {
+        @media (max-width: 991.98px) {
+            justify-content: center;
+        }
+    }
+
+    .auth-card__description {
+        @media (max-width: 991.98px) {
+            max-width: none;
+        }
+    }
+
+    .admin-sidebar__brand-image {
+        object-position: end center;
+    }
+
+    .auth-card__logo {
+        object-position: end center;
+
+        @media (max-width: 991.98px) {
+            object-position: center center;
+        }
+    }
+
+    @media (min-width: 992px) {
+        body.sidebar-collapsed {
+            .admin-main {
+                margin-right: $sidebar-collapsed-width;
+            }
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        .admin-sidebar {
+            transform: translateX(100%);
+
+            &.show {
+                transform: translateX(0);
+            }
+        }
+
+        .admin-main {
+            margin-right: 0;
+        }
+    }
+}
+
+[dir="rtl"] body {
+    font-family: 'IBM Plex Sans Arabic', $font-family-sans-serif;
+}

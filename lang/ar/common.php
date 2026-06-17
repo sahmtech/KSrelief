@@ -1,0 +1,42 @@
+<?php
+
+return [
+    'add_new' => 'إضافة جديد',
+    'add' => 'إضافة',
+    'edit' => 'تعديل',
+    'delete' => 'حذف',
+    'save' => 'حفظ',
+    'save_changes' => 'حفظ التغييرات',
+    'cancel' => 'إلغاء',
+    'close' => 'إغلاق',
+    'export' => 'تصدير',
+    'export_report' => 'تصدير التقرير',
+    'view_all' => 'عرض الكل',
+    'select' => 'اختر',
+    'notes' => 'ملاحظات',
+    'details' => 'التفاصيل',
+    'created_at' => 'تاريخ الإنشاء',
+    'are_you_sure' => 'هل أنت متأكد؟',
+    'create' => 'إنشاء',
+    'change_password' => 'تغيير كلمة المرور',
+    'module_placeholder' => 'هذه الوحدة جاهزة للتطوير. سيتم إضافة منطق الأعمال ونماذج البيانات وعمليات CRUD في المرحلة التالية.',
+    'status' => [
+        'active' => 'نشط',
+        'pending' => 'قيد الانتظار',
+        'inactive' => 'غير نشط',
+        'completed' => 'مكتمل',
+    ],
+    'datatable' => [
+        'search' => '',
+        'search_placeholder' => 'بحث...',
+        'length_menu' => 'عرض _MENU_ سجل',
+        'info' => 'عرض _START_ إلى _END_ من أصل _TOTAL_ سجل',
+        'empty_table' => 'لا توجد بيانات',
+        'zero_records' => 'لم يتم العثور على نتائج',
+    ],
+    'confirm' => [
+        'title' => 'تأكيد الإجراء',
+        'message' => 'هل أنت متأكد من المتابعة؟',
+        'yes' => 'نعم، متابعة',
+    ],
+];

@@ -1,0 +1,273 @@
+<?php
+
+return [
+    'title' => 'Patients',
+    'subtitle' => 'Patient registry and medical workflow',
+    'add' => 'Register Patient',
+    'create_title' => 'Register Patient',
+    'create_subtitle' => 'Add a new patient to a campaign',
+    'edit_title' => 'Edit Patient',
+    'edit_subtitle' => 'Update patient information',
+    'show_title' => 'Patient Profile',
+    'show_subtitle' => 'Patient details and medical classification',
+
+    'show' => [
+        'back' => 'Back to Patient',
+    ],
+
+    'admission' => [
+        'admitted' => 'Admitted',
+        'not_admitted' => 'Not Admitted',
+    ],
+
+    'record_status' => [
+        'active' => 'Active',
+        'closed' => 'Closed',
+        'archived' => 'Archived',
+    ],
+
+    'age' => [
+        'years' => ':years years',
+        'months' => ':months months',
+    ],
+
+    'stats' => [
+        'total' => 'Total Patients',
+        'accepted' => 'Accepted',
+        'rejected' => 'Rejected',
+        'postponed' => 'Postponed',
+        'cancelled' => 'Cancelled',
+        'admitted' => 'Admitted',
+        'completed' => 'Completed',
+    ],
+
+    'filters' => [
+        'title' => 'Filters',
+        'search' => 'Search',
+        'search_placeholder' => 'Name, file number, contact…',
+        'campaign' => 'Campaign',
+        'all_campaigns' => 'All campaigns',
+        'eligibility' => 'Eligibility Status',
+        'all_eligibility' => 'All statuses',
+        'stage' => 'Current Stage',
+        'all_stages' => 'All stages',
+        'admission' => 'Admission Status',
+        'all_admission' => 'All',
+        'gender' => 'Gender',
+        'all_genders' => 'All',
+        'created_from' => 'Created From',
+        'created_to' => 'Created To',
+        'apply' => 'Apply',
+        'reset' => 'Reset',
+    ],
+
+    'table' => [
+        'name' => 'Patient Name',
+        'file_number' => 'File Number',
+        'campaign' => 'Campaign',
+        'age' => 'Age',
+        'gender' => 'Gender',
+        'eligibility' => 'Eligibility',
+        'stage' => 'Current Stage',
+        'admission' => 'Admission',
+        'created_at' => 'Created',
+        'actions' => 'Actions',
+    ],
+
+    'sections' => [
+        'basic' => 'Basic Information',
+        'campaign' => 'Campaign Information',
+        'medical' => 'Medical Classification',
+        'contact' => 'Contact Information',
+        'attachments' => 'Attachments',
+        'audit' => 'Record Information',
+    ],
+
+    'fields' => [
+        'campaign' => 'Campaign',
+        'patient_name' => 'Patient Name',
+        'photo' => 'Patient Photo',
+        'file_number' => 'File Number',
+        'date_of_birth' => 'Date of Birth',
+        'age' => 'Age',
+        'gender' => 'Gender',
+        'contact_number' => 'Contact Number',
+        'eligibility_status' => 'Eligibility Status',
+        'current_stage' => 'Current Stage',
+        'admission_status' => 'Admission Status',
+        'record_status' => 'Record Status',
+        'notes' => 'Notes',
+        'created_by' => 'Created By',
+        'updated_by' => 'Updated By',
+        'created_at' => 'Created At',
+        'updated_at' => 'Updated At',
+        'attachment' => 'Attachment',
+        'attachment_notes' => 'Attachment Notes',
+    ],
+
+    'placeholders' => [
+        'patient_name' => 'Full patient name',
+        'file_number' => 'e.g. P-2026-001',
+        'contact_number' => 'e.g. +966501234567',
+        'notes' => 'Clinical or administrative notes…',
+        'select_campaign' => 'Select campaign',
+        'select_eligibility' => 'Select eligibility status',
+        'select_stage' => 'Select stage',
+    ],
+
+    'tabs' => [
+        'overview' => 'Overview',
+        'workflow' => 'Medical Workflow',
+        'records' => 'Medical Records',
+        'history' => 'Stage History',
+        'attachments' => 'Attachments',
+        'reports' => 'Reports',
+        'transportation' => 'Transportation',
+        'activities' => 'Activities',
+    ],
+
+    'future' => [
+        'workflow' => 'Medical workflow will be available when the workflow module is enabled.',
+        'records' => 'Medical records will appear here when the Medical Records module is enabled.',
+        'history' => 'Stage history will appear here when the Stage History module is enabled.',
+        'reports' => 'Patient reports will appear here when the Reports module is enabled.',
+    ],
+
+    'photo' => [
+        'choose' => 'Choose Photo',
+        'change' => 'Change Photo',
+        'remove' => 'Remove Photo',
+        'hint' => 'Optional. JPEG, PNG or WebP, max 2 MB.',
+    ],
+
+    'campaign' => [
+        'title' => 'Campaign Patients',
+        'add_patient' => 'Add Patient',
+        'empty' => 'No patients registered for this campaign yet.',
+    ],
+
+    'actions' => [
+        'view' => 'View',
+        'edit' => 'Edit',
+        'delete' => 'Delete',
+        'download' => 'Download',
+        'upload' => 'Upload Attachment',
+        'remove_attachment' => 'Remove',
+    ],
+
+    'import' => [
+        'title' => 'Patient Imports',
+        'subtitle' => 'Import patients from Excel spreadsheets',
+        'create_title' => 'Import Patients',
+        'create_subtitle' => 'Upload an Excel file to import patients in bulk',
+        'show_title' => 'Import Batch',
+        'show_subtitle' => 'Review and approve imported data',
+        'download_template' => 'Download Template',
+
+        'status' => [
+            'uploaded' => 'Uploaded',
+            'processing' => 'Processing',
+            'review' => 'Awaiting Review',
+            'approved' => 'Approved',
+            'completed' => 'Completed',
+            'failed' => 'Failed',
+        ],
+
+        'stats' => [
+            'total' => 'Total Imports',
+            'pending_review' => 'Pending Review',
+            'processing' => 'Processing',
+            'completed' => 'Completed',
+            'failed' => 'Failed',
+            'patients_imported' => 'Patients Imported',
+        ],
+
+        'table' => [
+            'date' => 'Import Date',
+            'campaign' => 'Campaign',
+            'uploaded_by' => 'Uploaded By',
+            'rows' => 'Rows',
+            'valid' => 'Valid',
+            'invalid' => 'Invalid',
+            'duplicates' => 'Duplicates',
+            'imported' => 'Imported',
+            'status' => 'Status',
+            'actions' => 'Actions',
+        ],
+
+        'row_status' => [
+            'valid' => 'Valid',
+            'invalid' => 'Invalid',
+            'duplicate' => 'Duplicate',
+            'imported' => 'Imported',
+        ],
+
+        'fields' => [
+            'campaign' => 'Campaign',
+            'file' => 'Excel File',
+            'notes' => 'Notes',
+        ],
+
+        'sections' => [
+            'upload' => 'Upload File',
+            'instructions' => 'Instructions',
+            'reference' => 'Reference Codes',
+            'statistics' => 'Import Statistics',
+            'review' => 'Row Review',
+            'approval' => 'Approval',
+        ],
+
+        'instructions' => [
+            'Download the Excel template and fill in patient data.',
+            'Column campaign_code is required and must match an existing campaign code.',
+            'Columns eligibility_status and admission_status must use the codes from the reference table.',
+            'Date of birth format: YYYY-MM-DD (e.g. 2015-06-20).',
+            'Gender must be: male or female.',
+            'Stage column is optional — leave blank to use the default admission stage.',
+            'File number must be unique within the same campaign.',
+            'Rows with errors will be rejected — valid rows can still be approved.',
+            'The import will be processed in the background. Refresh the page to check status.',
+        ],
+
+        'actions' => [
+            'upload' => 'Upload File',
+            'approve' => 'Approve Import',
+            'download_errors' => 'Export Errors',
+            'view' => 'View',
+        ],
+
+        'messages' => [
+            'uploaded' => 'File uploaded and queued for processing. Refresh to check status.',
+            'approved' => ':count patient(s) imported successfully.',
+            'not_reviewable' => 'This batch is not in a reviewable state.',
+            'empty_file' => 'The file contains no data rows.',
+            'file_missing' => 'Import file not found on storage.',
+            'missing_column' => 'Required column ":column" is missing from the file.',
+            'required' => 'Field ":field" is required.',
+            'invalid_date' => 'Invalid date format. Use YYYY-MM-DD.',
+            'future_date' => 'Date of birth cannot be a future date.',
+            'invalid_gender' => 'Invalid gender. Use: male or female.',
+            'invalid_eligibility' => 'Invalid eligibility status code: :code',
+            'invalid_admission' => 'Invalid admission status. Use: admitted or not_admitted.',
+            'invalid_stage' => 'Invalid stage code: :code',
+            'invalid_campaign' => 'Campaign not found for code: :code',
+            'campaign_mismatch' => 'Campaign code does not match the selected campaign (expected: :expected).',
+            'duplicate_in_file' => 'Duplicate :field in file (first seen at row :row).',
+            'duplicate_in_database' => 'File number ":file_number" already exists in this campaign.',
+            'no_importable_rows' => 'No valid rows found to import.',
+            'confirm_approve' => 'Approve this import? This will create :count patient record(s) and cannot be undone.',
+        ],
+    ],
+
+    'messages' => [
+        'created' => 'Patient registered successfully.',
+        'updated' => 'Patient updated successfully.',
+        'deleted' => 'Patient deleted successfully.',
+        'attachment_uploaded' => 'Attachment uploaded successfully.',
+        'attachment_deleted' => 'Attachment removed successfully.',
+        'confirm_delete' => 'Are you sure you want to delete this patient record?',
+        'confirm_remove_attachment' => 'Remove this attachment?',
+        'empty' => 'No patients found.',
+        'no_attachments' => 'No attachments uploaded.',
+    ],
+];

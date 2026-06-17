@@ -1,0 +1,31 @@
+<?php
+
+return [
+    'login' => 'تسجيل الدخول',
+    'logout' => 'تسجيل الخروج',
+    'welcome_back' => 'مرحباً بعودتك',
+    'sign_in_subtitle' => 'سجّل الدخول إلى حسابك في :name',
+    'email' => 'البريد الإلكتروني',
+    'email_placeholder' => 'you@organization.com',
+    'password' => 'كلمة المرور',
+    'password_placeholder' => 'أدخل كلمة المرور',
+    'remember_me' => 'تذكرني',
+    'forgot_password' => 'نسيت كلمة المرور؟',
+    'forgot_password_title' => 'نسيت كلمة المرور؟',
+    'forgot_password_subtitle' => 'أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين',
+    'send_reset_link' => 'إرسال رابط إعادة التعيين',
+    'back_to_sign_in' => 'العودة لتسجيل الدخول',
+    'reset_password' => 'إعادة تعيين كلمة المرور',
+    'reset_password_subtitle' => 'اختر كلمة مرور جديدة لحسابك',
+    'new_password' => 'كلمة المرور الجديدة',
+    'new_password_placeholder' => '8 أحرف على الأقل',
+    'confirm_password' => 'تأكيد كلمة المرور',
+    'confirm_password_placeholder' => 'أعد إدخال كلمة المرور',
+    'failed' => 'بيانات الاعتماد هذه غير متطابقة مع سجلاتنا.',
+
+    'brand_heading' => 'نظام إدارة الحملات الطبية الخيرية الدولية',
+    'brand_description' => 'تمكين الحملات الطبية الخيرية الدولية بأدوات احترافية على مستوى المؤسسات.',
+    'feature_campaigns' => 'إدارة دورة حياة الحملات',
+    'feature_staff' => 'تنسيق الطاقم الطبي',
+    'feature_patients' => 'تتبع المرضى والتقارير',
+];
