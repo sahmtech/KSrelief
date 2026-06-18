@@ -173,7 +173,7 @@ class AttendanceController extends Controller
         }
 
         return view('pages.attendance.quick', [
-            'campaigns' => Campaign::query()->orderBy('name')->get(['id', 'name', 'shifts_count']),
+            'campaigns' => Campaign::query()->orderBy('name')->get(['id', 'name']),
             'attendanceStatuses' => $this->lookupService->getAttendanceStatuses(),
             'campaignId' => $campaignId,
             'attendanceDate' => $date,
@@ -237,7 +237,7 @@ class AttendanceController extends Controller
         }
 
         return [
-            'campaigns' => Campaign::query()->orderBy('name')->get(['id', 'name', 'shifts_count']),
+            'campaigns' => Campaign::query()->orderBy('name')->get(['id', 'name']),
             'attendanceStatuses' => $this->lookupService->getAttendanceStatuses(),
             'members' => $members,
             'selectedCampaignId' => $campaignId,

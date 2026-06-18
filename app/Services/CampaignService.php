@@ -13,7 +13,7 @@ class CampaignService
     {
         return DB::transaction(function () use ($data, $user): Campaign {
             $campaign = Campaign::create([
-                ...$data,
+                ...$this->withCampaignDays($data),
                 'campaign_status_id' => $data['campaign_status_id'] ?? $this->defaultStatusId(),
                 'created_by' => $user->id,
                 'updated_by' => $user->id,
@@ -27,7 +27,7 @@ class CampaignService
     {
         return DB::transaction(function () use ($campaign, $data, $user): Campaign {
             $campaign->update([
-                ...$data,
+                ...$this->withCampaignDays($data),
                 'updated_by' => $user->id,
             ]);
 
@@ -87,5 +87,18 @@ class CampaignService
             ->value('id')
             ?? CampaignStatusRecord::query()->active()->where('code', 'draft')->value('id')
             ?? CampaignStatusRecord::query()->active()->orderBy('id')->value('id');
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function withCampaignDays(array $data): array
+    {
+        if (isset($data['start_date'], $data['end_date'])) {
+            $data['shifts_count'] = Campaign::daysBetween($data['start_date'], $data['end_date']);
+        }
+
+        return $data;
     }
 }

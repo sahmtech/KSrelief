@@ -14,6 +14,7 @@ use App\Models\Patient;
 use App\Models\Specialty;
 use App\Services\ActivityStatisticsService;
 use App\Services\AttendanceStatisticsService;
+use App\Services\CampaignDailyBreakdownService;
 use App\Services\CampaignService;
 use App\Services\LookupService;
 use App\Services\MemberService;
@@ -33,6 +34,7 @@ class CampaignController extends Controller
         private readonly AttendanceStatisticsService $attendanceStatisticsService,
         private readonly TransportationStatisticsService $transportationStatisticsService,
         private readonly ActivityStatisticsService $activityStatisticsService,
+        private readonly CampaignDailyBreakdownService $campaignDailyBreakdownService,
     ) {}
 
     public function index(Request $request): View
@@ -123,6 +125,7 @@ class CampaignController extends Controller
         $activityStats = $this->activityStatisticsService->getCampaignActivityStats($campaign->id);
         $upcomingActivities = $this->activityStatisticsService->getUpcomingActivities(5, $campaign->id);
         $recentActivities = $this->activityStatisticsService->getRecentActivities(10, $campaign->id);
+        $dailySchedule = $this->campaignDailyBreakdownService->getDailyBreakdown($campaign);
 
         $campaign->load([
             'patients.eligibilityStatus',
@@ -147,6 +150,7 @@ class CampaignController extends Controller
             'activityStats' => $activityStats,
             'upcomingActivities' => $upcomingActivities,
             'recentActivities' => $recentActivities,
+            'dailySchedule' => $dailySchedule,
             'futureStats' => [
                 'patients_count' => $patientStats['total'],
                 'members_count' => $campaign->campaignMemberAssignments()->count(),

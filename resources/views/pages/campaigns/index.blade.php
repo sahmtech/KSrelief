@@ -112,7 +112,7 @@
                     <th>{{ __('campaigns.table.specialty') }}</th>
                     <th><a href="{{ $sortLink('start_date') }}" class="text-decoration-none text-reset">{{ __('campaigns.table.start_date') }}</a></th>
                     <th><a href="{{ $sortLink('end_date') }}" class="text-decoration-none text-reset">{{ __('campaigns.table.end_date') }}</a></th>
-                    <th><a href="{{ $sortLink('shifts_count') }}" class="text-decoration-none text-reset">{{ __('campaigns.table.shifts') }}</a></th>
+                    <th><a href="{{ $sortLink('shifts_count') }}" class="text-decoration-none text-reset">{{ __('campaigns.table.campaign_days') }}</a></th>
                     <th><a href="{{ $sortLink('expected_patients') }}" class="text-decoration-none text-reset">{{ __('campaigns.table.expected_patients') }}</a></th>
                     <th><a href="{{ $sortLink('status') }}" class="text-decoration-none text-reset">{{ __('campaigns.table.status') }}</a></th>
                     <th>{{ __('campaigns.table.created_by') }}</th>
@@ -128,7 +128,7 @@
                         <td class="text-nowrap">{{ $campaign->specialty?->name ?? '—' }}</td>
                         <td class="text-nowrap">{{ $campaign->start_date->format('Y-m-d') }}</td>
                         <td class="text-nowrap">{{ $campaign->end_date->format('Y-m-d') }}</td>
-                        <td>{{ $campaign->shifts_count }}</td>
+                        <td>{{ $campaign->campaignDaysCount() }}</td>
                         <td>{{ number_format($campaign->expected_patients) }}</td>
                         <td class="text-nowrap">
                             <span class="badge-status {{ $campaign->statusBadgeClass() }}">{{ $campaign->statusLabel() }}</span>

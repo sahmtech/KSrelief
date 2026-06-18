@@ -42,7 +42,6 @@ class StoreCampaignRequest extends FormRequest
             'specialty_id' => ['required', 'integer', Rule::exists('specialties', 'id')->where('status', SettingStatus::Active->value)],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after_or_equal:start_date'],
-            'shifts_count' => ['required', 'integer', 'min:1', 'max:99'],
             'expected_patients' => ['required', 'integer', 'min:0'],
             'description' => ['nullable', 'string', 'max:10000'],
             'campaign_status_id' => ['nullable', 'integer', Rule::exists('campaign_statuses', 'id')->where('status', SettingStatus::Active->value)],

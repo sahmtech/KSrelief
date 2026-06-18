@@ -84,6 +84,12 @@
         </button>
     </li>
     <li class="nav-item" role="presentation">
+        <button class="nav-link" id="daily-schedule-tab" data-bs-toggle="tab" data-bs-target="#daily-schedule-pane" type="button" role="tab">
+            <i class="ti ti-calendar-event me-1"></i> {{ __('campaigns.tabs.daily_schedule') }}
+            <span class="badge bg-secondary-subtle text-secondary ms-1">{{ $campaign->campaignDaysCount() }}</span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
         <button class="nav-link" id="patients-tab" data-bs-toggle="tab" data-bs-target="#patients-pane" type="button" role="tab">
             <i class="ti ti-user-heart me-1"></i> {{ __('campaigns.tabs.patients') }}
             <span class="badge bg-secondary-subtle text-secondary ms-1">{{ $futureStats['patients_count'] }}</span>
@@ -130,8 +136,8 @@
                             <div class="user-info-list__value">{{ $campaign->target_group }}</div>
                         </div>
                         <div class="user-info-list__item">
-                            <div class="user-info-list__label">{{ __('campaigns.fields.shifts_count') }}</div>
-                            <div class="user-info-list__value">{{ $campaign->shifts_count }}</div>
+                            <div class="user-info-list__label">{{ __('campaigns.fields.campaign_days_count') }}</div>
+                            <div class="user-info-list__value">{{ $campaign->campaignDaysCount() }}</div>
                         </div>
                         <div class="user-info-list__item">
                             <div class="user-info-list__label">{{ __('campaigns.fields.expected_patients') }}</div>
@@ -169,6 +175,13 @@
                 </x-card>
             </div>
         </div>
+    </div>
+
+    <div class="tab-pane fade" id="daily-schedule-pane" role="tabpanel">
+        @include('pages.campaigns.partials.daily-schedule', [
+            'campaign' => $campaign,
+            'dailySchedule' => $dailySchedule,
+        ])
     </div>
 
     <div class="tab-pane fade" id="patients-pane" role="tabpanel">
@@ -234,7 +247,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const hash = window.location.hash;
-    const tabMap = { '#team': 'team-tab', '#patients': 'patients-tab', '#attendance': 'attendance-tab', '#transportation': 'transportation-tab' };
+    const tabMap = { '#daily-schedule': 'daily-schedule-tab', '#team': 'team-tab', '#patients': 'patients-tab', '#attendance': 'attendance-tab', '#transportation': 'transportation-tab' };
     const tabId = tabMap[hash];
 
     if (tabId) {

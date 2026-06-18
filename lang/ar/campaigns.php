@@ -38,7 +38,7 @@ return [
         'specialty' => 'التخصص الطبي',
         'start_date' => 'تاريخ البداية',
         'end_date' => 'تاريخ النهاية',
-        'shifts_count' => 'عدد الورديات',
+        'campaign_days_count' => 'عدد أيام الحملة',
         'expected_patients' => 'المرضى المتوقعين',
         'status' => 'الحالة',
         'description' => 'الوصف',
@@ -63,7 +63,7 @@ return [
         'specialty' => 'التخصص',
         'start_date' => 'البداية',
         'end_date' => 'النهاية',
-        'shifts' => 'الورديات',
+        'campaign_days' => 'الأيام',
         'expected_patients' => 'المرضى المتوقعين',
         'status' => 'الحالة',
         'created_by' => 'أنشئت بواسطة',
@@ -95,6 +95,10 @@ return [
         'change_status' => 'تغيير الحالة',
     ],
 
+    'hints' => [
+        'campaign_days_auto' => 'يُحسب تلقائياً من تاريخ البداية والنهاية (شامل اليومين).',
+    ],
+
     'future_stats' => [
         'patients' => 'المرضى',
         'members' => 'الأعضاء',
@@ -106,11 +110,29 @@ return [
 
     'tabs' => [
         'overview' => 'نظرة عامة',
+        'daily_schedule' => 'جدول الأيام',
         'team' => 'فريق الحملة',
         'patients' => 'المرضى',
         'attendance' => 'الحضور',
         'transportation' => 'النقل',
         'activities' => 'الأنشطة',
+    ],
+
+    'daily_schedule' => [
+        'title' => 'جدول أيام الحملة',
+        'subtitle' => 'عرض يومي لـ :days أيام الحملة — الفريق، الحضور، المرضى، الرحلات، والأنشطة.',
+        'day' => 'اليوم :number',
+        'today' => 'اليوم',
+        'empty' => 'تواريخ الحملة غير محددة.',
+        'no_data' => 'لا توجد سجلات لهذا اليوم بعد.',
+        'no_team' => 'لا يوجد أعضاء معيّنون لهذا اليوم.',
+        'assigned_team' => 'الفريق المعيّن والحضور',
+        'patients' => 'مرضى مسجّلون',
+        'trips' => 'الرحلات',
+        'activities' => 'الأنشطة',
+        'other_attendance' => 'سجلات حضور إضافية',
+        'not_recorded' => 'غير مسجّل',
+        'record_attendance' => 'تسجيل الحضور',
     ],
 
     'wizard' => [

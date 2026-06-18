@@ -50,4 +50,19 @@ class CampaignMember extends Model
 
         return $this->assigned_to->isFuture() || $this->assigned_to->isToday();
     }
+
+    public function isActiveOn(\Illuminate\Support\Carbon $date): bool
+    {
+        $day = $date->copy()->startOfDay();
+
+        if ($this->assigned_from && $this->assigned_from->gt($day)) {
+            return false;
+        }
+
+        if ($this->assigned_to && $this->assigned_to->lt($day)) {
+            return false;
+        }
+
+        return true;
+    }
 }

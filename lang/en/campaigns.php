@@ -38,7 +38,7 @@ return [
         'specialty' => 'Medical Specialty',
         'start_date' => 'Start Date',
         'end_date' => 'End Date',
-        'shifts_count' => 'Shifts Count',
+        'campaign_days_count' => 'Campaign Days',
         'expected_patients' => 'Expected Patients',
         'status' => 'Status',
         'description' => 'Description',
@@ -63,7 +63,7 @@ return [
         'specialty' => 'Specialty',
         'start_date' => 'Start Date',
         'end_date' => 'End Date',
-        'shifts' => 'Shifts',
+        'campaign_days' => 'Days',
         'expected_patients' => 'Expected Patients',
         'status' => 'Status',
         'created_by' => 'Created By',
@@ -95,6 +95,10 @@ return [
         'change_status' => 'Change Status',
     ],
 
+    'hints' => [
+        'campaign_days_auto' => 'Calculated automatically from start and end dates (inclusive).',
+    ],
+
     'future_stats' => [
         'patients' => 'Patients',
         'members' => 'Members',
@@ -106,11 +110,29 @@ return [
 
     'tabs' => [
         'overview' => 'Overview',
+        'daily_schedule' => 'Daily Schedule',
         'team' => 'Campaign Team',
         'patients' => 'Patients',
         'attendance' => 'Attendance',
         'transportation' => 'Transportation',
         'activities' => 'Activities',
+    ],
+
+    'daily_schedule' => [
+        'title' => 'Campaign Daily Schedule',
+        'subtitle' => 'Day-by-day view of the :days campaign days — team, attendance, patients, trips, and activities.',
+        'day' => 'Day :number',
+        'today' => 'Today',
+        'empty' => 'Campaign dates are not set.',
+        'no_data' => 'No records for this day yet.',
+        'no_team' => 'No team members assigned for this day.',
+        'assigned_team' => 'Assigned Team & Attendance',
+        'patients' => 'Patients Registered',
+        'trips' => 'Trips',
+        'activities' => 'Activities',
+        'other_attendance' => 'Other Attendance Records',
+        'not_recorded' => 'Not recorded',
+        'record_attendance' => 'Record Attendance',
     ],
 
     'wizard' => [

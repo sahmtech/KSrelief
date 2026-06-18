@@ -65,7 +65,15 @@
                     <x-form-input :label="__('campaigns.fields.end_date')" name="end_date" type="date" :value="old('end_date', $campaign?->end_date?->format('Y-m-d'))" required />
                 </div>
             </div>
-            <x-form-input :label="__('campaigns.fields.shifts_count')" name="shifts_count" type="number" :value="old('shifts_count', $campaign?->shifts_count ?? 1)" min="1" required />
+            @if($campaign?->start_date && $campaign?->end_date)
+                <p class="text-muted small mb-0 mt-2">
+                    {{ __('campaigns.fields.campaign_days_count') }}:
+                    <strong>{{ $campaign->campaignDaysCount() }}</strong>
+                    <span class="d-block">{{ __('campaigns.hints.campaign_days_auto') }}</span>
+                </p>
+            @else
+                <p class="text-muted small mb-0 mt-2">{{ __('campaigns.hints.campaign_days_auto') }}</p>
+            @endif
         </x-card>
     </div>
 

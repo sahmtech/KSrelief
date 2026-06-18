@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 class Campaign extends Model
 {
@@ -121,6 +122,23 @@ class Campaign extends Model
     public function isTerminalStatus(): bool
     {
         return $this->campaignStatus?->isTerminal() ?? false;
+    }
+
+    public function campaignDaysCount(): int
+    {
+        if ($this->start_date && $this->end_date) {
+            return self::daysBetween($this->start_date, $this->end_date);
+        }
+
+        return (int) $this->shifts_count;
+    }
+
+    public static function daysBetween(Carbon|string $startDate, Carbon|string $endDate): int
+    {
+        $start = Carbon::parse($startDate)->startOfDay();
+        $end = Carbon::parse($endDate)->startOfDay();
+
+        return $start->diffInDays($end) + 1;
     }
 
     /**
