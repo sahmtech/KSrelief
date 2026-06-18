@@ -5,6 +5,7 @@ cd "$(dirname "$0")/.."
 
 echo "==> Removing stale config (if any)"
 rm -f config/sanctum.php
+rm -f public/hot
 
 echo "==> Installing PHP dependencies"
 composer install --no-dev --optimize-autoloader
@@ -32,3 +33,6 @@ echo "==> Fixing permissions"
 chmod -R 775 storage bootstrap/cache
 
 echo "==> Done. Login: superadmin@ksrelife.com / ks123456relife"
+echo ""
+echo "IMPORTANT: Cloudways Webroot MUST be: public_html/public"
+echo "Verify assets: https://YOUR-DOMAIN/build/assets/app-DREMItda.js"

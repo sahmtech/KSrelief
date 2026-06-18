@@ -167,15 +167,6 @@
                         </div>
                     </div>
                 </x-card>
-
-                <x-card :title="__('campaigns.wizard.title')" class="mt-3">
-                    <p class="text-muted mb-3" style="font-size: 0.875rem;">{{ __('campaigns.wizard.subtitle') }}</p>
-                    <ol class="campaign-wizard-steps mb-0">
-                        @foreach(app(\App\Services\CampaignWizardService::class)->steps() as $step)
-                            <li>{{ $step['label'] }}</li>
-                        @endforeach
-                    </ol>
-                </x-card>
             </div>
         </div>
     </div>

@@ -4,7 +4,15 @@ KSrelief — Cloudways Upload Guide
 1) Upload ksrelief-deploy.zip to ~/public_html and extract:
    unzip -o ksrelief-deploy.zip -d ~/public_html
 
-2) Set Cloudways Webroot to: public_html/public
+2) Set Cloudways Webroot to: public_html/public   <<< CRITICAL (fixes icons + menus)
+
+   Cloudways → Application → Application Settings → General
+   → Web Application Settings → Set "public" as webroot folder
+   OR point document root to: .../public_html/public
+
+   If webroot is public_html (parent folder), CSS may load but:
+   - Icons break (font files 404)
+   - JavaScript won't load (menus/dropdowns dead)
 
 3) PHP version: 8.2 or 8.3
 

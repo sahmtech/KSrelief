@@ -105,6 +105,7 @@
             <i class="ti ti-report-analytics me-1"></i> {{ __('patients.tabs.reports') }}
         </button>
     </li>
+    @if(config('admin.show_patient_transportation_tab'))
     @can('transportation.view')
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="transportation-tab" data-bs-toggle="tab" data-bs-target="#transportation-pane" type="button" role="tab">
@@ -113,6 +114,7 @@
         </button>
     </li>
     @endcan
+    @endif
     @can('activity.view')
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="activities-tab" data-bs-toggle="tab" data-bs-target="#activities-pane" type="button" role="tab">
@@ -275,6 +277,7 @@
         </x-card>
     </div>
 
+    @if(config('admin.show_patient_transportation_tab'))
     @can('transportation.view')
     <div class="tab-pane fade" id="transportation-pane" role="tabpanel">
         @include('pages.patients.partials.transportation-tab', [
@@ -284,6 +287,7 @@
         ])
     </div>
     @endcan
+    @endif
 
     @can('activity.view')
     <div class="tab-pane fade" id="activities-pane" role="tabpanel">

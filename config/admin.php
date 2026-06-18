@@ -18,6 +18,7 @@ return [
     'show_notifications' => false,
     'show_navbar_search' => false,
     'show_reports' => false,
+    'show_patient_transportation_tab' => false,
 
     /*
     |--------------------------------------------------------------------------
