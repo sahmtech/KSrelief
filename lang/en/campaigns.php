@@ -135,6 +135,14 @@ return [
         'record_attendance' => 'Record Attendance',
     ],
 
+    'surgery_days' => [
+        'title' => 'Surgery Days Schedule',
+        'subtitle' => 'Patients grouped by surgery day (Day 1, Day 2, Day 3…) matching the campaign Excel sheets.',
+        'day' => 'Surgery Day :number',
+        'empty' => 'No surgery days configured.',
+        'no_patients' => 'No patients assigned to this surgery day yet.',
+    ],
+
     'wizard' => [
         'title' => 'Campaign Setup Wizard',
         'subtitle' => 'Multi-step campaign configuration (coming soon)',

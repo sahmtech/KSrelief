@@ -133,4 +133,43 @@ class CampaignDailyBreakdownService
 
         return $days;
     }
+
+    /**
+     * Surgery-day schedule (matches client Day1/Day2/Day3 sheets).
+     *
+     * @return list<array{
+     *     day_number: int,
+     *     patients: Collection<int, Patient>,
+     *     count: int,
+     * }>
+     */
+    public function getSurgeryDaysSchedule(Campaign $campaign): array
+    {
+        $dayCount = max(1, $campaign->campaignDaysCount());
+        $patients = Patient::query()
+            ->where('campaign_id', $campaign->id)
+            ->with(['eligibilityStatus', 'currentStage'])
+            ->orderBy('rank')
+            ->orderBy('patient_name')
+            ->get();
+
+        $maxAssignedDay = (int) $patients->max('surgery_day_number');
+        $totalDays = max($dayCount, $maxAssignedDay);
+
+        $schedule = [];
+
+        for ($day = 1; $day <= $totalDays; $day++) {
+            $dayPatients = $patients
+                ->where('surgery_day_number', $day)
+                ->values();
+
+            $schedule[] = [
+                'day_number' => $day,
+                'patients' => $dayPatients,
+                'count' => $dayPatients->count(),
+            ];
+        }
+
+        return $schedule;
+    }
 }

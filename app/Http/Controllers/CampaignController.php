@@ -126,6 +126,7 @@ class CampaignController extends Controller
         $upcomingActivities = $this->activityStatisticsService->getUpcomingActivities(5, $campaign->id);
         $recentActivities = $this->activityStatisticsService->getRecentActivities(10, $campaign->id);
         $dailySchedule = $this->campaignDailyBreakdownService->getDailyBreakdown($campaign);
+        $surgeryDaysSchedule = $this->campaignDailyBreakdownService->getSurgeryDaysSchedule($campaign);
 
         $campaign->load([
             'patients.eligibilityStatus',
@@ -151,6 +152,7 @@ class CampaignController extends Controller
             'upcomingActivities' => $upcomingActivities,
             'recentActivities' => $recentActivities,
             'dailySchedule' => $dailySchedule,
+            'surgeryDaysSchedule' => $surgeryDaysSchedule,
             'futureStats' => [
                 'patients_count' => $patientStats['total'],
                 'members_count' => $campaign->campaignMemberAssignments()->count(),
