@@ -11,6 +11,7 @@ use App\Models\Patient;
 use App\Models\TransportationTrip;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 
 class CampaignDailyBreakdownService
 {
@@ -146,12 +147,22 @@ class CampaignDailyBreakdownService
     public function getSurgeryDaysSchedule(Campaign $campaign): array
     {
         $dayCount = max(1, $campaign->campaignDaysCount());
-        $patients = Patient::query()
+        $hasSurgeryDayColumn = Schema::hasColumn('patients', 'surgery_day_number');
+        $hasRankColumn = Schema::hasColumn('patients', 'rank');
+
+        $query = Patient::query()
             ->where('campaign_id', $campaign->id)
-            ->with(['eligibilityStatus', 'currentStage'])
-            ->orderBy('rank')
-            ->orderBy('patient_name')
-            ->get();
+            ->with(['eligibilityStatus', 'currentStage']);
+
+        if ($hasRankColumn) {
+            $query->orderBy('rank');
+        }
+
+        $patients = $query->orderBy('patient_name')->get();
+
+        if (! $hasSurgeryDayColumn) {
+            return $this->emptySurgeryDaySlots($dayCount);
+        }
 
         $maxAssignedDay = (int) $patients->max('surgery_day_number');
         $totalDays = max($dayCount, $maxAssignedDay);
@@ -167,6 +178,24 @@ class CampaignDailyBreakdownService
                 'day_number' => $day,
                 'patients' => $dayPatients,
                 'count' => $dayPatients->count(),
+            ];
+        }
+
+        return $schedule;
+    }
+
+    /**
+     * @return list<array{day_number: int, patients: Collection<int, Patient>, count: int}>
+     */
+    private function emptySurgeryDaySlots(int $dayCount): array
+    {
+        $schedule = [];
+
+        for ($day = 1; $day <= $dayCount; $day++) {
+            $schedule[] = [
+                'day_number' => $day,
+                'patients' => collect(),
+                'count' => 0,
             ];
         }
 
