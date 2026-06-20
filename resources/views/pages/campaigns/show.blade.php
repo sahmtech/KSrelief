@@ -83,12 +83,14 @@
             <i class="ti ti-info-circle me-1"></i> {{ __('campaigns.tabs.overview') }}
         </button>
     </li>
+    @if(config('admin.show_campaign_daily_schedule_tab'))
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="daily-schedule-tab" data-bs-toggle="tab" data-bs-target="#daily-schedule-pane" type="button" role="tab">
             <i class="ti ti-calendar-event me-1"></i> {{ __('campaigns.tabs.daily_schedule') }}
             <span class="badge bg-secondary-subtle text-secondary ms-1">{{ $campaign->campaignDaysCount() }}</span>
         </button>
     </li>
+    @endif
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="patients-tab" data-bs-toggle="tab" data-bs-target="#patients-pane" type="button" role="tab">
             <i class="ti ti-user-heart me-1"></i> {{ __('campaigns.tabs.patients') }}
@@ -177,12 +179,14 @@
         </div>
     </div>
 
+    @if(config('admin.show_campaign_daily_schedule_tab'))
     <div class="tab-pane fade" id="daily-schedule-pane" role="tabpanel">
         @include('pages.campaigns.partials.daily-schedule', [
             'campaign' => $campaign,
             'dailySchedule' => $dailySchedule,
         ])
     </div>
+    @endif
 
     <div class="tab-pane fade" id="patients-pane" role="tabpanel">
         @include('pages.campaigns.partials.patients', [

@@ -19,6 +19,7 @@ return [
     'show_navbar_search' => false,
     'show_reports' => false,
     'show_patient_transportation_tab' => false,
+    'show_campaign_daily_schedule_tab' => false,
 
     /*
     |--------------------------------------------------------------------------
