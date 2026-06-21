@@ -123,7 +123,7 @@ return [
         'general' => 'الإعدادات العامة',
         'org_name' => 'اسم المؤسسة',
         'contact_email' => 'البريد الإلكتروني للتواصل',
-        'contact_email_placeholder' => 'admin@ksrelief.org',
+        'contact_email_placeholder' => 'admin@esghaa.org',
         'timezone' => 'المنطقة الزمنية الافتراضية',
         'account' => 'الحساب',
     ],

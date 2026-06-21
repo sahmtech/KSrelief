@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 
 $root = Split-Path -Parent $PSScriptRoot
 $staging = Join-Path $root "deploy-staging"
-$zipPath = Join-Path $root "ksrelief-deploy.zip"
+$zipPath = Join-Path $root "esghaa-deploy.zip"
 
 $includeDirs = @(
     "app", "bootstrap", "config", "database", "deploy", "lang",

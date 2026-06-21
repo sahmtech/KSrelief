@@ -1,8 +1,8 @@
-KSrelief — Cloudways Upload Guide
+Esghaa — Cloudways Upload Guide
 =================================
 
-1) Upload ksrelief-deploy.zip to ~/public_html and extract:
-   unzip -o ksrelief-deploy.zip -d ~/public_html
+1) Upload esghaa-deploy.zip to ~/public_html and extract:
+   unzip -o esghaa-deploy.zip -d ~/public_html
 
 2) Set Cloudways Webroot to: public_html/public   <<< CRITICAL (fixes icons + menus)
 

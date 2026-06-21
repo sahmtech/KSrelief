@@ -123,7 +123,7 @@ return [
         'general' => 'General Settings',
         'org_name' => 'Organization Name',
         'contact_email' => 'Contact Email',
-        'contact_email_placeholder' => 'admin@ksrelief.org',
+        'contact_email_placeholder' => 'admin@esghaa.org',
         'timezone' => 'Default Timezone',
         'account' => 'Account',
     ],

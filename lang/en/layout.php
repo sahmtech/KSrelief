@@ -2,7 +2,7 @@
 
 return [
     'brand_tagline' => 'Medical Campaign Management',
-    'brand_alt' => 'King Salman Humanitarian Aid & Relief Centre',
+    'brand_alt' => 'Esghaa',
     'toggle_sidebar' => 'Toggle sidebar',
     'search' => 'Search',
     'search_placeholder' => 'Search campaigns, patients, staff...',
