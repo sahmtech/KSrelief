@@ -221,11 +221,19 @@
             </div>
         @endif
     </x-card>
-@elseif($batch->status?->value === 'processing')
+@elseif($batch->status?->value === 'processing' || $batch->status?->value === 'uploaded')
     <x-card>
-        <div class="text-center text-muted py-4">
-            <i class="ti ti-loader d-block mb-2" style="font-size: 2.5rem; opacity: 0.4;"></i>
-            {{ __('patients.import.messages.uploaded') }}
+        <div class="text-center text-muted py-4" id="importProcessingCard">
+            <i class="ti ti-loader d-block mb-2 import-processing-spinner" style="font-size: 2.5rem; opacity: 0.4;"></i>
+            <p class="mb-0" id="importProcessingMessage">
+                {{ $batch->status?->value === 'uploaded'
+                    ? __('patients.import.messages.queued_wait')
+                    : __('patients.import.messages.processing_wait') }}
+            </p>
+            <p class="text-warning mb-0 mt-3 d-none" id="importProcessingStuck" style="font-size: 0.875rem;">
+                <i class="ti ti-alert-triangle me-1"></i>
+                {{ __('patients.import.messages.queue_stuck') }}
+            </p>
         </div>
     </x-card>
 @endif
@@ -234,7 +242,23 @@
 @push('scripts')
 <script>
 @if(in_array($batch->status?->value, ['uploaded', 'processing']))
-setTimeout(() => window.location.reload(), 5000);
+(function () {
+    const storageKey = 'import-reload-{{ $batch->id }}';
+    const maxReloads = 12;
+    const reloadCount = Number(sessionStorage.getItem(storageKey) || 0) + 1;
+
+    sessionStorage.setItem(storageKey, String(reloadCount));
+
+    if (reloadCount >= maxReloads) {
+        document.getElementById('importProcessingStuck')?.classList.remove('d-none');
+        document.getElementById('importProcessingMessage')?.classList.add('text-muted');
+        document.querySelector('.import-processing-spinner')?.classList.replace('ti-loader', 'ti-clock-pause');
+    } else {
+        setTimeout(() => window.location.reload(), 5000);
+    }
+})();
+@else
+sessionStorage.removeItem('import-reload-{{ $batch->id }}');
 @endif
 </script>
 @endpush

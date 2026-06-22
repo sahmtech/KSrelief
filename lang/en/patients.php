@@ -286,6 +286,9 @@ return [
 
         'messages' => [
             'uploaded' => 'File uploaded and queued for processing. Refresh to check status.',
+            'processing_wait' => 'Processing the file. This page will refresh automatically.',
+            'queued_wait' => 'Waiting for background processing to start. This page will refresh automatically.',
+            'queue_stuck' => 'Processing is taking longer than expected. Ask your administrator to run the queue worker, or set PATIENT_IMPORT_SYNC=true in .env.',
             'approved' => ':count patient(s) imported successfully.',
             'not_reviewable' => 'This batch is not in a reviewable state.',
             'empty_file' => 'The file contains no data rows.',

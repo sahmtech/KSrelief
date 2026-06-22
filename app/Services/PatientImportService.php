@@ -62,9 +62,13 @@ class PatientImportService
 
         $file->storeAs('patient-imports/'.$batch->id, $storedName, 'local');
 
-        ProcessPatientImportJob::dispatch($batch);
+        if (config('patient_import.sync_processing', true)) {
+            ProcessPatientImportJob::dispatchSync($batch);
+        } else {
+            ProcessPatientImportJob::dispatch($batch);
+        }
 
-        return $batch;
+        return $batch->fresh();
     }
 
     public function processBatch(PatientImportBatch $batch): void
