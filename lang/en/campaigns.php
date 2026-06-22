@@ -57,6 +57,7 @@ return [
     ],
 
     'table' => [
+        'code' => 'Code',
         'name' => 'Name',
         'country' => 'Country',
         'city' => 'City',
@@ -73,7 +74,7 @@ return [
     'filters' => [
         'title' => 'Search & Filters',
         'search' => 'Search',
-        'search_placeholder' => 'Search by name, objective, or target group...',
+        'search_placeholder' => 'Search by code, name, objective, or target group...',
         'status' => 'Status',
         'country' => 'Country',
         'city' => 'City',
@@ -97,6 +98,8 @@ return [
 
     'hints' => [
         'campaign_days_auto' => 'Calculated automatically from start and end dates (inclusive).',
+        'code_auto' => 'Format: country abbreviation + campaign name token (e.g. NG-SAMA). Generated automatically and cannot be edited.',
+        'code_generated_on_save' => 'Generated automatically when the campaign is saved (country + first campaign word).',
     ],
 
     'future_stats' => [

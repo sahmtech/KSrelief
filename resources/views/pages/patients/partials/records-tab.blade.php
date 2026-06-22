@@ -1,7 +1,7 @@
-{{-- Medical Records tab on patient profile --}}
-{{-- Requires: $patient, $medicalRecords (Collection) --}}
+{{-- Medical Records tab: clinical dossier (Excel-like) + records list --}}
+{{-- Requires: $patient, $medicalRecords, $clinicalProfile (optional) --}}
 
-<div class="d-flex align-items-center justify-content-between mb-3">
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
     <h6 class="mb-0 fw-semibold">
         <i class="ti ti-file-medical me-2 text-primary"></i>
         {{ __('workflow.medical_records') }}
@@ -13,72 +13,33 @@
     @endcan
 </div>
 
-@if($medicalRecords->isEmpty())
-    <div class="text-center text-muted py-5">
-        <i class="ti ti-file-medical d-block mb-2" style="font-size: 2.5rem; opacity: .4;"></i>
-        {{ __('workflow.no_records') }}
+@if(!empty($clinicalProfile))
+<ul class="nav nav-pills mb-3" id="recordsSubTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="records-dossier-tab" data-bs-toggle="pill" data-bs-target="#records-dossier-pane" type="button" role="tab">
+            <i class="ti ti-layout-grid me-1"></i> {{ __('workflow.records.view_dossier') }}
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="records-list-tab" data-bs-toggle="pill" data-bs-target="#records-list-pane" type="button" role="tab">
+            <i class="ti ti-list me-1"></i> {{ __('workflow.records.view_list') }}
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="recordsSubTabsContent">
+    <div class="tab-pane fade show active" id="records-dossier-pane" role="tabpanel">
+        @include('pages.patients.partials.clinical-dossier', [
+            'patient' => $patient,
+            'clinicalProfile' => $clinicalProfile,
+        ])
     </div>
+    <div class="tab-pane fade" id="records-list-pane" role="tabpanel">
+        @include('pages.patients.partials.records-list')
+    </div>
+</div>
 @else
-    <div class="table-responsive">
-        <table class="table table-hover align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>#</th>
-                    <th>{{ __('workflow.records.date') }}</th>
-                    <th>{{ __('workflow.records.stage') }}</th>
-                    <th>{{ __('workflow.records.submitted_by') }}</th>
-                    <th>{{ __('common.notes') }}</th>
-                    <th class="text-end">{{ __('workflow.records.actions') }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($medicalRecords as $record)
-                <tr>
-                    <td class="small text-muted">{{ $loop->iteration }}</td>
-                    <td class="small text-nowrap">{{ $record->record_date?->format('d M Y') }}</td>
-                    <td>
-                        @if($record->stage)
-                            <span class="badge rounded-pill px-2 py-1"
-                                  style="background-color: {{ $record->stage->color ?? '#3B82F6' }}; color:#fff;">
-                                {{ $record->stage->name }}
-                            </span>
-                        @else
-                            <span class="text-muted">—</span>
-                        @endif
-                    </td>
-                    <td class="small">{{ $record->submitter?->name ?? '—' }}</td>
-                    <td class="small text-muted">{{ Str::limit($record->notes, 50) }}</td>
-                    <td class="text-end">
-                        <div class="d-flex gap-1 justify-content-end">
-                            @can('view', $record)
-                            <a href="{{ route('patients.records.show', [$patient, $record]) }}"
-                               class="btn btn-xs btn-light" title="{{ __('workflow.records.view') }}">
-                                <i class="ti ti-eye"></i>
-                            </a>
-                            @endcan
-                            @can('update', $record)
-                            <a href="{{ route('patients.records.edit', [$patient, $record]) }}"
-                               class="btn btn-xs btn-light" title="{{ __('workflow.records.edit') }}">
-                                <i class="ti ti-edit"></i>
-                            </a>
-                            @endcan
-                            @can('delete', $record)
-                            <form action="{{ route('patients.records.destroy', [$patient, $record]) }}"
-                                  method="POST" class="delete-record-form d-inline">
-                                @csrf @method('DELETE')
-                                <button type="button" class="btn btn-xs btn-light text-danger btn-delete-record"
-                                        title="{{ __('workflow.records.delete') }}">
-                                    <i class="ti ti-trash"></i>
-                                </button>
-                            </form>
-                            @endcan
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+    @include('pages.patients.partials.records-list')
 @endif
 
 @push('scripts')

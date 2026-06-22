@@ -13,6 +13,7 @@ use App\Models\Patient;
 use App\Models\PatientStage;
 use App\Services\LookupService;
 use App\Services\MedicalRecordService;
+use App\Services\PatientClinicalProfileService;
 use App\Services\PatientService;
 use App\Services\PatientStatisticsService;
 use App\Services\PatientWorkflowService;
@@ -160,6 +161,11 @@ class PatientController extends Controller
             'workflowStages'   => $workflowStages,
             'stageHistory'     => $stageHistory,
             'medicalRecords'   => $medicalRecords,
+            'clinicalProfile'  => $user->can('viewAny', [MedicalRecord::class, $patient])
+                ? app(PatientClinicalProfileService::class)->buildProfile($patient)
+                : null,
+            'screeningFields'  => $this->recordService->getScreeningFields(),
+            'clinicalPhases'   => $this->recordService->clinicalPhases(),
             'transportStats'   => $transportStats,
             'patientTrips'     => $patientTrips,
             'activityStats'    => $activityStats,
@@ -219,6 +225,9 @@ class PatientController extends Controller
             'genders' => Gender::cases(),
             'admissionStatuses' => AdmissionStatus::cases(),
             'recordStatuses' => PatientRecordStatus::cases(),
+            'screeningFields' => $this->recordService->getScreeningFields(),
+            'clinicalPhases' => $this->recordService->clinicalPhases(),
+            'surgicalSides' => ['left', 'right', 'bilateral'],
         ];
     }
 }

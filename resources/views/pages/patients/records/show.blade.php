@@ -71,7 +71,9 @@
                     @php $val = $record->field($fieldKey); @endphp
                     @if(filled($val))
                     <dt class="col-sm-4 fw-semibold">{{ $fieldDef['label'] }}</dt>
-                    <dd class="col-sm-8">{{ \App\Support\MedicalRecordFieldPresenter::display($fieldKey, $val, $fieldDef) }}</dd>
+                    <dd class="col-sm-8">
+                        <x-clinical-value :value="$val" :type="$fieldDef['type'] ?? 'text'" />
+                    </dd>
                     @endif
                     @endforeach
                 </dl>

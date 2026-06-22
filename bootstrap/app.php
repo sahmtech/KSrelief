@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'ensure.permission' => \App\Http\Middleware\EnsureUserHasPermission::class,
             'ensure.role' => \App\Http\Middleware\EnsureUserHasRole::class,
             'reports.enabled' => \App\Http\Middleware\EnsureReportsEnabled::class,
+            'app.debug' => \App\Http\Middleware\EnsureAppDebug::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

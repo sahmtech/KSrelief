@@ -18,6 +18,8 @@ class Patient extends Model
 
     protected $fillable = [
         'campaign_id',
+        'surgery_day_number',
+        'rank',
         'patient_name',
         'photo',
         'file_number',
@@ -25,11 +27,16 @@ class Patient extends Model
         'age_years',
         'age_months',
         'gender',
+        'height_cm',
+        'weight_kg',
         'contact_number',
         'eligibility_status_id',
+        'approval_reason',
         'current_stage_id',
         'admission_status',
+        'surgical_side',
         'notes',
+        'screening_data',
         'status',
         'created_by',
         'updated_by',
@@ -42,8 +49,13 @@ class Patient extends Model
             'age_years' => 'integer',
             'age_months' => 'integer',
             'gender' => Gender::class,
+            'height_cm' => 'decimal:1',
+            'weight_kg' => 'decimal:1',
             'admission_status' => AdmissionStatus::class,
             'status' => PatientRecordStatus::class,
+            'screening_data' => 'array',
+            'surgery_day_number' => 'integer',
+            'rank' => 'integer',
         ];
     }
 
@@ -156,6 +168,24 @@ class Patient extends Model
         return __('patients.age.years', ['years' => $this->age_years]);
     }
 
+    public function heightLabel(): string
+    {
+        if ($this->height_cm === null) {
+            return '—';
+        }
+
+        return __('patients.measurements.height_value', ['value' => rtrim(rtrim(number_format((float) $this->height_cm, 1, '.', ''), '0'), '.')]);
+    }
+
+    public function weightLabel(): string
+    {
+        if ($this->weight_kg === null) {
+            return '—';
+        }
+
+        return __('patients.measurements.weight_value', ['value' => rtrim(rtrim(number_format((float) $this->weight_kg, 1, '.', ''), '0'), '.')]);
+    }
+
     public function admissionLabel(): string
     {
         return $this->admission_status?->label() ?? '—';
@@ -174,6 +204,29 @@ class Patient extends Model
     public function recordStatusBadgeClass(): string
     {
         return $this->status?->badgeClass() ?? 'badge-status--inactive';
+    }
+
+    public function screening(string $key, mixed $default = null): mixed
+    {
+        return $this->screening_data[$key] ?? $default;
+    }
+
+    public function surgeryDayLabel(): string
+    {
+        if (! $this->surgery_day_number) {
+            return '—';
+        }
+
+        return __('patients.fields.surgery_day_number_value', ['day' => $this->surgery_day_number]);
+    }
+
+    public function surgicalSideLabel(): string
+    {
+        if (! filled($this->surgical_side)) {
+            return '—';
+        }
+
+        return __('workflow.sides.'.$this->surgical_side);
     }
 
     /**
@@ -200,6 +253,7 @@ class Patient extends Model
     {
         return $query
             ->when($filters['campaign_id'] ?? null, fn (Builder $q, int $id) => $q->where('campaign_id', $id))
+            ->when($filters['surgery_day_number'] ?? null, fn (Builder $q, int $day) => $q->where('surgery_day_number', $day))
             ->when($filters['eligibility_status_id'] ?? null, fn (Builder $q, int $id) => $q->where('eligibility_status_id', $id))
             ->when($filters['current_stage_id'] ?? null, fn (Builder $q, int $id) => $q->where('current_stage_id', $id))
             ->when($filters['admission_status'] ?? null, fn (Builder $q, string $status) => $q->where('admission_status', $status))

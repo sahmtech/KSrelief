@@ -28,7 +28,7 @@
                             {{ $patient->campaign->name }}
                         </a>
                         @if($patient->file_number)
-                            · <code>{{ $patient->file_number }}</code>
+                            · <x-record-code-link :href="route('patients.show', $patient)" :code="$patient->file_number" />
                         @endif
                     </p>
                     <div class="user-profile-hero__meta">
@@ -137,7 +137,13 @@
                         </div>
                         <div class="user-info-list__item">
                             <div class="user-info-list__label">{{ __('patients.fields.file_number') }}</div>
-                            <div class="user-info-list__value"><code>{{ $patient->file_number ?? '—' }}</code></div>
+                            <div class="user-info-list__value">
+                                @if($patient->file_number)
+                                    <x-record-code-link :href="route('patients.show', $patient)" :code="$patient->file_number" />
+                                @else
+                                    —
+                                @endif
+                            </div>
                         </div>
                         <div class="user-info-list__item">
                             <div class="user-info-list__label">{{ __('patients.fields.date_of_birth') }}</div>
@@ -150,6 +156,14 @@
                         <div class="user-info-list__item">
                             <div class="user-info-list__label">{{ __('patients.fields.gender') }}</div>
                             <div class="user-info-list__value">{{ $patient->gender?->label() ?? '—' }}</div>
+                        </div>
+                        <div class="user-info-list__item">
+                            <div class="user-info-list__label">{{ __('patients.fields.height_cm') }}</div>
+                            <div class="user-info-list__value">{{ $patient->heightLabel() }}</div>
+                        </div>
+                        <div class="user-info-list__item">
+                            <div class="user-info-list__label">{{ __('patients.fields.weight_kg') }}</div>
+                            <div class="user-info-list__value">{{ $patient->weightLabel() }}</div>
                         </div>
                     </div>
                 </x-card>
@@ -205,6 +219,24 @@
                             <div class="user-info-list__value">{{ $patient->currentStage?->name ?? '—' }}</div>
                         </div>
                         <div class="user-info-list__item">
+                            <div class="user-info-list__label">{{ __('patients.fields.surgery_day_number') }}</div>
+                            <div class="user-info-list__value">{{ $patient->surgeryDayLabel() }}</div>
+                        </div>
+                        <div class="user-info-list__item">
+                            <div class="user-info-list__label">{{ __('patients.fields.rank') }}</div>
+                            <div class="user-info-list__value">{{ $patient->rank ?? '—' }}</div>
+                        </div>
+                        <div class="user-info-list__item">
+                            <div class="user-info-list__label">{{ __('patients.fields.surgical_side') }}</div>
+                            <div class="user-info-list__value">{{ $patient->surgicalSideLabel() }}</div>
+                        </div>
+                        @if($patient->approval_reason)
+                        <div class="user-info-list__item">
+                            <div class="user-info-list__label">{{ __('patients.fields.approval_reason') }}</div>
+                            <div class="user-info-list__value">{{ $patient->approval_reason }}</div>
+                        </div>
+                        @endif
+                        <div class="user-info-list__item">
                             <div class="user-info-list__label">{{ __('patients.fields.admission_status') }}</div>
                             <div class="user-info-list__value">
                                 <span class="badge-status {{ $patient->admissionBadgeClass() }}">{{ $patient->admissionLabel() }}</span>
@@ -250,10 +282,14 @@
     </div>
     @endcan
 
-    {{-- Medical Records Tab --}}
+    {{-- Medical Records Tab (includes Excel-like clinical dossier) --}}
     @can('viewAny', [\App\Models\MedicalRecord::class, $patient])
     <div class="tab-pane fade" id="records-pane" role="tabpanel">
-        @include('pages.patients.partials.records-tab')
+        @include('pages.patients.partials.records-tab', [
+            'patient' => $patient,
+            'medicalRecords' => $medicalRecords,
+            'clinicalProfile' => $clinicalProfile,
+        ])
     </div>
     @endcan
 
@@ -308,7 +344,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabMap = {
         '#attachments': 'attachments-tab',
         '#workflow': 'workflow-tab',
+        '#clinical': 'records-tab',
         '#records': 'records-tab',
+        '#records-dossier': 'records-tab',
+        '#records-list': 'records-tab',
         '#history': 'history-tab',
         '#transportation': 'transportation-tab',
         '#activities': 'activities-tab',
@@ -319,6 +358,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const tab = document.getElementById(tabId);
         if (tab) {
             bootstrap.Tab.getOrCreateInstance(tab).show();
+        }
+    }
+
+    const recordsSubMap = {
+        '#clinical': 'records-dossier-tab',
+        '#records': 'records-dossier-tab',
+        '#records-dossier': 'records-dossier-tab',
+        '#records-list': 'records-list-tab',
+    };
+    const recordsSubId = recordsSubMap[hash];
+
+    if (recordsSubId) {
+        const subTab = document.getElementById(recordsSubId);
+        if (subTab) {
+            bootstrap.Tab.getOrCreateInstance(subTab).show();
         }
     }
 

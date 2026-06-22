@@ -56,4 +56,33 @@
         @endcan
     @endforeach
 </div>
+
+@if(config('app.debug') && $debugBackfill)
+    <x-card :title="__('settings.debug.title')" class="mt-3 border border-warning-subtle">
+        <p class="text-muted mb-3" style="font-size: 0.875rem;">{{ __('settings.debug.backfill_description') }}</p>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6 col-md-4">
+                <div class="text-muted small">{{ __('settings.debug.missing_campaign_codes') }}</div>
+                <div class="fs-5 fw-semibold">{{ number_format($debugBackfill['campaigns']) }}</div>
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <div class="text-muted small">{{ __('settings.debug.missing_patient_codes') }}</div>
+                <div class="fs-5 fw-semibold">{{ number_format($debugBackfill['patients']) }}</div>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ route('settings.backfill-record-codes') }}">
+            @csrf
+            <button
+                type="submit"
+                class="btn btn-warning btn-sm"
+                @disabled($debugBackfill['campaigns'] === 0 && $debugBackfill['patients'] === 0)
+                data-confirm="{{ __('settings.debug.backfill_confirm') }}"
+            >
+                <i class="ti ti-barcode me-1"></i>{{ __('settings.debug.backfill_action') }}
+            </button>
+        </form>
+    </x-card>
+@endif
 @endsection

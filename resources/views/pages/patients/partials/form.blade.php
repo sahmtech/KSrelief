@@ -7,6 +7,8 @@
     'genders' => [],
     'admissionStatuses' => [],
     'recordStatuses' => [],
+    'screeningFields' => [],
+    'surgicalSides' => [],
 ])
 
 <div class="row g-3">
@@ -15,7 +17,20 @@
             @include('pages.patients.partials.photo-upload', ['patient' => $patient, 'inputId' => 'patientPhotoInput'.($patient?->id ?? 'New')])
 
             <x-form-input :label="__('patients.fields.patient_name')" name="patient_name" :value="old('patient_name', $patient?->patient_name)" :placeholder="__('patients.placeholders.patient_name')" required />
-            <x-form-input :label="__('patients.fields.file_number')" name="file_number" :value="old('file_number', $patient?->file_number)" :placeholder="__('patients.placeholders.file_number')" />
+            @if($patient?->file_number)
+                <div class="mb-3">
+                    <label class="form-group-admin__label">{{ __('patients.fields.file_number') }}</label>
+                    <div class="form-control form-control-sm bg-light">
+                        <code>{{ $patient->file_number }}</code>
+                    </div>
+                    <div class="form-text">{{ __('patients.hints.file_number_auto') }}</div>
+                </div>
+            @else
+                <div class="mb-3">
+                    <label class="form-group-admin__label">{{ __('patients.fields.file_number') }}</label>
+                    <div class="form-control form-control-sm bg-light text-muted">{{ __('patients.hints.file_number_generated_on_save') }}</div>
+                </div>
+            @endif
             <div class="row g-0">
                 <div class="col-md-6 pe-md-2">
                     <x-form-input :label="__('patients.fields.date_of_birth')" name="date_of_birth" type="date" :value="old('date_of_birth', $patient?->date_of_birth?->format('Y-m-d'))" required />
@@ -37,6 +52,14 @@
                     {{ __('patients.fields.age') }}: {{ $patient->ageLabel() }}
                 </div>
             @endif
+            <div class="row g-0 mt-2">
+                <div class="col-md-6 pe-md-2">
+                    <x-form-input :label="__('patients.fields.height_cm')" name="height_cm" type="number" step="0.1" min="20" max="250" :value="old('height_cm', $patient?->height_cm)" :placeholder="__('patients.placeholders.height_cm')" />
+                </div>
+                <div class="col-md-6 ps-md-2">
+                    <x-form-input :label="__('patients.fields.weight_kg')" name="weight_kg" type="number" step="0.1" min="0.5" max="500" :value="old('weight_kg', $patient?->weight_kg)" :placeholder="__('patients.placeholders.weight_kg')" />
+                </div>
+            </div>
         </x-card>
     </div>
 
@@ -70,6 +93,23 @@
                     </option>
                 @endforeach
             </x-form-input>
+            <x-form-input :label="__('patients.fields.approval_reason')" name="approval_reason" type="textarea" :value="old('approval_reason', $patient?->approval_reason)" />
+            <div class="row g-0">
+                <div class="col-md-4 pe-md-2">
+                    <x-form-input :label="__('patients.fields.surgery_day_number')" name="surgery_day_number" type="number" min="1" max="99" :value="old('surgery_day_number', $patient?->surgery_day_number)" />
+                </div>
+                <div class="col-md-4 px-md-1">
+                    <x-form-input :label="__('patients.fields.rank')" name="rank" type="number" min="1" :value="old('rank', $patient?->rank)" />
+                </div>
+                <div class="col-md-4 ps-md-2">
+                    <x-form-input :label="__('patients.fields.surgical_side')" name="surgical_side" type="select">
+                        <option value="">{{ __('common.select') }}</option>
+                        @foreach($surgicalSides as $side)
+                            <option value="{{ $side }}" @selected(old('surgical_side', $patient?->surgical_side) === $side)>{{ __('workflow.sides.'.$side) }}</option>
+                        @endforeach
+                    </x-form-input>
+                </div>
+            </div>
             @if($patient)
                 <div class="mb-3">
                     <label class="form-label fw-semibold">{{ __('patients.fields.current_stage') }}</label>
@@ -118,6 +158,13 @@
             @endif
             <x-form-input :label="__('patients.fields.notes')" name="notes" type="textarea" :value="old('notes', $patient?->notes)" :placeholder="__('patients.placeholders.notes')" />
         </x-card>
+    </div>
+
+    <div class="col-12">
+        @include('pages.patients.partials.screening-fields', [
+            'patient' => $patient,
+            'screeningFields' => $screeningFields,
+        ])
     </div>
 
     <div class="col-lg-6">

@@ -31,8 +31,8 @@
                                         <thead class="table-light">
                                             <tr>
                                                 <th>{{ __('patients.fields.rank') }}</th>
-                                                <th>{{ __('patients.table.name') }}</th>
                                                 <th>{{ __('patients.table.file_number') }}</th>
+                                                <th>{{ __('patients.table.name') }}</th>
                                                 <th>{{ __('patients.table.age') }}</th>
                                                 <th>{{ __('patients.table.eligibility') }}</th>
                                                 <th>{{ __('patients.fields.surgical_side') }}</th>
@@ -44,8 +44,12 @@
                                             @foreach($day['patients'] as $patient)
                                                 <tr>
                                                     <td>{{ $patient->rank ?? '—' }}</td>
-                                                    <td class="fw-medium">{{ $patient->patient_name }}</td>
-                                                    <td><code>{{ $patient->file_number ?? '—' }}</code></td>
+                                                    <td>
+                                                        <x-record-code-link :href="route('patients.show', $patient)" :code="$patient->file_number" />
+                                                    </td>
+                                                    <td class="fw-medium">
+                                                        <a href="{{ route('patients.show', $patient) }}" class="text-decoration-none">{{ $patient->patient_name }}</a>
+                                                    </td>
                                                     <td>{{ $patient->ageLabel() }}</td>
                                                     <td>{{ $patient->eligibilityStatus?->name ?? '—' }}</td>
                                                     <td>{{ $patient->surgicalSideLabel() }}</td>

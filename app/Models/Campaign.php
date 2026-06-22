@@ -152,6 +152,7 @@ class Campaign extends Model
 
         return $query->where(function (Builder $q) use ($term): void {
             $q->where('name', 'like', "%{$term}%")
+                ->orWhere('code', 'like', "%{$term}%")
                 ->orWhere('objective', 'like', "%{$term}%")
                 ->orWhere('target_group', 'like', "%{$term}%");
         });
@@ -181,6 +182,7 @@ class Campaign extends Model
     public function scopeSortable(Builder $query, ?string $sort, ?string $direction = 'desc'): Builder
     {
         $allowed = [
+            'code',
             'name',
             'start_date',
             'end_date',

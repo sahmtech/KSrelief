@@ -61,8 +61,8 @@
                     <table class="table table-hover mb-0">
                         <thead>
                             <tr>
-                                <th>{{ __('patients.table.name') }}</th>
                                 <th>{{ __('patients.table.file_number') }}</th>
+                                <th>{{ __('patients.table.name') }}</th>
                                 <th>{{ __('patients.table.eligibility') }}</th>
                                 <th>{{ __('patients.table.stage') }}</th>
                                 <th>{{ __('patients.table.admission') }}</th>
@@ -72,6 +72,9 @@
                         <tbody>
                             @foreach($campaign->patients as $patient)
                                 <tr>
+                                    <td>
+                                        <x-record-code-link :href="route('patients.show', $patient)" :code="$patient->file_number" />
+                                    </td>
                                     <td>
                                         <div class="d-flex align-items-center gap-2 min-w-0">
                                             <x-patient-avatar :patient="$patient" size="sm" />
@@ -83,7 +86,6 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td><code>{{ $patient->file_number ?? '—' }}</code></td>
                                     <td>
                                         @if($patient->eligibilityStatus)
                                             <span class="badge border" style="background-color: {{ $patient->eligibilityStatus->color }}20; color: {{ $patient->eligibilityStatus->color }};">

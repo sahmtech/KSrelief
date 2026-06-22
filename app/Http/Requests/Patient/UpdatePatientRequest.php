@@ -31,9 +31,7 @@ class UpdatePatientRequest extends StorePatientRequest
                 'nullable',
                 'string',
                 'max:100',
-                Rule::unique('patients', 'file_number')
-                    ->where(fn ($query) => $query->where('campaign_id', $campaignId))
-                    ->ignore($patient?->id),
+                Rule::unique('patients', 'file_number')->ignore($patient?->id),
             ],
         ];
     }

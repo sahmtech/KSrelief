@@ -63,7 +63,7 @@ return [
 
     'table' => [
         'name' => 'اسم المريض',
-        'file_number' => 'رقم الملف',
+        'file_number' => 'كود المريض',
         'campaign' => 'الحملة',
         'age' => 'العمر',
         'gender' => 'الجنس',
@@ -80,6 +80,8 @@ return [
         'medical' => 'التصنيف الطبي',
         'contact' => 'معلومات التواصل',
         'attachments' => 'المرفقات',
+        'screening' => 'الفحص قبل العملية',
+        'screening_hint' => 'بيانات الفحص والتصوير (الحقول الصفراء/البرتقالية في ملف الحملة). للملفات الكبيرة، الصق رابط Google Drive بدل الرفع.',
         'audit' => 'معلومات السجل',
     ],
 
@@ -87,7 +89,7 @@ return [
         'campaign' => 'الحملة',
         'patient_name' => 'اسم المريض',
         'photo' => 'صورة المريض',
-        'file_number' => 'رقم الملف',
+        'file_number' => 'كود المريض',
         'date_of_birth' => 'تاريخ الميلاد',
         'age' => 'العمر',
         'gender' => 'الجنس',
@@ -103,12 +105,31 @@ return [
         'updated_at' => 'تاريخ التحديث',
         'attachment' => 'مرفق',
         'attachment_notes' => 'ملاحظات المرفق',
+        'surgery_day_number' => 'يوم الجراحة',
+        'surgery_day_number_value' => 'اليوم :day',
+        'rank' => 'الترتيب',
+        'surgical_side' => 'جانب العملية',
+        'approval_reason' => 'سبب القبول / الرفض',
+        'height_cm' => 'الطول (سم)',
+        'weight_kg' => 'الوزن (كغ)',
+    ],
+
+    'measurements' => [
+        'height_value' => ':value سم',
+        'weight_value' => ':value كغ',
+    ],
+
+    'hints' => [
+        'file_number_auto' => 'يُولَّد تلقائياً بصيغة: اختصار الدولة-كود الحملة-رقم تسلسلي (مثال: NG-SAMA-001).',
+        'file_number_generated_on_save' => 'يُولَّد تلقائياً عند الحفظ ولا يمكن تعديله لاحقاً.',
     ],
 
     'placeholders' => [
         'patient_name' => 'الاسم الكامل للمريض',
         'file_number' => 'مثال: P-2026-001',
         'contact_number' => 'مثال: +966501234567',
+        'height_cm' => 'مثال: 120',
+        'weight_kg' => 'مثال: 32.5',
         'notes' => 'ملاحظات سريرية أو إدارية…',
         'select_campaign' => 'اختر الحملة',
         'select_eligibility' => 'اختر حالة الأهلية',
@@ -117,6 +138,7 @@ return [
 
     'tabs' => [
         'overview' => 'نظرة عامة',
+        'clinical' => 'الملف السريري',
         'workflow' => 'المسار الطبي',
         'records' => 'السجلات الطبية',
         'history' => 'سجل المراحل',
@@ -124,6 +146,19 @@ return [
         'reports' => 'التقارير',
         'transportation' => 'النقل',
         'activities' => 'الأنشطة',
+    ],
+
+    'clinical' => [
+        'title' => 'الملف السريري',
+        'subtitle' => 'بيانات المريض الكاملة مقسّمة حسب ما قبل / أثناء / بعد العملية.',
+        'field' => 'الحقل',
+        'value' => 'القيمة',
+        'source' => 'المصدر',
+        'no_phase_data' => 'لا توجد بيانات لهذه المرحلة بعد.',
+        'source_screening' => 'الفحص',
+        'source_patient' => 'ملف المريض',
+        'edit_screening' => 'تعديل بيانات الفحص',
+        'open_link' => 'فتح الرابط',
     ],
 
     'future' => [
@@ -229,6 +264,19 @@ return [
             'سيتم معالجة الاستيراد في الخلفية. أعِد تحميل الصفحة للتحقق من الحالة.',
         ],
 
+        'campaign_workbook' => [
+            'title' => 'استيراد ملف الحملة',
+            'instructions' => [
+                'ارفع ملف Excel الكامل للحملة (مثل Main Patients File مع Day1 وDay2 وDay3).',
+                'اختر الحملة المستهدفة قبل الرفع — مطلوب لاستيراد ملف الحملة.',
+                'ورقة Main Patients File تستورد بيانات الفحص والمعلومات الأساسية.',
+                'أوراق الأيام تستورد يوم العملية والترتيب والحقول السريرية.',
+                'يتم ربط المرضى بين الأوراق بالاسم.',
+                'حالة الموافقة تُحوَّل تلقائياً (accepted، waiting list، rejected، إلخ).',
+                'الصفوف الناقصة تاريخ الميلاد أو الجنس ستُعلَّم للمراجعة.',
+            ],
+        ],
+
         'actions' => [
             'upload' => 'رفع الملف',
             'approve' => 'اعتماد الاستيراد',
@@ -253,7 +301,9 @@ return [
             'invalid_campaign' => 'لم يتم العثور على الحملة للرمز: :code',
             'campaign_mismatch' => 'رمز الحملة لا يطابق الحملة المحددة (المتوقع: :expected).',
             'duplicate_in_file' => 'حقل :field مكرر في الملف (ظهر لأول مرة في الصف :row).',
-            'duplicate_in_database' => 'رقم الملف ":file_number" موجود بالفعل في هذه الحملة.',
+            'duplicate_in_database' => 'كود المريض ":file_number" موجود بالفعل في النظام.',
+            'duplicate_name_in_database' => 'المريض ":name" موجود بالفعل في هذه الحملة.',
+            'campaign_required_workbook' => 'يجب اختيار حملة عند استيراد ملف حملة Excel.',
             'no_importable_rows' => 'لا توجد صفوف صالحة للاستيراد.',
             'confirm_approve' => 'اعتماد هذا الاستيراد؟ سيؤدي ذلك إلى إنشاء :count سجل مريض ولا يمكن التراجع عنه.',
         ],

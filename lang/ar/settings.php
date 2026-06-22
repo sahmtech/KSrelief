@@ -21,6 +21,16 @@ return [
         ],
     ],
 
+    'debug' => [
+        'title' => 'أدوات التطوير',
+        'backfill_description' => 'تظهر فقط عند APP_DEBUG=true. تولّد أكواد الحملات والمرضى الناقصة للسجلات المخزنة.',
+        'missing_campaign_codes' => 'حملات بدون كود',
+        'missing_patient_codes' => 'مرضى بدون كود',
+        'backfill_action' => 'توليد الأكواد الناقصة',
+        'backfill_confirm' => 'توليد الأكواد لكل الحملات والمرضى الذين لا يملكون كوداً؟',
+        'backfill_success' => 'تم توليد :campaigns كود حملة و :patients كود مريض.',
+    ],
+
     'status' => [
         'active' => 'نشط',
         'inactive' => 'غير نشط',

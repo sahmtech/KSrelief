@@ -1,10 +1,19 @@
 @if(!empty($stageFields))
-<div class="card border-0 bg-light mb-3">
+@php
+    $phaseCode = app(\App\Services\MedicalRecordService::class)->phaseForStage($stageCode);
+    $phaseStyle = config("patient_clinical.phases.{$phaseCode}", []);
+@endphp
+<div class="card border-0 mb-3 clinical-phase-panel" style="--clinical-phase-bg: {{ $phaseStyle['background'] ?? '#f8f9fa' }}; --clinical-phase-color: {{ $phaseStyle['color'] ?? '#374151' }};">
     <div class="card-body">
-        <h6 class="fw-semibold text-muted mb-3">
-            <i class="ti ti-clipboard-list me-2"></i>
-            {{ __('workflow.title') }} — {{ ucfirst(str_replace('_', ' ', $stageCode)) }}
-        </h6>
+        <div class="clinical-phase-panel__header mb-3">
+            <h6 class="mb-0">
+                <i class="ti ti-clipboard-list me-2"></i>
+                {{ __('workflow.title') }} — {{ ucfirst(str_replace('_', ' ', $stageCode)) }}
+            </h6>
+            @if(!empty($phaseStyle['label']))
+                <span class="badge clinical-phase-badge" style="background: {{ $phaseStyle['background'] ?? '#f8f9fa' }};">{{ __($phaseStyle['label'] ?? 'workflow.phases.pre_op') }}</span>
+            @endif
+        </div>
         <div class="row g-3">
             @foreach($stageFields as $fieldKey => $fieldDef)
             @php
@@ -66,6 +75,13 @@
                     <input type="time" name="{{ $inputName }}"
                            class="form-control form-control-sm"
                            value="{{ $savedValue }}"
+                           {{ $isRequired ? 'required' : '' }}>
+
+                @elseif($inputType === 'url')
+                    <input type="url" name="{{ $inputName }}"
+                           class="form-control form-control-sm"
+                           value="{{ $savedValue }}"
+                           placeholder="{{ __('workflow.links.drive_placeholder') }}"
                            {{ $isRequired ? 'required' : '' }}>
 
                 @elseif($inputType === 'number')

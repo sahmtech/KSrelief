@@ -63,7 +63,7 @@ return [
 
     'table' => [
         'name' => 'Patient Name',
-        'file_number' => 'File Number',
+        'file_number' => 'Patient Code',
         'campaign' => 'Campaign',
         'age' => 'Age',
         'gender' => 'Gender',
@@ -80,6 +80,8 @@ return [
         'medical' => 'Medical Classification',
         'contact' => 'Contact Information',
         'attachments' => 'Attachments',
+        'screening' => 'Pre-Operative Screening',
+        'screening_hint' => 'Screening and imaging data (yellow/orange fields in the campaign sheet). For large files, paste a Google Drive link instead of uploading.',
         'audit' => 'Record Information',
     ],
 
@@ -87,7 +89,7 @@ return [
         'campaign' => 'Campaign',
         'patient_name' => 'Patient Name',
         'photo' => 'Patient Photo',
-        'file_number' => 'File Number',
+        'file_number' => 'Patient Code',
         'date_of_birth' => 'Date of Birth',
         'age' => 'Age',
         'gender' => 'Gender',
@@ -103,12 +105,31 @@ return [
         'updated_at' => 'Updated At',
         'attachment' => 'Attachment',
         'attachment_notes' => 'Attachment Notes',
+        'surgery_day_number' => 'Surgery Day',
+        'surgery_day_number_value' => 'Day :day',
+        'rank' => 'Rank',
+        'surgical_side' => 'Surgical Side',
+        'approval_reason' => 'Approval / Rejection Reason',
+        'height_cm' => 'Height (cm)',
+        'weight_kg' => 'Weight (kg)',
+    ],
+
+    'measurements' => [
+        'height_value' => ':value cm',
+        'weight_value' => ':value kg',
+    ],
+
+    'hints' => [
+        'file_number_auto' => 'Auto-generated as country-campaign-sequence (e.g. NG-SAMA-001). Unique system-wide.',
+        'file_number_generated_on_save' => 'Generated automatically on save and cannot be changed later.',
     ],
 
     'placeholders' => [
         'patient_name' => 'Full patient name',
         'file_number' => 'e.g. P-2026-001',
         'contact_number' => 'e.g. +966501234567',
+        'height_cm' => 'e.g. 120',
+        'weight_kg' => 'e.g. 32.5',
         'notes' => 'Clinical or administrative notes…',
         'select_campaign' => 'Select campaign',
         'select_eligibility' => 'Select eligibility status',
@@ -117,6 +138,7 @@ return [
 
     'tabs' => [
         'overview' => 'Overview',
+        'clinical' => 'Clinical File',
         'workflow' => 'Medical Workflow',
         'records' => 'Medical Records',
         'history' => 'Stage History',
@@ -124,6 +146,19 @@ return [
         'reports' => 'Reports',
         'transportation' => 'Transportation',
         'activities' => 'Activities',
+    ],
+
+    'clinical' => [
+        'title' => 'Clinical File',
+        'subtitle' => 'Complete patient data grouped by pre-operative, intra-operative, and post-operative phases.',
+        'field' => 'Field',
+        'value' => 'Value',
+        'source' => 'Source',
+        'no_phase_data' => 'No data recorded for this phase yet.',
+        'source_screening' => 'Screening',
+        'source_patient' => 'Patient Profile',
+        'edit_screening' => 'Edit Screening Data',
+        'open_link' => 'Open link',
     ],
 
     'future' => [
@@ -229,6 +264,19 @@ return [
             'The import will be processed in the background. Refresh the page to check status.',
         ],
 
+        'campaign_workbook' => [
+            'title' => 'Campaign Workbook Import',
+            'instructions' => [
+                'Upload the full campaign Excel workbook (e.g. Main Patients File + Day1, Day2, Day3 sheets).',
+                'Select the target campaign before uploading — it is required for workbook imports.',
+                'The Main Patients File sheet imports screening data and patient demographics.',
+                'Day sheets import surgery day, rank, and clinical fields (pre-op, intra-op, post-op).',
+                'Patients are matched across sheets by name.',
+                'Approval status text is mapped automatically (accepted, waiting list, rejected, etc.).',
+                'Rows missing date of birth or gender will be flagged for review.',
+            ],
+        ],
+
         'actions' => [
             'upload' => 'Upload File',
             'approve' => 'Approve Import',
@@ -253,7 +301,9 @@ return [
             'invalid_campaign' => 'Campaign not found for code: :code',
             'campaign_mismatch' => 'Campaign code does not match the selected campaign (expected: :expected).',
             'duplicate_in_file' => 'Duplicate :field in file (first seen at row :row).',
-            'duplicate_in_database' => 'File number ":file_number" already exists in this campaign.',
+            'duplicate_in_database' => 'Patient code ":file_number" already exists in the system.',
+            'duplicate_name_in_database' => 'Patient ":name" already exists in this campaign.',
+            'campaign_required_workbook' => 'A campaign must be selected when importing a campaign workbook.',
             'no_importable_rows' => 'No valid rows found to import.',
             'confirm_approve' => 'Approve this import? This will create :count patient record(s) and cannot be undone.',
         ],

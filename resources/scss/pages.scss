@@ -997,3 +997,63 @@
         }
     }
 }
+
+.clinical-phase-panel {
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: #fff;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: var(--clinical-phase-bg, #f8f9fa);
+        border-bottom: 3px solid var(--clinical-phase-color, #d1d5db);
+    }
+
+    &__body {
+        padding: 1rem;
+    }
+}
+
+.clinical-phase-badge {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    font-weight: 600;
+}
+
+.clinical-field-shell {
+    background: var(--clinical-phase-bg, #f8f9fa);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+}
+
+.record-code-link {
+    code {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--bs-primary);
+        background: rgba(var(--bs-primary-rgb), 0.08);
+        padding: 0.15rem 0.45rem;
+        border-radius: 0.35rem;
+    }
+
+    &:hover code {
+        text-decoration: underline;
+    }
+}
+
+.clinical-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}

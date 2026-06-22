@@ -4,10 +4,12 @@ namespace App\Services;
 
 use App\Enums\AdmissionStatus;
 use App\Enums\PatientRecordStatus;
+use App\Models\Campaign;
 use App\Models\Patient;
 use App\Models\PatientAttachment;
 use App\Models\PatientStage;
 use App\Models\User;
+use App\Support\RecordCodeGenerator;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -17,6 +19,7 @@ class PatientService
 {
     public function __construct(
         private readonly PatientWorkflowService $workflowService,
+        private readonly RecordCodeGenerator $codeGenerator,
     ) {}
 
     public const AUDIT_CREATED = 'patient.created';
@@ -38,8 +41,15 @@ class PatientService
         ?UploadedFile $photo = null
     ): Patient {
         return DB::transaction(function () use ($data, $user, $attachments, $photo): Patient {
+            $prepared = $this->preparePatientData($data);
+
+            if (! filled($prepared['file_number'])) {
+                $campaign = Campaign::query()->lockForUpdate()->findOrFail($prepared['campaign_id']);
+                $prepared['file_number'] = $this->codeGenerator->generatePatientFileNumber($campaign);
+            }
+
             $patient = Patient::create([
-                ...$this->preparePatientData($data),
+                ...$prepared,
                 'created_by' => $user->id,
                 'updated_by' => $user->id,
             ]);
@@ -209,19 +219,51 @@ class PatientService
 
         return [
             'campaign_id' => $data['campaign_id'],
+            'surgery_day_number' => filled($data['surgery_day_number'] ?? null) ? (int) $data['surgery_day_number'] : null,
+            'rank' => filled($data['rank'] ?? null) ? (int) $data['rank'] : null,
             'patient_name' => $data['patient_name'],
-            'file_number' => filled($data['file_number'] ?? null) ? $data['file_number'] : null,
+            'file_number' => filled($data['file_number'] ?? null)
+                ? $data['file_number']
+                : ($patient?->file_number),
             'date_of_birth' => $dob,
             'age_years' => $ages['years'],
             'age_months' => $ages['months'],
             'gender' => $data['gender'],
+            'height_cm' => filled($data['height_cm'] ?? null) ? $data['height_cm'] : null,
+            'weight_kg' => filled($data['weight_kg'] ?? null) ? $data['weight_kg'] : null,
             'contact_number' => $data['contact_number'] ?? null,
             'eligibility_status_id' => $data['eligibility_status_id'],
+            'approval_reason' => $data['approval_reason'] ?? null,
             'current_stage_id' => $currentStageId,
             'admission_status' => $data['admission_status'] ?? AdmissionStatus::NotAdmitted->value,
+            'surgical_side' => $data['surgical_side'] ?? null,
             'notes' => $data['notes'] ?? null,
+            'screening_data' => $this->extractScreeningData($data),
             'status' => $data['status'] ?? PatientRecordStatus::Active->value,
         ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function extractScreeningData(array $data): array
+    {
+        $screening = [];
+
+        foreach ($data as $key => $value) {
+            if (str_starts_with($key, 'screening_')) {
+                $fieldKey = substr($key, 10);
+                if (filled($value)) {
+                    $screening[$fieldKey] = $value;
+                }
+            }
+        }
+
+        if (isset($data['screening_data']) && is_array($data['screening_data'])) {
+            $screening = array_merge($screening, array_filter($data['screening_data'], fn ($v) => filled($v)));
+        }
+
+        return $screening;
     }
 
     /**

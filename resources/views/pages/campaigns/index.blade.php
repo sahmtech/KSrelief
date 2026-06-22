@@ -106,6 +106,7 @@
         <table class="table table-hover mb-0">
             <thead>
                 <tr>
+                    <th><a href="{{ $sortLink('code') }}" class="text-decoration-none text-reset">{{ __('campaigns.table.code') }}</a></th>
                     <th><a href="{{ $sortLink('name') }}" class="text-decoration-none text-reset">{{ __('campaigns.table.name') }}</a></th>
                     <th>{{ __('campaigns.table.country') }}</th>
                     <th>{{ __('campaigns.table.city') }}</th>
@@ -122,6 +123,9 @@
             <tbody>
                 @forelse($campaigns as $campaign)
                     <tr>
+                        <td>
+                            <x-record-code-link :href="route('campaigns.show', $campaign)" :code="$campaign->code" />
+                        </td>
                         <td class="fw-medium text-truncate" style="max-width: 180px;">{{ $campaign->name }}</td>
                         <td class="text-nowrap">{{ $campaign->country?->localizedName() ?? '—' }}</td>
                         <td class="text-nowrap">{{ $campaign->city?->localizedName() ?? '—' }}</td>
@@ -171,7 +175,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="11" class="text-center text-muted py-5">{{ __('campaigns.messages.empty') }}</td>
+                        <td colspan="12" class="text-center text-muted py-5">{{ __('campaigns.messages.empty') }}</td>
                     </tr>
                 @endforelse
             </tbody>

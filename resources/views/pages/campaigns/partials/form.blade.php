@@ -26,6 +26,20 @@
                     <x-form-input :label="__('campaigns.fields.name')" name="name" :value="old('name', $campaign?->name)" :placeholder="__('campaigns.placeholders.name')" required />
                 </div>
                 <div class="col-md-6 ps-md-2">
+                    @if($campaign?->code)
+                        <label class="form-group-admin__label">{{ __('campaigns.fields.code') }}</label>
+                        <div class="form-control form-control-sm bg-light">
+                            <code>{{ $campaign->code }}</code>
+                        </div>
+                        <div class="form-text">{{ __('campaigns.hints.code_auto') }}</div>
+                    @else
+                        <label class="form-group-admin__label">{{ __('campaigns.fields.code') }}</label>
+                        <div class="form-control form-control-sm bg-light text-muted">{{ __('campaigns.hints.code_generated_on_save') }}</div>
+                    @endif
+                </div>
+            </div>
+            <div class="row g-0">
+                <div class="col-md-12">
                     <x-form-input :label="__('campaigns.fields.target_group')" name="target_group" :value="old('target_group', $campaign?->target_group)" :placeholder="__('campaigns.placeholders.target_group')" required />
                 </div>
             </div>

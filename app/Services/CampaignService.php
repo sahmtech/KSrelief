@@ -5,10 +5,14 @@ namespace App\Services;
 use App\Models\Campaign;
 use App\Models\CampaignStatusRecord;
 use App\Models\User;
+use App\Support\RecordCodeGenerator;
 use Illuminate\Support\Facades\DB;
 
 class CampaignService
 {
+    public function __construct(
+        private readonly RecordCodeGenerator $codeGenerator,
+    ) {}
     public function createCampaign(array $data, User $user): Campaign
     {
         return DB::transaction(function () use ($data, $user): Campaign {
@@ -17,6 +21,10 @@ class CampaignService
                 'campaign_status_id' => $data['campaign_status_id'] ?? $this->defaultStatusId(),
                 'created_by' => $user->id,
                 'updated_by' => $user->id,
+            ]);
+
+            $campaign->update([
+                'code' => $this->codeGenerator->generateCampaignCode($campaign),
             ]);
 
             return $campaign->load(['country', 'city', 'specialty', 'campaignStatus', 'creator']);

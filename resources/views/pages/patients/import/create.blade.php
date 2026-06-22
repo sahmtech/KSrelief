@@ -83,6 +83,14 @@
                 @endforeach
             </ul>
         </x-card>
+
+        <x-card :title="__('patients.import.campaign_workbook.title')" class="mt-3">
+            <ul class="mb-0 ps-3" style="font-size: 0.875rem;">
+                @foreach(__('patients.import.campaign_workbook.instructions') as $instruction)
+                    <li class="mb-2 text-muted">{{ $instruction }}</li>
+                @endforeach
+            </ul>
+        </x-card>
     </div>
 
     <div class="col-lg-7">

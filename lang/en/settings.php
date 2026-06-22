@@ -21,6 +21,16 @@ return [
         ],
     ],
 
+    'debug' => [
+        'title' => 'Debug Tools',
+        'backfill_description' => 'Visible only when APP_DEBUG=true. Generates missing campaign and patient codes for existing records.',
+        'missing_campaign_codes' => 'Campaigns without code',
+        'missing_patient_codes' => 'Patients without code',
+        'backfill_action' => 'Generate Missing Codes',
+        'backfill_confirm' => 'Generate codes for all campaigns and patients that are missing them?',
+        'backfill_success' => 'Generated :campaigns campaign code(s) and :patients patient code(s).',
+    ],
+
     'status' => [
         'active' => 'Active',
         'inactive' => 'Inactive',

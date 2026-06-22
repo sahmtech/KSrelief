@@ -127,8 +127,8 @@
     >
         <x-slot:head>
             <tr>
-                <th>{{ __('patients.table.name') }}</th>
                 <th>{{ __('patients.table.file_number') }}</th>
+                <th>{{ __('patients.table.name') }}</th>
                 <th>{{ __('patients.table.campaign') }}</th>
                 <th>{{ __('patients.table.age') }}</th>
                 <th>{{ __('patients.table.gender') }}</th>
@@ -142,6 +142,9 @@
         @forelse($patients as $patient)
             <tr>
                 <td>
+                    <x-record-code-link :href="route('patients.show', $patient)" :code="$patient->file_number" />
+                </td>
+                <td>
                     <div class="d-flex align-items-center gap-2 min-w-0">
                         <x-patient-avatar :patient="$patient" size="sm" />
                         <a href="{{ route('patients.show', $patient) }}" class="fw-medium text-decoration-none text-truncate">
@@ -149,11 +152,8 @@
                         </a>
                     </div>
                 </td>
-                <td><code>{{ $patient->file_number ?? '—' }}</code></td>
                 <td>
-                    <a href="{{ route('campaigns.show', $patient->campaign) }}" class="text-decoration-none">
-                        {{ $patient->campaign->name }}
-                    </a>
+                    <x-record-code-link :href="route('campaigns.show', $patient->campaign)" :code="$patient->campaign->code" />
                 </td>
                 <td>{{ $patient->ageLabel() }}</td>
                 <td>{{ $patient->gender?->label() ?? '—' }}</td>

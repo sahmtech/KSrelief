@@ -23,7 +23,13 @@
                 </div>
                 <div class="campaign-profile-hero__info">
                     <h1 class="campaign-profile-hero__name">{{ $campaign->name }}</h1>
-                    <p class="campaign-profile-hero__meta-text">{{ $campaign->country?->localizedName() }} · {{ $campaign->city?->localizedName() }} · {{ $campaign->specialty?->name }}</p>
+                    <p class="campaign-profile-hero__meta-text">
+                        @if($campaign->code)
+                            <x-record-code-link :href="route('campaigns.show', $campaign)" :code="$campaign->code" />
+                            ·
+                        @endif
+                        {{ $campaign->country?->localizedName() }} · {{ $campaign->city?->localizedName() }} · {{ $campaign->specialty?->name }}
+                    </p>
                     <div class="campaign-profile-hero__badges">
                         <span class="badge-status {{ $campaign->statusBadgeClass() }}">{{ $campaign->statusLabel() }}</span>
                         <span class="badge bg-light text-dark border">

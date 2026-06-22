@@ -8,6 +8,7 @@ use App\Http\Controllers\Settings\CountryController;
 use App\Http\Controllers\Settings\MemberRoleController;
 use App\Http\Controllers\Settings\PatientEligibilityStatusController;
 use App\Http\Controllers\Settings\PatientStageController;
+use App\Http\Controllers\Settings\RecordCodeBackfillController;
 use App\Http\Controllers\Settings\SettingsDashboardController;
 use App\Http\Controllers\Settings\SpecialtyController;
 use App\Http\Controllers\Settings\TransportationLocationController;
@@ -20,6 +21,10 @@ Route::prefix('settings')->name('settings.')->group(function (): void {
     Route::get('/', [SettingsDashboardController::class, 'index'])
         ->middleware('permission:settings.view')
         ->name('dashboard');
+
+    Route::post('backfill-record-codes', [RecordCodeBackfillController::class, 'store'])
+        ->middleware(['permission:settings.view', 'app.debug'])
+        ->name('backfill-record-codes');
 
     $settingsResource = function (string $uri, string $controller, string $prefix): void {
         Route::resource($uri, $controller)->middleware([
