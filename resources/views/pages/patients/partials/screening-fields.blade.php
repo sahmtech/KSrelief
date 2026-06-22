@@ -4,6 +4,7 @@
 ])
 
 @if(!empty($screeningFields))
+@include('pages.patients.partials.clinical-fallback-styles')
 <x-card :title="__('patients.sections.screening')" class="mt-3">
     <p class="text-muted small mb-3">{{ __('patients.sections.screening_hint') }}</p>
     <div class="row g-3">

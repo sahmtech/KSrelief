@@ -3,38 +3,7 @@
     $phaseOrder = ['screening', 'pre_op', 'intra_op', 'post_op'];
 @endphp
 
-@push('styles')
-<style>
-    .clinical-phase-panel {
-        border: 1px solid rgba(0, 0, 0, 0.06);
-        border-radius: 0.75rem;
-        overflow: hidden;
-        background: #fff;
-    }
-    .clinical-phase-panel__header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.75rem;
-        padding: 0.75rem 1rem;
-        background: var(--clinical-phase-bg, #f8f9fa);
-        border-bottom: 3px solid var(--clinical-phase-color, #d1d5db);
-    }
-    .clinical-phase-panel__body {
-        padding: 1rem;
-    }
-    .clinical-phase-badge {
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        font-weight: 600;
-    }
-    .clinical-link {
-        text-decoration: none;
-    }
-    .clinical-link:hover {
-        text-decoration: underline;
-    }
-</style>
-@endpush
+@include('pages.patients.partials.clinical-fallback-styles')
 
 <div class="clinical-dossier">
     <p class="text-muted mb-2" style="font-size: 0.875rem;">{{ __('workflow.records.dossier_subtitle') }}</p>

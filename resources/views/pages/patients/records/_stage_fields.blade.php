@@ -1,4 +1,5 @@
 @if(!empty($stageFields))
+@include('pages.patients.partials.clinical-fallback-styles')
 @php
     $phaseCode = app(\App\Services\MedicalRecordService::class)->phaseForStage($stageCode);
     $phaseStyle = config("patient_clinical.phases.{$phaseCode}", []);
