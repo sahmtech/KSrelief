@@ -1,5 +1,5 @@
 <x-card :title="__('patients.sections.attachments')" :flush="true">
-    @can('update', $patient)
+    @can('uploadAttachment', $patient)
         <x-slot:actions>
             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="collapse" data-bs-target="#uploadAttachmentForm">
                 <i class="ti ti-upload me-1"></i> {{ __('patients.actions.upload') }}
@@ -12,7 +12,7 @@
                     @csrf
                     <div class="col-md-5">
                         <label class="form-group-admin__label">{{ __('patients.fields.attachment') }}</label>
-                        <input type="file" name="file" class="form-group-admin__input" accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.xls,.xlsx" required>
+                        <input type="file" name="file" class="form-group-admin__input" accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx" required>
                     </div>
                     <div class="col-md-5">
                         <label class="form-group-admin__label">{{ __('patients.fields.attachment_notes') }}</label>
@@ -53,10 +53,15 @@
                             <td>{{ $attachment->uploader?->name ?? '—' }}</td>
                             <td>{{ $attachment->created_at->format('Y-m-d H:i') }}</td>
                             <td class="text-end">
+                                @if($attachment->isPreviewable())
+                                    <a href="{{ route('patients.attachments.preview', [$patient, $attachment]) }}" class="btn btn-sm btn-outline-secondary" target="_blank" title="{{ __('patients.actions.view') }}">
+                                        <i class="ti ti-eye"></i>
+                                    </a>
+                                @endif
                                 <a href="{{ route('patients.attachments.download', [$patient, $attachment]) }}" class="btn btn-sm btn-outline-primary" title="{{ __('patients.actions.download') }}">
                                     <i class="ti ti-download"></i>
                                 </a>
-                                @can('update', $patient)
+                                @can('deleteAttachment', $patient)
                                     <form method="POST" action="{{ route('patients.attachments.destroy', [$patient, $attachment]) }}" class="d-inline">
                                         @csrf
                                         @method('DELETE')

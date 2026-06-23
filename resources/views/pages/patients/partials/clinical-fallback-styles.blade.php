@@ -31,11 +31,25 @@
         height: 100%;
     }
     .clinical-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-weight: 500;
+        text-decoration: none;
+        border-radius: 0.5rem;
+        padding: 0.2rem 0.55rem;
+    }
+    .clinical-link--drive {
+        color: #1a73e8;
+        background: rgba(26, 115, 232, 0.08);
+        border: 1px solid rgba(26, 115, 232, 0.15);
+    }
+    .clinical-link--drive:hover {
+        color: #1558b0;
+        background: rgba(26, 115, 232, 0.14);
         text-decoration: none;
     }
-    .clinical-link:hover {
-        text-decoration: underline;
-    }
+    .clinical-link__icon { font-size: 1rem; }
 </style>
 @endpush
 @endonce

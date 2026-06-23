@@ -11,6 +11,25 @@ return [
     'show_title' => 'Patient Profile',
     'show_subtitle' => 'Patient details and medical classification',
 
+    'brief' => [
+        'title' => 'Patient Clinical Brief',
+        'subtitle' => 'Snapshot for clinical review',
+        'full_profile' => 'Full Profile',
+        'surgery_context' => 'Surgery & Status',
+        'priority_clinical' => 'Key Clinical Data (Pre-Op)',
+        'demographics' => 'Patient Identity',
+        'stage_records' => 'Medical Records by Stage',
+        'clinical_phases' => 'Full Clinical File',
+        'media' => 'Photos, Videos & Files',
+        'upload_media' => 'Upload',
+        'upload_files_label' => 'Select files',
+        'upload_files_hint' => 'Images, videos (MP4, MOV, WebM), or documents. Up to 10 files, 50 MB each.',
+        'upload_notes_placeholder' => 'Optional note (e.g. CT scan, audiology video)',
+        'no_media' => 'No photos, videos, or files uploaded yet.',
+        'photos_videos' => 'Photos & Videos',
+        'documents' => 'Documents & Other Files',
+    ],
+
     'show' => [
         'back' => 'Back to Patient',
     ],
@@ -317,6 +336,7 @@ return [
         'updated' => 'Patient updated successfully.',
         'deleted' => 'Patient deleted successfully.',
         'attachment_uploaded' => 'Attachment uploaded successfully.',
+        'attachment_required' => 'Please select at least one file to upload.',
         'attachment_deleted' => 'Attachment removed successfully.',
         'confirm_delete' => 'Are you sure you want to delete this patient record?',
         'confirm_remove_attachment' => 'Remove this attachment?',

@@ -10,6 +10,7 @@ use App\Models\PatientStage;
 use App\Services\LookupService;
 use App\Services\MedicalRecordService;
 use App\Services\PatientService;
+use App\Support\ClinicalCompositeFields;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -56,7 +57,30 @@ class MedicalRecordController extends Controller
                 'stageCode'   => $formData['stageCode'],
                 'record'      => null,
                 'teamMembers' => $formData['teamMembers'],
+                'patient'     => $patient,
+                'implantCompanies' => $formData['implantCompanies'],
+                'insertionApproaches' => $formData['insertionApproaches'],
+                'implantElectrodeTypes' => $formData['implantElectrodeTypes'],
+                'electrodeTypesUrl' => $formData['electrodeTypesUrl'],
             ])->render(),
+        ]);
+    }
+
+    public function electrodeTypes(Request $request, Patient $patient): JsonResponse
+    {
+        $this->authorize('viewAny', [MedicalRecord::class, $patient]);
+
+        $companyId = $request->integer('implant_company_id') ?: null;
+
+        $types = $companyId
+            ? $this->lookupService->getImplantElectrodeTypes($companyId)
+            : collect();
+
+        return response()->json([
+            'data' => $types->map(fn ($type) => [
+                'id' => $type->id,
+                'name' => $type->name,
+            ])->values(),
         ]);
     }
 
@@ -83,10 +107,39 @@ class MedicalRecordController extends Controller
 
         $record->load(['stage', 'submitter', 'specialty', 'patient.campaign']);
 
+        $stageFields = $this->recordService->getStageFields($record->stage?->code ?? '');
+
+        if (($record->stage?->code ?? '') === 'operation') {
+            if (filled($record->field('electrode_type')) && ! isset($stageFields['electrode_type'])) {
+                $stageFields['electrode_type'] = [
+                    'label' => __('workflow.fields.electrode_type'),
+                    'type' => 'text',
+                ];
+            }
+            if (filled($record->field('insertion_type')) && ! isset($stageFields['insertion_approach_id'])) {
+                $stageFields['insertion_type'] = [
+                    'label' => __('workflow.fields.insertion_approach'),
+                    'type' => 'text',
+                ];
+            }
+            if (ClinicalCompositeFields::hasContent('clinical_aud', $record->field('clinical_aud'), [
+                'type' => 'clinical_aud',
+                'metrics_profile' => 'post_operation',
+                'with_status' => false,
+            ]) && ! isset($stageFields['clinical_aud'])) {
+                $stageFields['clinical_aud'] = [
+                    'label' => __('workflow.fields.clinical_aud'),
+                    'type' => 'clinical_aud',
+                    'metrics_profile' => 'post_operation',
+                    'with_status' => false,
+                ];
+            }
+        }
+
         return view('pages.patients.records.show', [
             'patient'     => $patient,
             'record'      => $record,
-            'stageFields' => $this->recordService->getStageFields($record->stage?->code ?? ''),
+            'stageFields' => $stageFields,
             'teamMembers' => $this->lookupService->getCampaignTeamMembers($patient->campaign_id),
         ]);
     }
@@ -143,6 +196,11 @@ class MedicalRecordController extends Controller
         $stageCode = $selectedStage?->code ?? 'admission';
         $teamMembers = $this->lookupService->getCampaignTeamMembers($patient->campaign_id);
 
+        $selectedCompanyId = old(
+            'field_implant_company_id',
+            $record?->field('implant_company_id')
+        );
+
         return [
             'patient'     => $patient,
             'record'      => $record,
@@ -151,6 +209,12 @@ class MedicalRecordController extends Controller
             'stageCode'   => $stageCode,
             'teamMembers' => $teamMembers,
             'selectedStageId' => $selectedStage?->id,
+            'implantCompanies' => $this->lookupService->getImplantCompanies(),
+            'insertionApproaches' => $this->lookupService->getInsertionApproaches(),
+            'implantElectrodeTypes' => $selectedCompanyId
+                ? $this->lookupService->getImplantElectrodeTypes((int) $selectedCompanyId)
+                : collect(),
+            'electrodeTypesUrl' => route('patients.records.electrode-types', $patient),
         ];
     }
 }

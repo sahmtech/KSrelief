@@ -1,6 +1,6 @@
 @php
     $phases = $clinicalProfile['phases'] ?? [];
-    $phaseOrder = ['screening', 'pre_op', 'intra_op', 'post_op'];
+    $phaseOrder = ['screening', 'pre_op', 'intra_op', 'post_op', 'follow_up'];
 @endphp
 
 @include('pages.patients.partials.clinical-fallback-styles')
@@ -48,7 +48,12 @@
                                         <tr>
                                             <td class="fw-medium">{{ $item['label'] }}</td>
                                             <td>
-                                                <x-clinical-value :value="$item['value']" :type="$item['type'] ?? null" />
+                                        <x-clinical-value
+                                            :value="$item['value']"
+                                            :type="$item['type'] ?? null"
+                                            :field-definition="$item['field_definition'] ?? []"
+                                            :link-label="$item['label']"
+                                        />
                                             </td>
                                             <td class="text-muted small">{{ $item['source'] }}</td>
                                         </tr>

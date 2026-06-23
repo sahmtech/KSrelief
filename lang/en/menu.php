@@ -35,4 +35,9 @@ return [
     'transportation_locations' => 'Transportation Locations',
     'attendance_statuses' => 'Attendance Statuses',
     'campaign_statuses' => 'Campaign Statuses',
+    'implant_companies' => 'Implant Companies',
+    'insertion_approaches' => 'Insertion Approaches',
+    'ct_finding_options' => 'CT Finding Options',
+    'mri_finding_options' => 'MRI Finding Options',
+    'expectation_post_ci_options' => 'Expectations Post CI Options',
 ];

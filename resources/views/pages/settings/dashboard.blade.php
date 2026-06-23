@@ -15,6 +15,11 @@
         'transportation_locations' => 'ti-bus',
         'attendance_statuses' => 'ti-calendar-check',
         'campaign_statuses' => 'ti-flag',
+        'implant_companies' => 'ti-building-hospital',
+        'insertion_approaches' => 'ti-route',
+        'ct_finding_options' => 'ti-scan',
+        'mri_finding_options' => 'ti-magnetic',
+        'expectation_post_ci_options' => 'ti-list-check',
     ];
 @endphp
 

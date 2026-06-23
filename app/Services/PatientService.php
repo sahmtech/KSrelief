@@ -9,7 +9,9 @@ use App\Models\Patient;
 use App\Models\PatientAttachment;
 use App\Models\PatientStage;
 use App\Models\User;
+use App\Support\ClinicalCompositeFields;
 use App\Support\RecordCodeGenerator;
+use App\Support\ScreeningFieldSupport;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -249,12 +251,16 @@ class PatientService
     private function extractScreeningData(array $data): array
     {
         $screening = [];
+        $definitions = config('patient_clinical.screening_fields', []);
 
         foreach ($data as $key => $value) {
             if (str_starts_with($key, 'screening_')) {
                 $fieldKey = substr($key, 10);
-                if (filled($value)) {
-                    $screening[$fieldKey] = $value;
+                $definition = $definitions[$fieldKey] ?? [];
+                $normalized = $this->normalizeScreeningValue($fieldKey, $value, $definition);
+
+                if (ClinicalCompositeFields::hasContent($fieldKey, $normalized, $definition)) {
+                    $screening[$fieldKey] = $normalized;
                 }
             }
         }
@@ -264,6 +270,42 @@ class PatientService
         }
 
         return $screening;
+    }
+
+    /**
+     * @param  array<string, mixed>  $definition
+     */
+    private function normalizeScreeningValue(string $fieldKey, mixed $value, array $definition = []): mixed
+    {
+        if ($fieldKey === 'clinical_aud' && is_array($value)) {
+            $keys = ClinicalCompositeFields::metricsKeysFromDefinition($definition);
+            $withStatus = (bool) ($definition['with_status'] ?? true);
+
+            return ClinicalCompositeFields::normalizeAud($value, $keys, $withStatus);
+        }
+
+        if ($fieldKey === 'clinical_speech' && is_array($value)) {
+            return ClinicalCompositeFields::normalizeSpeech($value);
+        }
+
+        $type = $definition['type'] ?? '';
+        if ($type === 'expandable_checklist' && is_array($value)) {
+            return ScreeningFieldSupport::normalizeExpandableChecklist(
+                $value,
+                $definition['options'] ?? [],
+                $definition
+            );
+        }
+
+        if ($type === 'medical_history_screening' && is_array($value)) {
+            return ScreeningFieldSupport::normalizeMedicalHistoryScreening($value);
+        }
+
+        if ($type === 'imaging_findings' && is_array($value)) {
+            return ScreeningFieldSupport::normalizeImagingFindings($value);
+        }
+
+        return $value;
     }
 
     /**

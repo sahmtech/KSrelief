@@ -1,0 +1,96 @@
+@extends('layouts.admin')
+
+@section('title', __('settings.implant_companies.title'))
+
+@section('content')
+<x-page-header
+    :title="__('settings.implant_companies.title')"
+    :subtitle="__('settings.implant_companies.subtitle')"
+    :breadcrumbs="[
+        ['label' => __('menu.settings')],
+        ['label' => __('settings.dashboard.title'), 'url' => route('settings.dashboard')],
+        ['label' => __('settings.implant_companies.title')],
+    ]"
+>
+    <x-slot:actions>
+        @can('implant_company.create')
+            <a href="{{ route('settings.implant-companies.create') }}" class="btn btn-primary btn-sm">
+                <i class="ti ti-plus me-1"></i> {{ __('settings.implant_companies.add') }}
+            </a>
+        @endcan
+    </x-slot:actions>
+</x-page-header>
+
+<x-card :title="__('settings.filters.title')" :compact="true" class="mb-4">
+    <form method="GET" action="{{ route('settings.implant-companies.index') }}" class="row g-3 align-items-end">
+        <div class="col-md-5">
+            <label class="form-group-admin__label">{{ __('settings.filters.search') }}</label>
+            <input type="search" name="search" class="form-group-admin__input" value="{{ $filters['search'] ?? '' }}" placeholder="{{ __('settings.filters.search_placeholder') }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-group-admin__label">{{ __('settings.filters.status') }}</label>
+            <select name="status" class="form-group-admin__input">
+                <option value="">{{ __('settings.filters.all_statuses') }}</option>
+                @foreach($statuses as $status)
+                    <option value="{{ $status->value }}" @selected(($filters['status'] ?? '') === $status->value)>{{ $status->label() }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary btn-sm">{{ __('settings.filters.apply') }}</button>
+            <a href="{{ route('settings.implant-companies.index') }}" class="btn btn-outline-secondary btn-sm">{{ __('settings.filters.reset') }}</a>
+        </div>
+    </form>
+</x-card>
+
+<x-card :flush="true">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>{{ __('settings.table.name') }}</th>
+                    <th>{{ __('settings.table.code') }}</th>
+                    <th>{{ __('settings.table.color') }}</th>
+                    <th>{{ __('settings.implant_companies.electrode_types') }}</th>
+                    <th>{{ __('settings.table.status') }}</th>
+                    <th class="text-end">{{ __('settings.table.actions') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($companies as $company)
+                    <tr>
+                        <td class="fw-medium" style="color: {{ $company->color }};">{{ $company->name }}</td>
+                        <td><code>{{ $company->code }}</code></td>
+                        <td>
+                            <span class="d-inline-flex align-items-center gap-2">
+                                <span class="rounded-circle d-inline-block" style="width: 14px; height: 14px; background-color: {{ $company->color }};"></span>
+                                <code>{{ $company->color }}</code>
+                            </span>
+                        </td>
+                        <td>{{ $company->electrode_types_count }}</td>
+                        <td><span class="badge-status {{ $company->status->badgeClass() }}">{{ $company->status->label() }}</span></td>
+                        <td class="text-end">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown"><i class="ti ti-dots-vertical"></i></button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                    @can('implant_company.view')<li><a class="dropdown-item" href="{{ route('settings.implant-companies.show', $company) }}"><i class="ti ti-eye me-2"></i>{{ __('settings.actions.view') }}</a></li>@endcan
+                                    @can('implant_company.update')<li><a class="dropdown-item" href="{{ route('settings.implant-companies.edit', $company) }}"><i class="ti ti-pencil me-2"></i>{{ __('settings.actions.edit') }}</a></li>@endcan
+                                    @can('implant_company.delete')
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><form method="POST" action="{{ route('settings.implant-companies.destroy', $company) }}">@csrf @method('DELETE')<button type="submit" class="dropdown-item text-danger" data-confirm="{{ __('settings.messages.confirm_delete') }}"><i class="ti ti-trash me-2"></i>{{ __('settings.actions.delete') }}</button></form></li>
+                                    @endcan
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="6" class="text-center text-muted py-4">{{ __('common.no_records') }}</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+    @if($companies->hasPages())
+        <div class="card-footer bg-white border-top">{{ $companies->links() }}</div>
+    @endif
+</x-card>
+@endsection

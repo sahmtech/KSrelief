@@ -35,4 +35,9 @@ return [
     'transportation_locations' => 'مواقع النقل',
     'attendance_statuses' => 'حالات الحضور',
     'campaign_statuses' => 'حالات الحملات',
+    'implant_companies' => 'شركات الزرع',
+    'insertion_approaches' => 'طرق الإدخال',
+    'ct_finding_options' => 'خيارات نتائج CT',
+    'mri_finding_options' => 'خيارات نتائج MRI',
+    'expectation_post_ci_options' => 'خيارات التوقعات بعد الزراعة',
 ];

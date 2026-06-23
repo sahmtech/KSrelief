@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\MedicalRecord;
 use App\Models\Patient;
 use App\Models\User;
+use App\Support\ClinicalCompositeFields;
+use App\Support\ScreeningFieldSupport;
 use App\Support\PatientClinicalFieldRegistry;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -85,11 +87,24 @@ class MedicalRecordService
     private function buildFieldsJson(array $data): array
     {
         $fields = [];
+        $stageCode = null;
+
+        if (! empty($data['stage_id'])) {
+            $stageCode = \App\Models\PatientStage::query()->find($data['stage_id'])?->code;
+        }
+
+        $stageFieldDefinitions = $stageCode
+            ? $this->fieldRegistry->getStageFields($stageCode)
+            : [];
 
         foreach ($data as $key => $value) {
             if (str_starts_with($key, 'field_')) {
                 $fieldKey = substr($key, 6);
-                $fields[$fieldKey] = $value;
+                $fields[$fieldKey] = $this->normalizeFieldValue(
+                    $fieldKey,
+                    $value,
+                    $stageFieldDefinitions[$fieldKey] ?? []
+                );
             }
         }
 
@@ -99,6 +114,49 @@ class MedicalRecordService
         }
 
         return $fields;
+    }
+
+    /**
+     * @param  array<string, mixed>  $fieldDefinition
+     */
+    private function normalizeFieldValue(string $fieldKey, mixed $value, array $fieldDefinition = []): mixed
+    {
+        $type = $fieldDefinition['type'] ?? '';
+
+        if (($fieldKey === 'clinical_aud' || $type === 'clinical_aud') && is_array($value)) {
+            $keys = ClinicalCompositeFields::metricsKeysFromDefinition($fieldDefinition);
+            $withStatus = (bool) ($fieldDefinition['with_status'] ?? true);
+
+            return ClinicalCompositeFields::normalizeAud($value, $keys, $withStatus);
+        }
+
+        if ($type === 'clinical_speech_followup' && is_array($value)) {
+            $keys = config('patient_clinical.clinical_speech_follow_up_keys', ['Cap', 'SIR']);
+
+            return ClinicalCompositeFields::normalizeSpeechFollowup($value, $keys);
+        }
+
+        if (($fieldKey === 'clinical_speech' || $type === 'clinical_speech') && is_array($value)) {
+            return ClinicalCompositeFields::normalizeSpeech($value);
+        }
+
+        if ($type === 'expandable_checklist' && is_array($value)) {
+            return ScreeningFieldSupport::normalizeExpandableChecklist(
+                $value,
+                $fieldDefinition['options'] ?? [],
+                $fieldDefinition
+            );
+        }
+
+        if ($type === 'medical_history_screening' && is_array($value)) {
+            return ScreeningFieldSupport::normalizeMedicalHistoryScreening($value);
+        }
+
+        if ($type === 'imaging_findings' && is_array($value)) {
+            return ScreeningFieldSupport::normalizeImagingFindings($value);
+        }
+
+        return $value;
     }
 
     /**

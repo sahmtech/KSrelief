@@ -66,4 +66,15 @@ class PatientPolicy
     {
         return $user->can('stage.history.view') && $this->view($user, $patient);
     }
+
+    public function uploadAttachment(User $user, Patient $patient): bool
+    {
+        return $this->update($user, $patient)
+            || ($this->view($user, $patient) && $user->can('medical_record.view'));
+    }
+
+    public function deleteAttachment(User $user, Patient $patient): bool
+    {
+        return $this->update($user, $patient);
+    }
 }

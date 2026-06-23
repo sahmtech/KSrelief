@@ -139,6 +139,36 @@ final class PermissionRegistry
             'campaign_status.update',
             'campaign_status.delete',
         ],
+        'implant_companies' => [
+            'implant_company.view',
+            'implant_company.create',
+            'implant_company.update',
+            'implant_company.delete',
+        ],
+        'insertion_approaches' => [
+            'insertion_approach.view',
+            'insertion_approach.create',
+            'insertion_approach.update',
+            'insertion_approach.delete',
+        ],
+        'ct_finding_options' => [
+            'ct_finding_option.view',
+            'ct_finding_option.create',
+            'ct_finding_option.update',
+            'ct_finding_option.delete',
+        ],
+        'mri_finding_options' => [
+            'mri_finding_option.view',
+            'mri_finding_option.create',
+            'mri_finding_option.update',
+            'mri_finding_option.delete',
+        ],
+        'expectation_post_ci_options' => [
+            'expectation_post_ci_option.view',
+            'expectation_post_ci_option.create',
+            'expectation_post_ci_option.update',
+            'expectation_post_ci_option.delete',
+        ],
         'users' => [
             'user.view',
             'user.create',
@@ -182,6 +212,11 @@ final class PermissionRegistry
             'transport_locations',
             'attendance_statuses',
             'campaign_statuses',
+            'implant_companies',
+            'insertion_approaches',
+            'ct_finding_options',
+            'mri_finding_options',
+            'expectation_post_ci_options',
         ],
         'campaign_coordinator' => [
             'dashboard.view',

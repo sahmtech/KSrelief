@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PatientAttachment extends Model
 {
@@ -52,6 +53,38 @@ class PatientAttachment extends Model
         }
 
         return $bytes.' B';
+    }
+
+    public function isImage(): bool
+    {
+        return Str::startsWith((string) $this->file_type, 'image/');
+    }
+
+    public function isVideo(): bool
+    {
+        return Str::startsWith((string) $this->file_type, 'video/');
+    }
+
+    public function isPreviewable(): bool
+    {
+        return $this->isImage() || $this->isVideo();
+    }
+
+    public function iconClass(): string
+    {
+        if ($this->isImage()) {
+            return 'ti-photo';
+        }
+
+        if ($this->isVideo()) {
+            return 'ti-video';
+        }
+
+        if (Str::contains((string) $this->file_type, 'pdf')) {
+            return 'ti-file-type-pdf';
+        }
+
+        return 'ti-file';
     }
 
     public function deleteStoredFile(): void

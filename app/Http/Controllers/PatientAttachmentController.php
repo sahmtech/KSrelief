@@ -18,14 +18,41 @@ class PatientAttachmentController extends Controller
 
     public function store(UploadPatientAttachmentRequest $request, Patient $patient): RedirectResponse
     {
-        $this->patientService->uploadAttachment(
-            $patient,
-            $request->file('file'),
-            $request->user(),
-            $request->validated('notes')
-        );
+        $files = collect($request->file('files', []))
+            ->when($request->file('file'), fn ($collection) => $collection->prepend($request->file('file')))
+            ->filter()
+            ->values();
 
-        return back()->with('success', __('patients.messages.attachment_uploaded'));
+        foreach ($files as $file) {
+            $this->patientService->uploadAttachment(
+                $patient,
+                $file,
+                $request->user(),
+                $request->validated('notes')
+            );
+        }
+
+        $redirect = $request->validated('return_to') ?: url()->previous();
+
+        return redirect()->to($redirect)
+            ->with('success', __('patients.messages.attachment_uploaded'));
+    }
+
+    public function preview(Patient $patient, PatientAttachment $attachment): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        $this->authorize('view', $patient);
+
+        abort_unless($attachment->patient_id === $patient->id, 404);
+        abort_unless($attachment->isPreviewable(), 404);
+        abort_unless(Storage::disk('local')->exists($attachment->storage_path), 404);
+
+        return response()->file(
+            Storage::disk('local')->path($attachment->storage_path),
+            [
+                'Content-Type' => $attachment->file_type,
+                'Content-Disposition' => 'inline; filename="'.$attachment->original_name.'"',
+            ]
+        );
     }
 
     public function download(Patient $patient, PatientAttachment $attachment): StreamedResponse
@@ -43,12 +70,15 @@ class PatientAttachmentController extends Controller
 
     public function destroy(Patient $patient, PatientAttachment $attachment): RedirectResponse
     {
-        $this->authorize('update', $patient);
+        $this->authorize('deleteAttachment', $patient);
 
         abort_unless($attachment->patient_id === $patient->id, 404);
 
         $this->patientService->removeAttachment($attachment);
 
-        return back()->with('success', __('patients.messages.attachment_deleted'));
+        $redirect = request()->input('return_to') ?: url()->previous();
+
+        return redirect()->to($redirect)
+            ->with('success', __('patients.messages.attachment_deleted'));
     }
 }

@@ -3,12 +3,22 @@
         <i class="ti ti-menu-2"></i>
     </button>
 
-    @if (config('admin.show_navbar_search'))
-    <div class="admin-navbar__search">
+    @can('viewAny', \App\Models\Patient::class)
+    <div class="admin-navbar__search patient-search" data-patient-search data-search-url="{{ route('patients.search') }}" data-empty-text="{{ __('layout.patient_search_empty') }}" data-loading-text="{{ __('layout.patient_search_loading') }}">
         <i class="ti ti-search"></i>
-        <input type="search" placeholder="{{ __('layout.search_placeholder') }}" aria-label="{{ __('layout.search') }}">
+        <input
+            type="search"
+            data-patient-search-input
+            placeholder="{{ __('layout.patient_search_placeholder') }}"
+            aria-label="{{ __('layout.patient_search') }}"
+            aria-expanded="false"
+            aria-autocomplete="list"
+            role="combobox"
+            autocomplete="off"
+        >
+        <div class="patient-search__results" data-patient-search-results hidden role="listbox"></div>
     </div>
-    @endif
+    @endcan
 
     <div class="admin-navbar__actions">
         @if (config('admin.show_locale_switcher'))

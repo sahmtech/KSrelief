@@ -13,6 +13,7 @@ use App\Models\Patient;
 use App\Models\PatientStage;
 use App\Services\LookupService;
 use App\Services\MedicalRecordService;
+use App\Services\PatientBriefService;
 use App\Services\PatientClinicalProfileService;
 use App\Services\PatientService;
 use App\Services\PatientStatisticsService;
@@ -33,6 +34,7 @@ class PatientController extends Controller
         private readonly MedicalRecordService $recordService,
         private readonly TransportationStatisticsService $transportationStatisticsService,
         private readonly ActivityStatisticsService $activityStatisticsService,
+        private readonly PatientBriefService $briefService,
     ) {}
 
     public function index(Request $request): View
@@ -88,6 +90,31 @@ class PatientController extends Controller
         return redirect()
             ->route('patients.show', $patient)
             ->with('success', __('patients.messages.created'));
+    }
+
+    public function brief(Patient $patient): View
+    {
+        $this->authorize('view', $patient);
+
+        $user = auth()->user();
+
+        $patient->load([
+            'campaign.country',
+            'campaign.city',
+            'eligibilityStatus',
+            'currentStage',
+            'attachments' => fn ($query) => $query->with('uploader')->latest(),
+        ]);
+
+        $clinicalProfile = $user->can('viewAny', [MedicalRecord::class, $patient])
+            ? app(PatientClinicalProfileService::class)->buildProfile($patient)
+            : null;
+
+        return view('pages.patients.brief', [
+            'patient' => $patient,
+            'brief' => $this->briefService->build($patient, $clinicalProfile),
+            'clinicalProfile' => $clinicalProfile,
+        ]);
     }
 
     public function show(Patient $patient): View

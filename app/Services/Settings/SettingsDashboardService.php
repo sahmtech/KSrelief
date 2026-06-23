@@ -7,6 +7,11 @@ use App\Models\AttendanceStatus;
 use App\Models\CampaignStatusRecord;
 use App\Models\City;
 use App\Models\Country;
+use App\Models\CtFindingOption;
+use App\Models\ExpectationPostCiOption;
+use App\Models\ImplantCompany;
+use App\Models\InsertionApproach;
+use App\Models\MriFindingOption;
 use App\Models\MemberRole;
 use App\Models\PatientEligibilityStatus;
 use App\Models\PatientStage;
@@ -32,6 +37,11 @@ class SettingsDashboardService
             $this->buildCard('transportation_locations', TransportationLocation::class, 'settings.transportation-locations.index', 'transport_location.view'),
             $this->buildCard('attendance_statuses', AttendanceStatus::class, 'settings.attendance-statuses.index', 'attendance_status.view'),
             $this->buildCard('campaign_statuses', CampaignStatusRecord::class, 'settings.campaign-statuses.index', 'campaign_status.view'),
+            $this->buildCard('implant_companies', ImplantCompany::class, 'settings.implant-companies.index', 'implant_company.view'),
+            $this->buildCard('insertion_approaches', InsertionApproach::class, 'settings.insertion-approaches.index', 'insertion_approach.view'),
+            $this->buildCard('ct_finding_options', CtFindingOption::class, 'settings.ct-finding-options.index', 'ct_finding_option.view'),
+            $this->buildCard('mri_finding_options', MriFindingOption::class, 'settings.mri-finding-options.index', 'mri_finding_option.view'),
+            $this->buildCard('expectation_post_ci_options', ExpectationPostCiOption::class, 'settings.expectation-post-ci-options.index', 'expectation_post_ci_option.view'),
         ];
     }
 

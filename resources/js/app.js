@@ -20,6 +20,8 @@ import { initTransportationLocationPickers } from './transportation-location-pic
 import { initSpecialtyPickers } from './specialty-picker';
 import { initActivityParticipantMultiselects } from './activity-participants';
 import { initTableDropdowns, resetTableDropdowns } from './table-dropdown';
+import { initPatientNavbarSearch } from './patient-search';
+import './clinical-aud-fields';
 
 function getBodyI18n() {
     const body = document.body;
@@ -248,6 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSpecialtyPickers();
     initActivityParticipantMultiselects();
     initTableDropdowns();
+    initPatientNavbarSearch();
 });
 
 export { bootstrap, DataTable, ApexCharts, Swal };

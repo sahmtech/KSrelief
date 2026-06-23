@@ -19,6 +19,11 @@ class SettingsSeeder extends Seeder
             TransportationLocationsSeeder::class,
             AttendanceStatusesSeeder::class,
             CampaignStatusesSeeder::class,
+            ImplantCompaniesSeeder::class,
+            InsertionApproachesSeeder::class,
+            CtFindingOptionsSeeder::class,
+            MriFindingOptionsSeeder::class,
+            ExpectationPostCiOptionsSeeder::class,
         ]);
     }
 }

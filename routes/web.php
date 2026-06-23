@@ -11,6 +11,7 @@ use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PatientAttachmentController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PatientSearchController;
 use App\Http\Controllers\PatientImportController;
 use App\Http\Controllers\MedicalRecordController;
 use App\Http\Controllers\PatientWorkflowController;
@@ -160,6 +161,10 @@ Route::middleware('auth')->group(function () {
 
     // Patients
     Route::prefix('patients')->name('patients.')->group(function () {
+        Route::get('search', PatientSearchController::class)
+            ->middleware('permission:patient.view')
+            ->name('search');
+
         Route::get('/', [PatientController::class, 'index'])
             ->middleware('permission:patient.view')
             ->name('index');
@@ -222,6 +227,9 @@ Route::middleware('auth')->group(function () {
             Route::get('stage-fields', [MedicalRecordController::class, 'stageFields'])
                 ->middleware('permission:medical_record.create')
                 ->name('stage-fields');
+            Route::get('electrode-types', [MedicalRecordController::class, 'electrodeTypes'])
+                ->middleware('permission:medical_record.view')
+                ->name('electrode-types');
             Route::get('{record}', [MedicalRecordController::class, 'show'])
                 ->middleware('permission:medical_record.view')
                 ->name('show');
@@ -237,6 +245,9 @@ Route::middleware('auth')->group(function () {
         });
 
         // Individual patient routes — after all static segments
+        Route::get('{patient}/brief', [PatientController::class, 'brief'])
+            ->middleware('permission:patient.view')
+            ->name('brief');
         Route::get('{patient}', [PatientController::class, 'show'])
             ->middleware('permission:patient.view')
             ->name('show');
@@ -250,13 +261,16 @@ Route::middleware('auth')->group(function () {
             ->middleware('permission:patient.delete')
             ->name('destroy');
         Route::post('{patient}/attachments', [PatientAttachmentController::class, 'store'])
-            ->middleware('permission:patient.update')
+            ->middleware('permission:patient.view')
             ->name('attachments.store');
+        Route::get('{patient}/attachments/{attachment}/preview', [PatientAttachmentController::class, 'preview'])
+            ->middleware('permission:patient.view')
+            ->name('attachments.preview');
         Route::get('{patient}/attachments/{attachment}/download', [PatientAttachmentController::class, 'download'])
             ->middleware('permission:patient.view')
             ->name('attachments.download');
         Route::delete('{patient}/attachments/{attachment}', [PatientAttachmentController::class, 'destroy'])
-            ->middleware('permission:patient.update')
+            ->middleware('permission:patient.view')
             ->name('attachments.destroy');
     });
 

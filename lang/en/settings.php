@@ -18,6 +18,11 @@ return [
             'transportation_locations' => 'Transportation Locations',
             'attendance_statuses' => 'Attendance Statuses',
             'campaign_statuses' => 'Campaign Statuses',
+            'implant_companies' => 'Implant Companies',
+            'insertion_approaches' => 'Insertion Approaches',
+            'ct_finding_options' => 'CT Finding Options',
+            'mri_finding_options' => 'MRI Finding Options',
+            'expectation_post_ci_options' => 'Expectations Post CI Options',
         ],
     ],
 
@@ -183,6 +188,41 @@ return [
                 'deleted' => 'Campaign status deleted successfully.',
             ],
         ],
+        'implant_companies' => [
+            'messages' => [
+                'created' => 'Implant company created successfully.',
+                'updated' => 'Implant company updated successfully.',
+                'deleted' => 'Implant company deleted successfully.',
+            ],
+        ],
+        'insertion_approaches' => [
+            'messages' => [
+                'created' => 'Insertion approach created successfully.',
+                'updated' => 'Insertion approach updated successfully.',
+                'deleted' => 'Insertion approach deleted successfully.',
+            ],
+        ],
+        'ct_finding_options' => [
+            'messages' => [
+                'created' => 'CT finding option created successfully.',
+                'updated' => 'CT finding option updated successfully.',
+                'deleted' => 'CT finding option deleted successfully.',
+            ],
+        ],
+        'mri_finding_options' => [
+            'messages' => [
+                'created' => 'MRI finding option created successfully.',
+                'updated' => 'MRI finding option updated successfully.',
+                'deleted' => 'MRI finding option deleted successfully.',
+            ],
+        ],
+        'expectation_post_ci_options' => [
+            'messages' => [
+                'created' => 'Expectations Post CI option created successfully.',
+                'updated' => 'Expectations Post CI option updated successfully.',
+                'deleted' => 'Expectations Post CI option deleted successfully.',
+            ],
+        ],
     ],
 
     'countries' => [
@@ -313,5 +353,74 @@ return [
         'edit_subtitle' => 'Update campaign status information',
         'show_title' => 'Campaign Status Details',
         'show_subtitle' => 'View campaign status information',
+    ],
+
+    'implant_companies' => [
+        'title' => 'Implant Companies',
+        'subtitle' => 'Manage cochlear implant companies and electrode types',
+        'singular' => 'Implant Company',
+        'add' => 'Add Company',
+        'create_title' => 'Create Implant Company',
+        'create_subtitle' => 'Add a company with its electrode types',
+        'edit_title' => 'Edit Implant Company',
+        'edit_subtitle' => 'Update company details and electrode types',
+        'show_title' => 'Implant Company Details',
+        'show_subtitle' => 'View company and electrode type list',
+        'electrode_types' => 'Electrode Types',
+        'add_electrode' => 'Add Electrode Type',
+        'electrode_types_hint' => 'Each electrode type appears in the Operation stage when this company is selected.',
+        'electrode_name_placeholder' => 'Electrode type name',
+    ],
+
+    'insertion_approaches' => [
+        'title' => 'Insertion Approaches',
+        'subtitle' => 'Manage insertion approach options for the Operation stage',
+        'singular' => 'Insertion Approach',
+        'add' => 'Add Approach',
+        'create_title' => 'Create Insertion Approach',
+        'create_subtitle' => 'Add a new insertion approach option',
+        'edit_title' => 'Edit Insertion Approach',
+        'edit_subtitle' => 'Update insertion approach information',
+        'show_title' => 'Insertion Approach Details',
+        'show_subtitle' => 'View insertion approach information',
+    ],
+
+    'ct_finding_options' => [
+        'title' => 'CT Finding Options',
+        'subtitle' => 'Manage CT finding choices for imaging screening',
+        'singular' => 'CT Finding Option',
+        'add' => 'Add CT Finding',
+        'create_title' => 'Create CT Finding Option',
+        'create_subtitle' => 'Add a new CT finding option',
+        'edit_title' => 'Edit CT Finding Option',
+        'edit_subtitle' => 'Update CT finding option information',
+        'show_title' => 'CT Finding Option Details',
+        'show_subtitle' => 'View CT finding option information',
+    ],
+
+    'mri_finding_options' => [
+        'title' => 'MRI Finding Options',
+        'subtitle' => 'Manage MRI finding choices for imaging screening',
+        'singular' => 'MRI Finding Option',
+        'add' => 'Add MRI Finding',
+        'create_title' => 'Create MRI Finding Option',
+        'create_subtitle' => 'Add a new MRI finding option',
+        'edit_title' => 'Edit MRI Finding Option',
+        'edit_subtitle' => 'Update MRI finding option information',
+        'show_title' => 'MRI Finding Option Details',
+        'show_subtitle' => 'View MRI finding option information',
+    ],
+
+    'expectation_post_ci_options' => [
+        'title' => 'Expectations Post CI Options',
+        'subtitle' => 'Manage Expectations Post CI choices for patient screening',
+        'singular' => 'Expectations Post CI Option',
+        'add' => 'Add Option',
+        'create_title' => 'Create Expectations Post CI Option',
+        'create_subtitle' => 'Add a new Expectations Post CI option',
+        'edit_title' => 'Edit Expectations Post CI Option',
+        'edit_subtitle' => 'Update Expectations Post CI option information',
+        'show_title' => 'Expectations Post CI Option Details',
+        'show_subtitle' => 'View Expectations Post CI option information',
     ],
 ];

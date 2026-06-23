@@ -9,6 +9,11 @@ use App\Models\Campaign;
 use App\Models\CampaignStatusRecord;
 use App\Models\City;
 use App\Models\Country;
+use App\Models\CtFindingOption;
+use App\Models\ExpectationPostCiOption;
+use App\Models\ImplantCompany;
+use App\Models\InsertionApproach;
+use App\Models\MriFindingOption;
 use App\Models\MemberRole;
 use App\Models\PatientEligibilityStatus;
 use App\Models\PatientStage;
@@ -36,6 +41,11 @@ use App\Policies\Settings\AttendanceStatusPolicy;
 use App\Policies\Settings\CampaignStatusRecordPolicy;
 use App\Policies\Settings\CityPolicy;
 use App\Policies\Settings\CountryPolicy;
+use App\Policies\Settings\CtFindingOptionPolicy;
+use App\Policies\Settings\ExpectationPostCiOptionPolicy;
+use App\Policies\Settings\ImplantCompanyPolicy;
+use App\Policies\Settings\InsertionApproachPolicy;
+use App\Policies\Settings\MriFindingOptionPolicy;
 use App\Policies\Settings\MemberRolePolicy;
 use App\Policies\Settings\PatientEligibilityStatusPolicy;
 use App\Policies\Settings\PatientStagePolicy;
@@ -43,6 +53,7 @@ use App\Policies\Settings\SpecialtyPolicy;
 use App\Policies\Settings\TransportationLocationPolicy;
 use App\Support\AdminMenu;
 use App\Support\DashboardAccessResolver;
+use App\Enums\SystemRole;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
@@ -58,6 +69,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
+
+        Gate::before(function (User $user, string $ability): ?bool {
+            if ($user->hasRole(SystemRole::SuperAdmin->value)) {
+                return true;
+            }
+
+            return null;
+        });
 
         Gate::policy(Campaign::class, CampaignPolicy::class);
         Gate::policy(Attendance::class, AttendancePolicy::class);
@@ -78,6 +97,11 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(TransportationLocation::class, TransportationLocationPolicy::class);
         Gate::policy(AttendanceStatus::class, AttendanceStatusPolicy::class);
         Gate::policy(CampaignStatusRecord::class, CampaignStatusRecordPolicy::class);
+        Gate::policy(ImplantCompany::class, ImplantCompanyPolicy::class);
+        Gate::policy(InsertionApproach::class, InsertionApproachPolicy::class);
+        Gate::policy(CtFindingOption::class, CtFindingOptionPolicy::class);
+        Gate::policy(MriFindingOption::class, MriFindingOptionPolicy::class);
+        Gate::policy(ExpectationPostCiOption::class, ExpectationPostCiOptionPolicy::class);
 
         Gate::define('viewDashboard', [DashboardPolicy::class, 'viewDashboard']);
         Gate::define('viewCampaignDashboard', [DashboardPolicy::class, 'viewCampaignDashboard']);

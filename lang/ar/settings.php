@@ -18,6 +18,11 @@ return [
             'transportation_locations' => 'مواقع النقل',
             'attendance_statuses' => 'حالات الحضور',
             'campaign_statuses' => 'حالات الحملات',
+            'implant_companies' => 'شركات الزرع',
+            'insertion_approaches' => 'طرق الإدخال',
+            'ct_finding_options' => 'خيارات نتائج CT',
+            'mri_finding_options' => 'خيارات نتائج MRI',
+            'expectation_post_ci_options' => 'خيارات التوقعات بعد الزراعة',
         ],
     ],
 
@@ -183,6 +188,41 @@ return [
                 'deleted' => 'تم حذف حالة الحملة بنجاح.',
             ],
         ],
+        'implant_companies' => [
+            'messages' => [
+                'created' => 'تم إنشاء شركة الزرع بنجاح.',
+                'updated' => 'تم تحديث شركة الزرع بنجاح.',
+                'deleted' => 'تم حذف شركة الزرع بنجاح.',
+            ],
+        ],
+        'insertion_approaches' => [
+            'messages' => [
+                'created' => 'تم إنشاء طريقة الإدخال بنجاح.',
+                'updated' => 'تم تحديث طريقة الإدخال بنجاح.',
+                'deleted' => 'تم حذف طريقة الإدخال بنجاح.',
+            ],
+        ],
+        'ct_finding_options' => [
+            'messages' => [
+                'created' => 'تم إنشاء خيار نتيجة CT بنجاح.',
+                'updated' => 'تم تحديث خيار نتيجة CT بنجاح.',
+                'deleted' => 'تم حذف خيار نتيجة CT بنجاح.',
+            ],
+        ],
+        'mri_finding_options' => [
+            'messages' => [
+                'created' => 'تم إنشاء خيار نتيجة MRI بنجاح.',
+                'updated' => 'تم تحديث خيار نتيجة MRI بنجاح.',
+                'deleted' => 'تم حذف خيار نتيجة MRI بنجاح.',
+            ],
+        ],
+        'expectation_post_ci_options' => [
+            'messages' => [
+                'created' => 'تم إنشاء خيار التوقعات بعد الزراعة بنجاح.',
+                'updated' => 'تم تحديث خيار التوقعات بعد الزراعة بنجاح.',
+                'deleted' => 'تم حذف خيار التوقعات بعد الزراعة بنجاح.',
+            ],
+        ],
     ],
 
     'countries' => [
@@ -313,5 +353,74 @@ return [
         'edit_subtitle' => 'تحديث معلومات حالة الحملة',
         'show_title' => 'تفاصيل حالة الحملة',
         'show_subtitle' => 'عرض معلومات حالة الحملة',
+    ],
+
+    'implant_companies' => [
+        'title' => 'شركات الزرع',
+        'subtitle' => 'إدارة شركات زراعة القوقعة وأنواع الأقطاب',
+        'singular' => 'شركة زرع',
+        'add' => 'إضافة شركة',
+        'create_title' => 'إنشاء شركة زرع',
+        'create_subtitle' => 'إضافة شركة مع أنواع الأقطاب الخاصة بها',
+        'edit_title' => 'تعديل شركة زرع',
+        'edit_subtitle' => 'تحديث بيانات الشركة وأنواع الأقطاب',
+        'show_title' => 'تفاصيل شركة الزرع',
+        'show_subtitle' => 'عرض الشركة وقائمة أنواع الأقطاب',
+        'electrode_types' => 'أنواع الأقطاب',
+        'add_electrode' => 'إضافة نوع قطب',
+        'electrode_types_hint' => 'تظهر أنواع الأقطاب في مرحلة العملية عند اختيار هذه الشركة.',
+        'electrode_name_placeholder' => 'اسم نوع القطب',
+    ],
+
+    'insertion_approaches' => [
+        'title' => 'طرق الإدخال',
+        'subtitle' => 'إدارة خيارات طريقة الإدخال لمرحلة العملية',
+        'singular' => 'طريقة إدخال',
+        'add' => 'إضافة طريقة',
+        'create_title' => 'إنشاء طريقة إدخال',
+        'create_subtitle' => 'إضافة خيار جديد لطريقة الإدخال',
+        'edit_title' => 'تعديل طريقة الإدخال',
+        'edit_subtitle' => 'تحديث معلومات طريقة الإدخال',
+        'show_title' => 'تفاصيل طريقة الإدخال',
+        'show_subtitle' => 'عرض معلومات طريقة الإدخال',
+    ],
+
+    'ct_finding_options' => [
+        'title' => 'خيارات نتائج CT',
+        'subtitle' => 'إدارة خيارات نتائج CT للفحص التصويري',
+        'singular' => 'خيار نتيجة CT',
+        'add' => 'إضافة نتيجة CT',
+        'create_title' => 'إنشاء خيار نتيجة CT',
+        'create_subtitle' => 'إضافة خيار جديد لنتائج CT',
+        'edit_title' => 'تعديل خيار نتيجة CT',
+        'edit_subtitle' => 'تحديث معلومات خيار نتيجة CT',
+        'show_title' => 'تفاصيل خيار نتيجة CT',
+        'show_subtitle' => 'عرض معلومات خيار نتيجة CT',
+    ],
+
+    'mri_finding_options' => [
+        'title' => 'خيارات نتائج MRI',
+        'subtitle' => 'إدارة خيارات نتائج MRI للفحص التصويري',
+        'singular' => 'خيار نتيجة MRI',
+        'add' => 'إضافة نتيجة MRI',
+        'create_title' => 'إنشاء خيار نتيجة MRI',
+        'create_subtitle' => 'إضافة خيار جديد لنتائج MRI',
+        'edit_title' => 'تعديل خيار نتيجة MRI',
+        'edit_subtitle' => 'تحديث معلومات خيار نتيجة MRI',
+        'show_title' => 'تفاصيل خيار نتيجة MRI',
+        'show_subtitle' => 'عرض معلومات خيار نتيجة MRI',
+    ],
+
+    'expectation_post_ci_options' => [
+        'title' => 'خيارات التوقعات بعد الزراعة',
+        'subtitle' => 'إدارة خيارات التوقعات بعد الزراعة في الفحص',
+        'singular' => 'خيار توقعات بعد الزراعة',
+        'add' => 'إضافة خيار',
+        'create_title' => 'إنشاء خيار توقعات بعد الزراعة',
+        'create_subtitle' => 'إضافة خيار جديد للتوقعات بعد الزراعة',
+        'edit_title' => 'تعديل خيار التوقعات بعد الزراعة',
+        'edit_subtitle' => 'تحديث معلومات خيار التوقعات بعد الزراعة',
+        'show_title' => 'تفاصيل خيار التوقعات بعد الزراعة',
+        'show_subtitle' => 'عرض معلومات خيار التوقعات بعد الزراعة',
     ],
 ];

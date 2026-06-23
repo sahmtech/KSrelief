@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\MedicalRecord;
 use App\Models\Patient;
+use App\Support\ClinicalCompositeFields;
+use App\Support\OperationFieldResolver;
 use App\Support\PatientClinicalFieldRegistry;
 
 class PatientClinicalProfileService
@@ -31,16 +33,20 @@ class PatientClinicalProfileService
 
         foreach ($this->fieldRegistry->screeningFields() as $key => $definition) {
             $value = $patient->screening($key);
-            if (! filled($value)) {
+            if (! ClinicalCompositeFields::hasContent($key, $value, $definition)) {
                 continue;
             }
 
             $phase = $definition['phase'] ?? 'screening';
+            $type = $definition['type'] ?? 'text';
             $grouped[$phase]['items'][] = [
                 'label' => $definition['label'],
-                'value' => (string) $value,
+                'value' => in_array($type, ['clinical_aud', 'clinical_speech', 'clinical_speech_followup', 'expandable_checklist', 'medical_history_screening', 'imaging_findings'], true)
+                    ? $value
+                    : (string) $value,
                 'source' => __('patients.clinical.source_screening'),
-                'type' => $definition['type'] ?? 'text',
+                'type' => $type,
+                'field_definition' => $definition,
             ];
         }
 
@@ -70,16 +76,20 @@ class PatientClinicalProfileService
 
             foreach ($fields as $key => $definition) {
                 $value = $record->field($key);
-                if (! filled($value)) {
+                if (! ClinicalCompositeFields::hasContent($key, $value, $definition)) {
                     continue;
                 }
 
                 $phase = $definition['phase'] ?? 'pre_op';
+                $type = $definition['type'] ?? 'text';
                 $grouped[$phase]['items'][] = [
                     'label' => $definition['label'],
-                    'value' => $this->formatFieldValue($value, $definition, $record),
+                    'value' => in_array($type, ['clinical_aud', 'clinical_speech', 'clinical_speech_followup', 'expandable_checklist', 'medical_history_screening', 'imaging_findings'], true)
+                        ? $value
+                        : $this->formatFieldValue($value, $definition, $record),
                     'source' => $record->stage?->name ?? __('workflow.medical_records'),
-                    'type' => $definition['type'] ?? 'text',
+                    'type' => $type,
+                    'field_definition' => $definition,
                 ];
             }
         }
@@ -99,6 +109,17 @@ class PatientClinicalProfileService
             $member = $record->patient?->campaign?->staffMembers?->firstWhere('id', (int) $value);
 
             return $member?->full_name ?? (string) $value;
+        }
+
+        if (in_array($definition['type'] ?? '', ['clinical_aud', 'clinical_speech', 'clinical_speech_followup', 'expandable_checklist', 'medical_history_screening'], true)) {
+            $type = $definition['type'] ?? '';
+            $presentKey = $type === 'clinical_speech_followup' ? 'clinical_speech_followup' : $type;
+
+            return ClinicalCompositeFields::present($presentKey, $value, $definition);
+        }
+
+        if (in_array($definition['type'] ?? '', ['company_select', 'electrode_select', 'insertion_approach_select'], true)) {
+            return OperationFieldResolver::resolve('', $value, $definition)['text'];
         }
 
         return (string) $value;

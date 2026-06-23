@@ -69,10 +69,16 @@
                 <dl class="row small mb-0">
                     @foreach($stageFields as $fieldKey => $fieldDef)
                     @php $val = $record->field($fieldKey); @endphp
-                    @if(filled($val))
+                    @if(\App\Support\ClinicalCompositeFields::hasContent($fieldKey, $val, $fieldDef))
                     <dt class="col-sm-4 fw-semibold">{{ $fieldDef['label'] }}</dt>
                     <dd class="col-sm-8">
-                        <x-clinical-value :value="$val" :type="$fieldDef['type'] ?? 'text'" />
+                        <x-clinical-value
+                            :value="$val"
+                            :type="$fieldDef['type'] ?? 'text'"
+                            :field-key="$fieldKey"
+                            :field-definition="$fieldDef"
+                            :link-label="$fieldDef['label'] ?? null"
+                        />
                     </dd>
                     @endif
                     @endforeach

@@ -53,6 +53,7 @@
         </div>
     </div>
 
+    @include('components.clinical-aud-fields-script')
     @stack('scripts')
 </body>
 </html>

@@ -8,6 +8,12 @@ use App\Models\AttendanceStatus;
 use App\Models\CampaignStatusRecord;
 use App\Models\City;
 use App\Models\Country;
+use App\Models\CtFindingOption;
+use App\Models\ExpectationPostCiOption;
+use App\Models\ImplantCompany;
+use App\Models\ImplantElectrodeType;
+use App\Models\InsertionApproach;
+use App\Models\MriFindingOption;
 use App\Models\Member;
 use App\Models\MemberRole;
 use App\Models\PatientEligibilityStatus;
@@ -192,6 +198,90 @@ class LookupService
         return CampaignStatusRecord::query()
             ->active()
             ->search($term)
+            ->orderBy('name')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * @return Collection<int, ImplantCompany>
+     */
+    public function getImplantCompanies(?string $term = null, int $limit = 100): Collection
+    {
+        return ImplantCompany::query()
+            ->active()
+            ->search($term)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * @return Collection<int, InsertionApproach>
+     */
+    public function getInsertionApproaches(?string $term = null, int $limit = 100): Collection
+    {
+        return InsertionApproach::query()
+            ->active()
+            ->search($term)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * @return Collection<int, MriFindingOption>
+     */
+    public function getMriFindingOptions(?string $term = null, int $limit = 100): Collection
+    {
+        return MriFindingOption::query()
+            ->active()
+            ->search($term)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * @return Collection<int, ExpectationPostCiOption>
+     */
+    public function getExpectationPostCiOptions(?string $term = null, int $limit = 100): Collection
+    {
+        return ExpectationPostCiOption::query()
+            ->active()
+            ->search($term)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * @return Collection<int, CtFindingOption>
+     */
+    public function getCtFindingOptions(?string $term = null, int $limit = 100): Collection
+    {
+        return CtFindingOption::query()
+            ->active()
+            ->search($term)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * @return Collection<int, ImplantElectrodeType>
+     */
+    public function getImplantElectrodeTypes(?int $companyId = null, int $limit = 100): Collection
+    {
+        return ImplantElectrodeType::query()
+            ->when($companyId, fn ($query) => $query->where('implant_company_id', $companyId))
+            ->active()
+            ->orderBy('sort_order')
             ->orderBy('name')
             ->limit($limit)
             ->get();
