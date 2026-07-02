@@ -37,18 +37,24 @@
                     <td>
                         @if($entry->fromStage)
                             <span class="badge rounded-pill px-2 py-1"
-                                  style="background-color: {{ $entry->fromStage->color ?? '#6B7280' }}; color:#fff;">
-                                {{ $entry->fromStage->name }}
+                                  style="background-color: {{ $entry->fromStageColor() }}; color:#fff;">
+                                {{ $entry->fromStageLabel() }}
                             </span>
                         @else
-                            <span class="text-muted">—</span>
+                            <span class="text-muted">{{ $entry->fromStageLabel() }}</span>
                         @endif
                     </td>
                     <td>
-                        <span class="badge rounded-pill px-2 py-1"
-                              style="background-color: {{ $entry->toStage->color ?? '#3B82F6' }}; color:#fff;">
-                            {{ $entry->toStage->name }}
-                        </span>
+                        @if($entry->toStage)
+                            <span class="badge rounded-pill px-2 py-1"
+                                  style="background-color: {{ $entry->toStageColor() }}; color:#fff;">
+                                {{ $entry->toStageLabel() }}
+                            </span>
+                        @else
+                            <span class="badge rounded-pill px-2 py-1 bg-secondary-subtle text-secondary">
+                                {{ $entry->toStageLabel() }}
+                            </span>
+                        @endif
                     </td>
                     <td class="small">{{ $entry->changedBy?->name ?? '—' }}</td>
                     <td class="small text-muted">{{ $entry->notes ?? '—' }}</td>

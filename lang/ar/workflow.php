@@ -42,11 +42,12 @@ return [
     ],
 
     'history' => [
-        'date'       => 'التاريخ',
-        'from_stage' => 'من مرحلة',
-        'to_stage'   => 'إلى مرحلة',
-        'changed_by' => 'تم التغيير بواسطة',
-        'notes'      => 'ملاحظات',
+        'date'           => 'التاريخ',
+        'from_stage'     => 'من مرحلة',
+        'to_stage'       => 'إلى مرحلة',
+        'changed_by'     => 'تم التغيير بواسطة',
+        'notes'          => 'ملاحظات',
+        'deleted_stage'  => 'مرحلة محذوفة (#:id)',
     ],
 
     'records' => [

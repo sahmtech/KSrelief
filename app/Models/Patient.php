@@ -71,7 +71,7 @@ class Patient extends Model
 
     public function currentStage(): BelongsTo
     {
-        return $this->belongsTo(PatientStage::class, 'current_stage_id');
+        return $this->belongsTo(PatientStage::class, 'current_stage_id')->withTrashed();
     }
 
     public function creator(): BelongsTo

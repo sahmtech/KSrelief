@@ -42,11 +42,12 @@ return [
     ],
 
     'history' => [
-        'date'       => 'Date',
-        'from_stage' => 'From Stage',
-        'to_stage'   => 'To Stage',
-        'changed_by' => 'Changed By',
-        'notes'      => 'Notes',
+        'date'           => 'Date',
+        'from_stage'     => 'From Stage',
+        'to_stage'       => 'To Stage',
+        'changed_by'     => 'Changed By',
+        'notes'          => 'Notes',
+        'deleted_stage'  => 'Removed stage (#:id)',
     ],
 
     'records' => [

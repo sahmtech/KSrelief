@@ -18,15 +18,25 @@ class PatientStageHistoryResource extends JsonResource
             'patient_id' => $this->patient_id,
             'from_stage' => $this->whenLoaded('fromStage', fn () => $this->fromStage ? [
                 'id'    => $this->fromStage->id,
-                'name'  => $this->fromStage->name,
+                'name'  => $this->fromStage->displayName(),
                 'code'  => $this->fromStage->code,
                 'color' => $this->fromStage->color,
-            ] : null),
-            'to_stage'   => $this->whenLoaded('toStage', fn () => [
+            ] : ($this->from_stage_id ? [
+                'id'    => $this->from_stage_id,
+                'name'  => $this->fromStageLabel(),
+                'code'  => null,
+                'color' => $this->fromStageColor(),
+            ] : null)),
+            'to_stage'   => $this->whenLoaded('toStage', fn () => $this->toStage ? [
                 'id'    => $this->toStage->id,
-                'name'  => $this->toStage->name,
+                'name'  => $this->toStage->displayName(),
                 'code'  => $this->toStage->code,
                 'color' => $this->toStage->color,
+            ] : [
+                'id'    => $this->to_stage_id,
+                'name'  => $this->toStageLabel(),
+                'code'  => null,
+                'color' => $this->toStageColor(),
             ]),
             'changed_by' => $this->whenLoaded('changedBy', fn () => [
                 'id'   => $this->changedBy->id,
