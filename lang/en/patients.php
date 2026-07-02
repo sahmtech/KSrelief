@@ -28,6 +28,16 @@ return [
         'no_media' => 'No photos, videos, or files uploaded yet.',
         'photos_videos' => 'Photos & Videos',
         'documents' => 'Documents & Other Files',
+        'records_snapshot' => ':total medical record(s) — showing the latest entry per stage.',
+        'records_history_hint' => 'Older entries for the same stage are hidden on this brief. Open the full profile for complete history.',
+        'view_all_records' => 'View all records',
+        'stage_latest' => 'Latest: :date',
+        'stage_record_count' => ':count record(s)',
+        'view_record' => 'Open record',
+        'show_more_fields' => 'Show :count more',
+        'show_less_fields' => 'Show less',
+        'collapse_phases' => 'Collapse',
+        'expand_phases' => 'Expand full clinical file',
     ],
 
     'show' => [

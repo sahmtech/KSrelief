@@ -39,7 +39,7 @@
                         @endif
                         @if($patient->currentStage)
                             <span class="badge bg-light text-dark border">
-                                <i class="ti ti-stairs me-1"></i>{{ $patient->currentStage->name }}
+                                <i class="ti ti-stairs me-1"></i>{{ $patient->currentStage->displayName() }}
                             </span>
                         @endif
                         <span class="badge-status {{ $patient->admissionBadgeClass() }}">{{ $patient->admissionLabel() }}</span>
@@ -216,7 +216,7 @@
                         </div>
                         <div class="user-info-list__item">
                             <div class="user-info-list__label">{{ __('patients.fields.current_stage') }}</div>
-                            <div class="user-info-list__value">{{ $patient->currentStage?->name ?? '—' }}</div>
+                            <div class="user-info-list__value">{{ $patient->currentStage?->displayName() ?? '—' }}</div>
                         </div>
                         <div class="user-info-list__item">
                             <div class="user-info-list__label">{{ __('patients.fields.surgery_day_number') }}</div>

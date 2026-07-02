@@ -34,7 +34,7 @@
 
     @include('pages.campaigns.partials.form', [
         'campaign' => $campaign,
-        'statuses' => $statuses,
+        'statuses' => $statuses ?? [],
     ])
 
     <div class="d-flex gap-2 mt-3">

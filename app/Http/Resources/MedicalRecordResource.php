@@ -19,7 +19,7 @@ class MedicalRecordResource extends JsonResource
             'record_date' => $this->record_date?->toDateString(),
             'stage'       => $this->whenLoaded('stage', fn () => [
                 'id'    => $this->stage->id,
-                'name'  => $this->stage->name,
+                'name'  => $this->stage->displayName(),
                 'code'  => $this->stage->code,
                 'color' => $this->stage->color,
             ]),

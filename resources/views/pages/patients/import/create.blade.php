@@ -151,7 +151,7 @@
                             <tbody>
                                 @foreach($patientStages as $stage)
                                     <tr>
-                                        <td>{{ $stage->name }} @if($stage->is_default)<span class="badge bg-primary-subtle text-primary ms-1">default</span>@endif</td>
+                                        <td>{{ $stage->displayName() }} @if($stage->is_default)<span class="badge bg-primary-subtle text-primary ms-1">default</span>@endif</td>
                                         <td><code>{{ $stage->code }}</code></td>
                                     </tr>
                                 @endforeach

@@ -50,4 +50,9 @@ class ImplantCompany extends Model
     {
         return $this->electrodeTypes()->where('status', SettingStatus::Active->value);
     }
+
+    public function quickFillPresets(): HasMany
+    {
+        return $this->hasMany(OperationQuickFillPreset::class)->orderBy('sort_order')->orderBy('name');
+    }
 }

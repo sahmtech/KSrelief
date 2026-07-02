@@ -263,7 +263,59 @@ final class ClinicalCompositeFields
             return ScreeningFieldSupport::hasImagingFindingsContent($value);
         }
 
-        if ($type === 'select') {
+        if ($type === 'follow_up_clinical_assessment') {
+            return FollowUpFieldSupport::hasClinicalAssessmentContent($value);
+        }
+
+        if ($type === 'follow_up_audiology_assessment') {
+            return FollowUpFieldSupport::hasAudiologyAssessmentContent($value);
+        }
+
+        if ($type === 'follow_up_speech_assessment') {
+            return FollowUpFieldSupport::hasSpeechAssessmentContent($value);
+        }
+
+        if ($type === 'follow_up_notes') {
+            return FollowUpFieldSupport::hasNotesContent($value);
+        }
+
+        if ($type === 'pre_op_physician_assessment') {
+            return PreOperationFieldSupport::hasPhysicianAssessmentContent($value);
+        }
+
+        if ($type === 'pre_op_audiology_decision') {
+            return PreOperationFieldSupport::hasAudiologyDecisionContent($value);
+        }
+
+        if ($type === 'pre_op_speech_assessment') {
+            return PreOperationFieldSupport::hasSpeechAssessmentContent($value);
+        }
+
+        if ($type === 'operation_insertion_depth') {
+            return OperationFieldSupport::hasInsertionDepthContent($value);
+        }
+
+        if ($type === 'operation_audio_test') {
+            return OperationFieldSupport::hasAudioTestContent($value);
+        }
+
+        if ($type === 'operation_intra_op_findings') {
+            return filled($value);
+        }
+
+        if ($type === 'post_op_physician_assessment') {
+            return PostOperationFieldSupport::hasPhysicianAssessmentContent($value);
+        }
+
+        if ($type === 'post_op_clinical_aud') {
+            return PostOperationFieldSupport::hasClinicalAudContent($value);
+        }
+
+        if ($type === 'post_op_notes') {
+            return PostOperationFieldSupport::hasNotesContent($value);
+        }
+
+        if ($type === 'select' || $type === 'yes_no') {
             return filled($value);
         }
 
@@ -284,7 +336,23 @@ final class ClinicalCompositeFields
             'expandable_checklist' => ScreeningFieldSupport::presentExpandableChecklist($value, $fieldDefinition),
             'medical_history_screening' => ScreeningFieldSupport::presentMedicalHistoryScreening($value),
             'imaging_findings' => ScreeningFieldSupport::presentImagingFindings($value),
-            'select' => ScreeningFieldSupport::selectOptionLabel($value, $fieldDefinition),
+            'follow_up_clinical_assessment' => FollowUpFieldSupport::presentClinicalAssessment($value),
+            'follow_up_audiology_assessment' => FollowUpFieldSupport::presentAudiologyAssessment($value),
+            'follow_up_speech_assessment' => FollowUpFieldSupport::presentSpeechAssessment($value),
+            'follow_up_notes' => FollowUpFieldSupport::presentNotes($value),
+            'pre_op_physician_assessment' => PreOperationFieldSupport::presentPhysicianAssessment($value),
+            'pre_op_audiology_decision' => PreOperationFieldSupport::presentAudiologyDecision($value),
+            'pre_op_speech_assessment' => PreOperationFieldSupport::presentSpeechAssessment(
+                $value,
+                $fieldDefinition['expectation_options'] ?? []
+            ),
+            'operation_insertion_depth' => OperationFieldSupport::presentInsertionDepth($value),
+            'operation_audio_test' => OperationFieldSupport::presentAudioTest($value),
+            'operation_intra_op_findings' => OperationFieldSupport::presentIntraOpFindings($value),
+            'post_op_physician_assessment' => PostOperationFieldSupport::presentPhysicianAssessment($value),
+            'post_op_clinical_aud' => PostOperationFieldSupport::presentClinicalAud($value),
+            'post_op_notes' => PostOperationFieldSupport::presentNotes($value),
+            'select', 'yes_no' => ScreeningFieldSupport::selectOptionLabel($value, $fieldDefinition),
             default => (string) $value,
         };
     }

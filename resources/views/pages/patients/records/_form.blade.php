@@ -10,7 +10,7 @@
                 <option value="{{ $stage->id }}"
                         data-code="{{ $stage->code }}"
                         {{ old('stage_id', $selectedStageId ?? $record->stage_id ?? $patient->current_stage_id) == $stage->id ? 'selected' : '' }}>
-                    {{ $stage->name }}
+                    {{ $stage->displayName() }}
                 </option>
             @endforeach
         </select>
@@ -36,13 +36,19 @@
         'implantCompanies' => $implantCompanies ?? collect(),
         'insertionApproaches' => $insertionApproaches ?? collect(),
         'implantElectrodeTypes' => $implantElectrodeTypes ?? collect(),
-        'electrodeTypesUrl' => $electrodeTypesUrl ?? null,
+        'enableFollowUpTemplateActions' => $enableFollowUpTemplateActions ?? false,
+        'hasFollowUpDefaults' => $hasFollowUpDefaults ?? false,
+        'enableOperationTemplateActions' => $enableOperationTemplateActions ?? false,
+        'hasOperationDefaults' => $hasOperationDefaults ?? false,
+        'hasCampaignOperationDefaults' => $hasCampaignOperationDefaults ?? false,
+        'operationQuickFillUrl' => $operationQuickFillUrl ?? '',
+        'campaignDefaultCompanies' => $campaignDefaultCompanies ?? collect(),
     ])
 </div>
 
 <div class="mb-3">
-    <label class="form-label fw-semibold">{{ __('common.notes') }}</label>
-    <textarea name="notes" class="form-control" rows="3">{{ old('notes', $record->notes ?? '') }}</textarea>
+    <label class="form-label fw-semibold">{{ __('workflow.records.general_notes') }}</label>
+    <textarea name="notes" class="form-control" rows="3" placeholder="{{ __('workflow.records.general_notes_placeholder') }}">{{ old('notes', $record->notes ?? '') }}</textarea>
 </div>
 
 @push('scripts')
@@ -65,6 +71,8 @@
             if (typeof data.html !== 'string') throw new Error('stage_fields_invalid');
             container.innerHTML = data.html;
             window.initOperationStageFields?.(container);
+            window.bindPreOperationFields?.();
+            window.initOperationQuickFill?.(container);
         })
         .catch(() => {
             container.innerHTML = '<div class="alert alert-danger mb-0">{{ __('workflow.messages.stage_fields_load_failed') }}</div>';
@@ -75,6 +83,7 @@
     if (!root) return;
 
     initOperationMemberFields(root);
+    window.initOperationInsertionDepth?.(root);
 
     const companySelect = root.querySelector('#implantCompanySelect');
     const electrodeSelect = root.querySelector('#electrodeTypeSelect');

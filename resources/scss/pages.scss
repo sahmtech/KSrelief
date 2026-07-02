@@ -1024,6 +1024,231 @@
     font-weight: 600;
 }
 
+.follow-up-stage-fields,
+.pre-operation-stage-fields,
+.operation-stage-fields,
+.post-operation-stage-fields,
+.campaign-operation-defaults {
+    .follow-up-form-header {
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        border-radius: 0.75rem;
+        overflow: hidden;
+        background: #fff;
+
+        &__inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            padding: 0.875rem 1rem;
+            background: var(--clinical-phase-bg, #f5f3ff);
+            border-bottom: 3px solid var(--clinical-phase-color, #6d28d9);
+
+            h6 {
+                color: var(--clinical-phase-color, #6d28d9);
+            }
+        }
+    }
+
+    .clinical-phase-panel__header h6 {
+        color: var(--clinical-phase-color, #6d28d9);
+    }
+
+    .clinical-kv-table-block + .clinical-kv-table-block {
+        margin-top: 1.25rem;
+        padding-top: 1.25rem;
+        border-top: 1px dashed rgba(0, 0, 0, 0.08);
+    }
+
+    .clinical-kv-table-add-row {
+        margin-top: 0.5rem;
+        width: 42%;
+        max-width: calc(100% - 3rem);
+
+        @media (max-width: 767.98px) {
+            width: 100%;
+            max-width: 100%;
+        }
+    }
+
+    .follow-up-notes-textarea {
+        min-height: 7.5rem;
+        resize: vertical;
+    }
+
+    .follow-up-speech-assessment {
+        .follow-up-speech-field {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+        }
+
+        .form-label {
+            color: #374151;
+        }
+    }
+
+    .pre-op-section-divider {
+        border-top: 1px dashed rgba(0, 0, 0, 0.08);
+    }
+
+    .operation-form-tabs {
+        border-bottom-color: rgba(0, 0, 0, 0.08);
+
+        .nav-link {
+            color: #64748b;
+            font-weight: 600;
+            border: none;
+            border-bottom: 2px solid transparent;
+            border-radius: 0;
+            padding: 0.65rem 1rem;
+
+            &.active {
+                color: var(--clinical-phase-color, #6AA84F);
+                border-bottom-color: var(--clinical-phase-color, #6AA84F);
+                background: transparent;
+            }
+        }
+    }
+}
+
+.operation-quick-fill {
+    &__companies {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 0.75rem;
+    }
+
+    &__company-card {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        width: 100%;
+        padding: 0.85rem 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-radius: 0.75rem;
+        background: #fff;
+        text-align: start;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+
+        &:hover {
+            border-color: var(--company-color, #0F766E);
+            box-shadow: 0 4px 14px rgba(15, 118, 110, 0.12);
+            transform: translateY(-1px);
+        }
+    }
+
+    &__company-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--company-color, #0F766E);
+        flex-shrink: 0;
+    }
+
+    &__company-name {
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    &__presets-header {
+        margin-bottom: 1rem;
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 0.75rem;
+    }
+
+    &__preset-card {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        padding: 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-left: 4px solid var(--company-color, #0F766E);
+        border-radius: 0.75rem;
+        background: #fff;
+        text-align: start;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+
+        &:hover {
+            border-color: var(--company-color, #0F766E);
+            box-shadow: 0 6px 18px rgba(15, 118, 110, 0.12);
+            transform: translateY(-1px);
+        }
+    }
+
+    &__preset-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+
+        strong {
+            color: #111827;
+        }
+    }
+
+    &__preset-badge {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: #0F766E;
+        background: rgba(15, 118, 110, 0.1);
+        border-radius: 999px;
+        padding: 0.15rem 0.5rem;
+        white-space: nowrap;
+
+        &--user {
+            color: #1d4ed8;
+            background: rgba(29, 78, 216, 0.1);
+        }
+
+        &--campaign {
+            color: #0F766E;
+            background: rgba(15, 118, 110, 0.12);
+        }
+    }
+
+    &__preset-summary {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 0.75rem;
+
+        li {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.75rem;
+            font-size: 0.8125rem;
+            padding: 0.2rem 0;
+
+            span {
+                color: #64748b;
+            }
+
+            strong {
+                color: #1f2937;
+                font-weight: 600;
+                text-align: end;
+            }
+        }
+    }
+
+    &__preset-action {
+        margin-top: auto;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--company-color, #0F766E);
+    }
+}
+
 .clinical-field-shell {
     background: var(--clinical-phase-bg, #f8f9fa);
     border: 1px solid rgba(0, 0, 0, 0.05);

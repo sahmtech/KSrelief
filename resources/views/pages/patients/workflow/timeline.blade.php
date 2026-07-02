@@ -22,7 +22,7 @@
                     @if($patient->currentStage)
                         <span class="badge rounded-pill fs-6 px-4 py-2"
                               style="background-color: {{ $patient->currentStage->color ?? '#3B82F6' }}; color: #fff;">
-                            {{ $patient->currentStage->name }}
+                            {{ $patient->currentStage->displayName() }}
                         </span>
                     @else
                         <span class="badge bg-secondary rounded-pill fs-6 px-4 py-2">
@@ -90,7 +90,7 @@
                             @foreach($stages as $stage)
                                 <option value="{{ $stage->id }}"
                                     {{ $patient->current_stage_id == $stage->id ? 'disabled' : '' }}>
-                                    {{ $stage->name }}
+                                    {{ $stage->displayName() }}
                                     {{ $patient->current_stage_id == $stage->id ? '(' . __('workflow.timeline.current') . ')' : '' }}
                                 </option>
                             @endforeach

@@ -94,6 +94,11 @@ class Campaign extends Model
         return $this->hasMany(Patient::class);
     }
 
+    public function operationDefaults(): HasMany
+    {
+        return $this->hasMany(CampaignOperationDefault::class);
+    }
+
     public function attendances(): HasMany
     {
         return $this->hasMany(Attendance::class);

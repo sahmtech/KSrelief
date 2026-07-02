@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Models\MedicalRecord;
+use App\Models\Member;
 use App\Models\Patient;
+use App\Models\PatientStage;
 use App\Support\ClinicalCompositeFields;
 use App\Support\OperationFieldResolver;
 use App\Support\PatientClinicalFieldRegistry;
@@ -27,10 +29,11 @@ class PatientBriefService
 
     /** @var list<string> */
     private const PRIORITY_STAGE_KEYS = [
-        'anesthesia' => ['npo_time', 'asa_score', 'anesthesia_type', 'readiness_status'],
-        'operation' => ['surgeon', 'implant_company_id', 'electrode_type_id', 'insertion_approach_id', 'intra_op_findings'],
-        'follow_up' => ['clinical_aud', 'clinical_speech'],
-        'post_operation' => ['clinical_aud', 'post_op_exam', 'pain_score', 'swelling_size'],
+        'anesthesia' => ['npo_time', 'asa_score', 'anesthesia_type'],
+        'operation' => ['operation_date', 'surgeon', 'implant_company_id', 'electrode_type_id', 'insertion_approach_id', 'insertion_depth', 'audio_test', 'intra_op_findings', 'operation_notes'],
+        'follow_up' => ['clinical_assessment', 'audiology_assessment', 'speech_assessment', 'follow_up_notes'],
+        'pre_operation' => ['physician_assessment', 'imaging_findings', 'audiology_decision', 'speech_assessment'],
+        'post_operation' => ['physician_assessment', 'clinical_aud', 'counselling', 'post_op_notes'],
     ];
 
     /** @var list<string> */
@@ -47,7 +50,8 @@ class PatientBriefService
      *     demographics: list<array{label: string, value: string}>,
      *     priority_clinical: list<array{label: string, value: string, type?: string}>,
      *     phases: array<string, array{label: string, color: string, background: string, items: list<array{label: string, value: string, source: string, type?: string}>}>,
-     *     stage_summaries: list<array{code: string, name: string, items: list<array{label: string, value: string}>}>,
+     *     stage_summaries: list<array{code: string, name: string, record_id: int, record_date: ?string, record_count: int, items: list<array{label: string, value: mixed, type?: string, field_definition?: array<string, mixed>, color?: ?string}>}>,
+     *     record_overview: array{total: int, stages_with_data: int, has_history: bool},
      * }
      */
     public function build(Patient $patient, ?array $clinicalProfile): array
@@ -60,6 +64,87 @@ class PatientBriefService
             'priority_clinical' => $priorityClinical,
             'phases' => $this->orderPhases($clinicalProfile['phases'] ?? []),
             'stage_summaries' => $this->buildStageSummaries($patient),
+            'record_overview' => $this->buildRecordOverview($patient),
+        ];
+    }
+
+    /**
+     * @return array{total: int, stages_with_data: int, has_history: bool}
+     */
+    private function buildRecordOverview(Patient $patient): array
+    {
+        $total = $patient->medicalRecords()->count();
+        $stagesWithData = $this->recordService->getLatestRecordsByStage($patient)->count();
+
+        return [
+            'total' => $total,
+            'stages_with_data' => $stagesWithData,
+            'has_history' => $total > $stagesWithData,
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $definition
+     * @return array{text: string, color: ?string, raw: mixed}
+     */
+    private function resolveBriefField(string $key, mixed $value, array $definition): array
+    {
+        $type = $definition['type'] ?? 'text';
+
+        $compositeTypes = [
+            'clinical_aud',
+            'clinical_speech',
+            'clinical_speech_followup',
+            'imaging_findings',
+            'expandable_checklist',
+            'medical_history_screening',
+            'follow_up_clinical_assessment',
+            'follow_up_audiology_assessment',
+            'follow_up_speech_assessment',
+            'follow_up_notes',
+            'pre_op_physician_assessment',
+            'pre_op_audiology_decision',
+            'pre_op_speech_assessment',
+            'operation_insertion_depth',
+            'operation_audio_test',
+            'operation_intra_op_findings',
+            'post_op_physician_assessment',
+            'post_op_clinical_aud',
+            'post_op_notes',
+        ];
+
+        if (in_array($type, $compositeTypes, true)) {
+            return [
+                'text' => ClinicalCompositeFields::present($key, $value, $definition),
+                'color' => null,
+                'raw' => $value,
+            ];
+        }
+
+        if ($type === 'yes_no' || $type === 'select') {
+            return [
+                'text' => ClinicalCompositeFields::present($key, $value, $definition),
+                'color' => null,
+                'raw' => $value,
+            ];
+        }
+
+        if ($type === 'member_select' && is_numeric($value)) {
+            $member = Member::query()->find((int) $value);
+
+            return [
+                'text' => $member?->full_name ?? (string) $value,
+                'color' => null,
+                'raw' => $value,
+            ];
+        }
+
+        $resolved = OperationFieldResolver::resolve($key, $value, $definition);
+
+        return [
+            'text' => $resolved['text'],
+            'color' => $resolved['color'],
+            'raw' => $value,
         ];
     }
 
@@ -185,12 +270,14 @@ class PatientBriefService
 
             $type = $definition['type'] ?? 'text';
             $compositeComponentTypes = ['imaging_findings', 'expandable_checklist', 'medical_history_screening'];
+            $resolved = $this->resolveBriefField($key, $value, $definition);
             $items[] = [
                 'label' => $definition['label'],
-                'value' => in_array($type, ['clinical_aud', 'clinical_speech', 'clinical_speech_followup'], true)
-                    ? ClinicalCompositeFields::present($key, $value, $definition)
-                    : (in_array($type, $compositeComponentTypes, true) ? $value : (string) $value),
+                'value' => in_array($type, ['clinical_aud', 'clinical_speech', 'clinical_speech_followup'], true) || in_array($type, $compositeComponentTypes, true) || $type === 'yes_no'
+                    ? $resolved['raw']
+                    : $resolved['text'],
                 'type' => $type,
+                'field_definition' => $definition,
             ];
             $seen[$key] = true;
         }
@@ -228,17 +315,14 @@ class PatientBriefService
                 }
 
                 $type = $definition['type'] ?? 'text';
-
-                if (in_array($type, ['clinical_aud', 'clinical_speech', 'clinical_speech_followup', 'imaging_findings', 'expandable_checklist', 'medical_history_screening'], true)) {
-                    $resolved = ['text' => ClinicalCompositeFields::present($key, $value, $definition), 'color' => null];
-                } else {
-                    $resolved = OperationFieldResolver::resolve($key, $value, $definition);
-                }
+                $resolved = $this->resolveBriefField($key, $value, $definition);
+                $compositeTypes = ['clinical_aud', 'clinical_speech', 'clinical_speech_followup', 'imaging_findings', 'expandable_checklist', 'medical_history_screening', 'follow_up_clinical_assessment', 'follow_up_audiology_assessment', 'follow_up_speech_assessment', 'follow_up_notes', 'pre_op_physician_assessment', 'pre_op_audiology_decision', 'pre_op_speech_assessment', 'operation_insertion_depth', 'operation_audio_test', 'operation_intra_op_findings', 'post_op_physician_assessment', 'post_op_clinical_aud', 'post_op_notes'];
 
                 $items[] = [
                     'label' => $definition['label'] ?? $key,
-                    'value' => $resolved['text'],
+                    'value' => in_array($type, $compositeTypes, true) || $type === 'yes_no' ? $resolved['raw'] : $resolved['text'],
                     'type' => $type,
+                    'field_definition' => $definition,
                     'color' => $resolved['color'],
                 ];
                 $seen[$key] = true;
@@ -306,11 +390,15 @@ class PatientBriefService
     }
 
     /**
-     * @return list<array{code: string, name: string, items: list<array{label: string, value: string}>}>
+     * @return list<array{code: string, name: string, record_id: int, record_date: ?string, record_count: int, items: list<array{label: string, value: mixed, type?: string, field_definition?: array<string, mixed>, color?: ?string}>}>
      */
     private function buildStageSummaries(Patient $patient): array
     {
         $recordsByStage = $this->recordService->getLatestRecordsByStage($patient);
+        $recordCountsByStage = $patient->medicalRecords()
+            ->selectRaw('stage_id, count(*) as aggregate')
+            ->groupBy('stage_id')
+            ->pluck('aggregate', 'stage_id');
         $summaries = [];
 
         foreach (self::STAGE_ORDER as $stageCode) {
@@ -331,13 +419,14 @@ class PatientBriefService
                 }
 
                 $type = $definition['type'] ?? 'text';
-                $resolved = in_array($type, ['clinical_aud', 'clinical_speech', 'clinical_speech_followup', 'imaging_findings', 'expandable_checklist', 'medical_history_screening'], true)
-                    ? ['text' => ClinicalCompositeFields::present($key, $value, $definition), 'color' => null]
-                    : OperationFieldResolver::resolve($key, $value, $definition);
+                $resolved = $this->resolveBriefField($key, $value, $definition);
+                $compositeTypes = ['clinical_aud', 'clinical_speech', 'clinical_speech_followup', 'imaging_findings', 'expandable_checklist', 'medical_history_screening', 'follow_up_clinical_assessment', 'follow_up_audiology_assessment', 'follow_up_speech_assessment', 'follow_up_notes', 'pre_op_physician_assessment', 'pre_op_audiology_decision', 'pre_op_speech_assessment', 'operation_insertion_depth', 'operation_audio_test', 'operation_intra_op_findings', 'post_op_physician_assessment', 'post_op_clinical_aud', 'post_op_notes'];
 
                 $items[] = [
                     'label' => $definition['label'],
-                    'value' => $resolved['text'],
+                    'value' => in_array($type, $compositeTypes, true) ? $resolved['raw'] : $resolved['text'],
+                    'type' => $type,
+                    'field_definition' => $definition,
                     'color' => $resolved['color'],
                 ];
             }
@@ -345,7 +434,10 @@ class PatientBriefService
             if ($items !== []) {
                 $summaries[] = [
                     'code' => $stageCode,
-                    'name' => $record->stage?->name ?? ucfirst(str_replace('_', ' ', $stageCode)),
+                    'name' => $record->stage?->displayName() ?? PatientStage::displayNameForCode($stageCode),
+                    'record_id' => $record->id,
+                    'record_date' => $record->record_date?->format('d M Y'),
+                    'record_count' => (int) ($recordCountsByStage[$record->stage_id] ?? 1),
                     'items' => $items,
                 ];
             }

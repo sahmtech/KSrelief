@@ -1,4 +1,37 @@
 @if(!empty($stageFields))
+@if(($stageCode ?? '') === 'pre_operation')
+    @include('pages.patients.records._pre_operation_stage_fields', [
+        'record' => $record ?? null,
+        'patient' => $patient ?? null,
+        'stageFields' => $stageFields ?? [],
+    ])
+@elseif(($stageCode ?? '') === 'operation')
+    @include('pages.patients.records._operation_stage_fields', [
+        'record' => $record ?? null,
+        'patient' => $patient ?? null,
+        'teamMembers' => $teamMembers ?? [],
+        'implantCompanies' => $implantCompanies ?? collect(),
+        'implantElectrodeTypes' => $implantElectrodeTypes ?? collect(),
+        'insertionApproaches' => $insertionApproaches ?? collect(),
+        'electrodeTypesUrl' => $electrodeTypesUrl ?? null,
+        'stageFields' => $stageFields ?? [],
+        'enableOperationTemplateActions' => $enableOperationTemplateActions ?? false,
+        'hasOperationDefaults' => $hasOperationDefaults ?? false,
+        'operationQuickFillUrl' => $operationQuickFillUrl ?? '',
+        'campaignDefaultCompanies' => $campaignDefaultCompanies ?? collect(),
+    ])
+@elseif(($stageCode ?? '') === 'follow_up')
+    @include('pages.patients.records._follow_up_stage_fields', [
+        'record' => $record ?? null,
+        'enableFollowUpTemplateActions' => $enableFollowUpTemplateActions ?? false,
+        'hasFollowUpDefaults' => $hasFollowUpDefaults ?? false,
+    ])
+@elseif(($stageCode ?? '') === 'post_operation')
+    @include('pages.patients.records._post_operation_stage_fields', [
+        'record' => $record ?? null,
+        'patient' => $patient ?? null,
+    ])
+@else
 @include('pages.patients.partials.clinical-fallback-styles')
 @php
     $phaseCode = app(\App\Services\MedicalRecordService::class)->phaseForStage($stageCode);
@@ -13,7 +46,7 @@
                 @if(($stageCode ?? '') === 'pre_operation')
                     {{ __('patients.sections.screening') }}
                 @else
-                    {{ ucfirst(str_replace('_', ' ', $stageCode)) }}
+                    {{ \App\Models\PatientStage::displayNameForCode($stageCode ?? '') }}
                 @endif
             </h6>
             @if(!empty($phaseStyle['label']))
@@ -39,10 +72,12 @@
                     : collect();
             @endphp
             <div class="{{ $colClass }}">
+                @if($inputType !== 'yes_no')
                 <label class="form-label fw-semibold small">
                     {{ $label }}
                     @if($isRequired) <span class="text-danger">*</span> @endif
                 </label>
+                @endif
 
                 @if($inputType === 'member_select')
                     @php
@@ -160,6 +195,13 @@
                               rows="3"
                               {{ $isRequired ? 'required' : '' }}>{{ $savedValue }}</textarea>
 
+                @elseif($inputType === 'yes_no')
+                    <x-yes-no-input
+                        :name-prefix="$inputName"
+                        :saved-value="$savedValue"
+                        :label="$label . ($isRequired ? ' *' : '')"
+                    />
+
                 @elseif($inputType === 'select' && isset($fieldDef['options']))
                     <select name="{{ $inputName }}" class="form-select form-select-sm" {{ $isRequired ? 'required' : '' }}>
                         <option value="">— {{ __('common.select') }} —</option>
@@ -216,4 +258,5 @@
         @endif
     </div>
 </div>
+@endif
 @endif

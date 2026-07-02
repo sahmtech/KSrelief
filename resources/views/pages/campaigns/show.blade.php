@@ -45,7 +45,7 @@
                 </a>
                 @endcan
                 @can('update', $campaign)
-                    <a href="{{ route('campaigns.edit', $campaign) }}" class="btn btn-primary btn-sm">
+                    <a href="{{ route('campaigns.edit', $campaign) }}#operation-record-defaults" class="btn btn-primary btn-sm">
                         <i class="ti ti-pencil me-1"></i> {{ __('campaigns.actions.edit') }}
                     </a>
                 @endcan
@@ -125,6 +125,13 @@
             <span class="badge bg-secondary-subtle text-secondary ms-1">{{ $futureStats['activities_count'] }}</span>
         </button>
     </li>
+    @if(! empty($operationDefaultSummaries ?? []))
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="operation-defaults-tab" data-bs-toggle="tab" data-bs-target="#operation-defaults-pane" type="button" role="tab">
+            <i class="ti ti-stethoscope me-1"></i> {{ __('campaigns.tabs.operation_defaults') }}
+        </button>
+    </li>
+    @endif
 </ul>
 
 <div class="tab-content" id="campaignTabsContent">
@@ -234,6 +241,15 @@
             'recentActivities' => $recentActivities,
         ])
     </div>
+
+    @if(! empty($operationDefaultSummaries ?? []))
+    <div class="tab-pane fade" id="operation-defaults-pane" role="tabpanel">
+        @include('pages.campaigns.partials.operation-defaults-show', [
+            'campaign' => $campaign,
+            'summaries' => $operationDefaultSummaries,
+        ])
+    </div>
+    @endif
 </div>
 
 @can('changeStatus', $campaign)
@@ -259,7 +275,15 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const hash = window.location.hash;
-    const tabMap = { '#daily-schedule': 'daily-schedule-tab', '#team': 'team-tab', '#patients': 'patients-tab', '#attendance': 'attendance-tab', '#transportation': 'transportation-tab' };
+    const tabMap = {
+        '#daily-schedule': 'daily-schedule-tab',
+        '#team': 'team-tab',
+        '#patients': 'patients-tab',
+        '#attendance': 'attendance-tab',
+        '#transportation': 'transportation-tab',
+        '#operation-record-defaults': 'operation-defaults-tab',
+        '#operation-defaults': 'operation-defaults-tab',
+    };
     const tabId = tabMap[hash];
 
     if (tabId) {

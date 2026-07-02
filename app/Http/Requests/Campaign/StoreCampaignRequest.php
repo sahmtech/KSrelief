@@ -45,6 +45,17 @@ class StoreCampaignRequest extends FormRequest
             'expected_patients' => ['required', 'integer', 'min:0'],
             'description' => ['nullable', 'string', 'max:10000'],
             'campaign_status_id' => ['nullable', 'integer', Rule::exists('campaign_statuses', 'id')->where('status', SettingStatus::Active->value)],
+            'operation_defaults' => ['nullable', 'array'],
+            'operation_defaults.*.electrode_type_id' => ['nullable', 'integer', 'exists:implant_electrode_types,id'],
+            'operation_defaults.*.insertion_approach_id' => ['nullable', 'integer', 'exists:insertion_approaches,id'],
+            'operation_defaults.*.insertion_depth' => ['nullable', 'array'],
+            'operation_defaults.*.insertion_depth.selection' => ['nullable', 'string', 'max:80'],
+            'operation_defaults.*.insertion_depth.note' => ['nullable', 'string', 'max:1000'],
+            'operation_defaults.*.intra_op_findings' => ['nullable', 'string', 'max:80'],
+            'operation_defaults.*.audio_test' => ['nullable', 'array'],
+            'operation_defaults.*.audio_test.metrics' => ['nullable', 'array'],
+            'operation_defaults.*.audio_test.metrics.*.key' => ['nullable', 'string', 'max:120'],
+            'operation_defaults.*.audio_test.metrics.*.value' => ['nullable', 'string', 'max:500'],
         ];
     }
 }

@@ -41,7 +41,7 @@ class PatientClinicalProfileService
             $type = $definition['type'] ?? 'text';
             $grouped[$phase]['items'][] = [
                 'label' => $definition['label'],
-                'value' => in_array($type, ['clinical_aud', 'clinical_speech', 'clinical_speech_followup', 'expandable_checklist', 'medical_history_screening', 'imaging_findings'], true)
+                'value' => in_array($type, ['clinical_aud', 'clinical_speech', 'clinical_speech_followup', 'expandable_checklist', 'medical_history_screening', 'imaging_findings', 'yes_no'], true)
                     ? $value
                     : (string) $value,
                 'source' => __('patients.clinical.source_screening'),
@@ -84,10 +84,10 @@ class PatientClinicalProfileService
                 $type = $definition['type'] ?? 'text';
                 $grouped[$phase]['items'][] = [
                     'label' => $definition['label'],
-                    'value' => in_array($type, ['clinical_aud', 'clinical_speech', 'clinical_speech_followup', 'expandable_checklist', 'medical_history_screening', 'imaging_findings'], true)
-                        ? $value
-                        : $this->formatFieldValue($value, $definition, $record),
-                    'source' => $record->stage?->name ?? __('workflow.medical_records'),
+                'value' => in_array($type, ['clinical_aud', 'clinical_speech', 'clinical_speech_followup', 'expandable_checklist', 'medical_history_screening', 'imaging_findings', 'yes_no', 'follow_up_clinical_assessment', 'follow_up_audiology_assessment', 'follow_up_speech_assessment', 'follow_up_notes', 'pre_op_physician_assessment', 'pre_op_audiology_decision', 'pre_op_speech_assessment', 'operation_insertion_depth', 'operation_audio_test', 'operation_intra_op_findings', 'post_op_physician_assessment', 'post_op_clinical_aud', 'post_op_notes'], true)
+                    ? $value
+                    : $this->formatFieldValue($value, $definition, $record),
+                    'source' => $record->stage?->displayName() ?? __('workflow.medical_records'),
                     'type' => $type,
                     'field_definition' => $definition,
                 ];
@@ -109,6 +109,14 @@ class PatientClinicalProfileService
             $member = $record->patient?->campaign?->staffMembers?->firstWhere('id', (int) $value);
 
             return $member?->full_name ?? (string) $value;
+        }
+
+        if (in_array($definition['type'] ?? '', ['follow_up_clinical_assessment', 'follow_up_audiology_assessment', 'follow_up_speech_assessment', 'follow_up_notes', 'pre_op_physician_assessment', 'pre_op_audiology_decision', 'pre_op_speech_assessment', 'operation_insertion_depth', 'operation_audio_test', 'operation_intra_op_findings', 'post_op_physician_assessment', 'post_op_clinical_aud', 'post_op_notes'], true)) {
+            return ClinicalCompositeFields::present('', $value, $definition);
+        }
+
+        if (in_array($definition['type'] ?? '', ['yes_no', 'select'], true)) {
+            return ClinicalCompositeFields::present('', $value, $definition);
         }
 
         if (in_array($definition['type'] ?? '', ['clinical_aud', 'clinical_speech', 'clinical_speech_followup', 'expandable_checklist', 'medical_history_screening'], true)) {

@@ -26,6 +26,7 @@ return [
         'expected' => 'Expected Results',
         'overview' => 'Campaign Overview',
         'future_stats' => 'Operational Statistics',
+        'operation_defaults' => 'Operation Record Defaults',
     ],
 
     'fields' => [
@@ -100,6 +101,8 @@ return [
         'campaign_days_auto' => 'Calculated automatically from start and end dates (inclusive).',
         'code_auto' => 'Format: country abbreviation + campaign name token (e.g. NG-SAMA). Generated automatically and cannot be edited.',
         'code_generated_on_save' => 'Generated automatically when the campaign is saved (country + first campaign word).',
+        'operation_defaults' => 'Default values for operation medical records per implant company. Used when creating operation records for patients in this campaign.',
+        'operation_defaults_show' => 'Default values applied when filling operation records for patients in this campaign.',
     ],
 
     'future_stats' => [
@@ -119,6 +122,7 @@ return [
         'attendance' => 'Attendance',
         'transportation' => 'Transportation',
         'activities' => 'Activities',
+        'operation_defaults' => 'Operation Defaults',
     ],
 
     'daily_schedule' => [

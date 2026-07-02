@@ -15,6 +15,7 @@ use App\Models\Specialty;
 use App\Services\ActivityStatisticsService;
 use App\Services\AttendanceStatisticsService;
 use App\Services\CampaignDailyBreakdownService;
+use App\Services\CampaignOperationDefaultService;
 use App\Services\CampaignService;
 use App\Services\LookupService;
 use App\Services\MemberService;
@@ -28,6 +29,7 @@ class CampaignController extends Controller
 {
     public function __construct(
         private readonly CampaignService $campaignService,
+        private readonly CampaignOperationDefaultService $campaignOperationDefaultService,
         private readonly LookupService $lookupService,
         private readonly MemberService $memberService,
         private readonly PatientStatisticsService $patientStatisticsService,
@@ -127,6 +129,7 @@ class CampaignController extends Controller
         $recentActivities = $this->activityStatisticsService->getRecentActivities(10, $campaign->id);
         $dailySchedule = $this->campaignDailyBreakdownService->getDailyBreakdown($campaign);
         $surgeryDaysSchedule = $this->campaignDailyBreakdownService->getSurgeryDaysSchedule($campaign);
+        $operationDefaultSummaries = $this->campaignOperationDefaultService->summariesForShow($campaign);
 
         $campaign->load([
             'patients.eligibilityStatus',
@@ -153,6 +156,7 @@ class CampaignController extends Controller
             'recentActivities' => $recentActivities,
             'dailySchedule' => $dailySchedule,
             'surgeryDaysSchedule' => $surgeryDaysSchedule,
+            'operationDefaultSummaries' => $operationDefaultSummaries,
             'futureStats' => [
                 'patients_count' => $patientStats['total'],
                 'members_count' => $campaign->campaignMemberAssignments()->count(),
@@ -168,10 +172,11 @@ class CampaignController extends Controller
         $this->authorize('update', $campaign);
 
         $campaign->load(['country', 'city', 'specialty', 'campaignStatus']);
+        $this->campaignOperationDefaultService->ensureDefaultsForCampaign($campaign);
 
         return view('pages.campaigns.edit', [
             'campaign' => $campaign,
-            ...$this->formData(),
+            ...$this->formData($campaign),
         ]);
     }
 
@@ -245,10 +250,21 @@ class CampaignController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function formData(): array
+    private function formData(?Campaign $campaign = null): array
     {
+        $defaultsByCompany = $this->campaignOperationDefaultService->defaultsForForm($campaign);
+        $electrodesByCompany = [];
+
+        foreach ($defaultsByCompany as $companyId => $defaults) {
+            $electrodesByCompany[$companyId] = $this->lookupService->getImplantElectrodeTypes((int) $companyId);
+        }
+
         return [
             'statuses' => $this->lookupService->getCampaignStatuses(),
+            'operationDefaultCompanies' => $this->campaignOperationDefaultService->supportedCompanies(),
+            'operationDefaultsByCompany' => $defaultsByCompany,
+            'operationElectrodesByCompany' => $electrodesByCompany,
+            'insertionApproaches' => $this->lookupService->getInsertionApproaches(),
         ];
     }
 }

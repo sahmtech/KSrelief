@@ -21,12 +21,22 @@
     .patient-brief-field{padding:.75rem;border-radius:.5rem;background:#f8fafc;border:1px solid rgba(0,0,0,.04);height:100%}
     .patient-brief-field__label{font-size:.75rem;font-weight:600;color:#64748b;margin-bottom:.35rem}
     .patient-brief-field__value{font-size:.875rem;font-weight:500;color:#1e293b}
-    .patient-brief-stage-card{height:100%;padding:.875rem;border-radius:.75rem;background:#f8fafc;border:1px solid #e2e8f0}
-    .patient-brief-stage-card__title{font-size:.8125rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:#0f766e;margin-bottom:.625rem;padding-bottom:.5rem;border-bottom:2px solid rgba(15,118,110,.15)}
+    .patient-brief-stage-card{height:100%;padding:.875rem 1rem;border-radius:.75rem;background:#f8fafc;border:1px solid #e2e8f0}
+    .patient-brief-stage-card__title{font-size:.8125rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:#0f766e;margin-bottom:.5rem;padding-bottom:.5rem;border-bottom:2px solid rgba(15,118,110,.15)}
+    .patient-brief-stages-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
     .patient-brief-stage-card__list{list-style:none;margin:0;padding:0}
-    .patient-brief-stage-card__list li{margin-bottom:.5rem;font-size:.8125rem}
-    .patient-brief-stage-card__list .label{display:block;color:#64748b;font-size:.7rem}
-    .patient-brief-stage-card__list .value{display:block;color:#1e293b;font-weight:500}
+    .patient-brief-stage-card__list li{padding:.5rem 0;border-bottom:1px solid #e2e8f0}
+    .patient-brief-stage-card__list li:last-child{border-bottom:0;padding-bottom:0}
+    .patient-brief-stage-card__list .label{display:block;color:#64748b;font-size:.7rem;font-weight:600;margin-bottom:.2rem}
+    .patient-brief-stage-card__list .value{display:block;color:#1e293b;font-size:.8125rem;line-height:1.45}
+    .clinical-brief-inline{font-size:.8125rem;line-height:1.45}
+    .clinical-brief-inline--multiline{white-space:pre-line}
+    .patient-brief-stage-card .badge{font-size:.7rem;font-weight:500}
+    .patient-brief-stage-card__meta{font-size:.7rem;color:#64748b;margin-bottom:.625rem;display:flex;flex-wrap:wrap;gap:.35rem;align-items:center}
+    .patient-brief-stage-card__toggle{font-size:.75rem;padding:0;border:0;background:none;color:#0f766e;margin-top:.35rem}
+    .patient-brief-field .clinical-composite-display .table-responsive{margin-bottom:.35rem}
+    .patient-brief-field .clinical-kv-table th,.patient-brief-field .clinical-kv-table td{padding:.3rem .45rem;font-size:.75rem}
+    .patient-brief-field .clinical-kv-table th{width:38%}
 </style>
 @endpush
 
@@ -84,7 +94,7 @@
                 @endif
                 @if($patient->currentStage)
                     <span class="badge bg-light text-dark border">
-                        <i class="ti ti-stairs me-1"></i>{{ $patient->currentStage->name }}
+                        <i class="ti ti-stairs me-1"></i>{{ $patient->currentStage->displayName() }}
                     </span>
                 @endif
                 <span class="badge-status {{ $patient->admissionBadgeClass() }}">{{ $patient->admissionLabel() }}</span>
@@ -117,6 +127,23 @@
     </div>
 @endif
 
+@can('viewAny', [\App\Models\MedicalRecord::class, $patient])
+    @if(($brief['record_overview']['total'] ?? 0) > 0)
+        <div class="alert alert-light border mb-4 py-2 px-3 d-flex flex-wrap align-items-center justify-content-between gap-2" style="font-size: 0.8125rem;">
+            <div>
+                <i class="ti ti-file-medical me-1 text-primary"></i>
+                {{ __('patients.brief.records_snapshot', ['total' => $brief['record_overview']['total']]) }}
+                @if($brief['record_overview']['has_history'])
+                    <span class="text-muted d-block mt-1">{{ __('patients.brief.records_history_hint') }}</span>
+                @endif
+            </div>
+            <a href="{{ route('patients.show', $patient) }}#records-dossier" class="btn btn-outline-primary btn-sm">
+                {{ __('patients.brief.view_all_records') }}
+            </a>
+        </div>
+    @endif
+@endcan
+
 {{-- Surgery context chips --}}
 @if(!empty($brief['surgery_context']))
     <x-card :title="__('patients.brief.surgery_context')" :compact="true" class="mb-4">
@@ -125,9 +152,10 @@
                 <div @class(['patient-brief-chip', 'patient-brief-chip--highlight' => !empty($item['highlight'])])>
                     <div class="patient-brief-chip__label">{{ $item['label'] }}</div>
                     <div class="patient-brief-chip__value">
-                        <x-clinical-value
+                        <x-brief-clinical-value
                             :value="$item['value']"
                             :type="$item['type'] ?? null"
+                            :field-definition="$item['field_definition'] ?? []"
                         />
                     </div>
                 </div>
@@ -150,9 +178,10 @@
                                     @if(!empty($item['color']))
                                         <span class="fw-semibold" style="color: {{ $item['color'] }};">{{ $item['value'] }}</span>
                                     @else
-                                        <x-clinical-value
+                                        <x-brief-clinical-value
                                             :value="$item['value']"
                                             :type="$item['type'] ?? null"
+                                            :field-definition="$item['field_definition'] ?? []"
                                             :link-label="$item['label']"
                                         />
                                     @endif
@@ -187,22 +216,58 @@
 {{-- Stage summaries --}}
 @if(!empty($brief['stage_summaries']))
     <x-card :title="__('patients.brief.stage_records')" class="mb-4">
-        <div class="row g-3">
+        <div class="patient-brief-stages-grid">
             @foreach($brief['stage_summaries'] as $stage)
-                <div class="col-md-6 col-xl-3">
-                    <div class="patient-brief-stage-card">
-                        <div class="patient-brief-stage-card__title">{{ $stage['name'] }}</div>
-                        <ul class="patient-brief-stage-card__list">
-                            @foreach(array_slice($stage['items'], 0, 5) as $item)
-                                <li>
+                @php
+                    $visibleItems = 5;
+                    $stageItems = $stage['items'];
+                    $hasMoreItems = count($stageItems) > $visibleItems;
+                @endphp
+                <div class="patient-brief-stage-card">
+                    <div class="patient-brief-stage-card__title">{{ $stage['name'] }}</div>
+                    <div class="patient-brief-stage-card__meta">
+                            @if(!empty($stage['record_date']))
+                                <span>{{ __('patients.brief.stage_latest', ['date' => $stage['record_date']]) }}</span>
+                            @endif
+                            @if(($stage['record_count'] ?? 1) > 1)
+                                <span class="badge bg-light text-dark border">{{ __('patients.brief.stage_record_count', ['count' => $stage['record_count']]) }}</span>
+                            @endif
+                            @can('viewAny', [\App\Models\MedicalRecord::class, $patient])
+                                @if(!empty($stage['record_id']))
+                                    <a href="{{ route('patients.records.show', [$patient, $stage['record_id']]) }}" class="text-decoration-none">
+                                        {{ __('patients.brief.view_record') }}
+                                    </a>
+                                @endif
+                            @endcan
+                    </div>
+                    <ul class="patient-brief-stage-card__list" data-brief-stage-list>
+                            @foreach($stageItems as $index => $item)
+                                <li @class(['d-none' => $index >= $visibleItems, 'brief-stage-extra' => $index >= $visibleItems])>
                                     <span class="label">{{ $item['label'] }}</span>
                                     <span class="value">
-                                        <x-clinical-value :value="$item['value']" />
+                                        @if(!empty($item['color']))
+                                            <span class="fw-semibold" style="color: {{ $item['color'] }};">{{ $item['value'] }}</span>
+                                        @else
+                                            <x-brief-clinical-value
+                                                :value="$item['value']"
+                                                :type="$item['type'] ?? null"
+                                                :field-definition="$item['field_definition'] ?? []"
+                                                :link-label="$item['label']"
+                                            />
+                                        @endif
                                     </span>
                                 </li>
                             @endforeach
                         </ul>
-                    </div>
+                    @if($hasMoreItems)
+                        <button type="button"
+                                class="patient-brief-stage-card__toggle"
+                                data-brief-stage-toggle
+                                data-show-more="{{ __('patients.brief.show_more_fields', ['count' => count($stageItems) - $visibleItems]) }}"
+                                data-show-less="{{ __('patients.brief.show_less_fields') }}">
+                            {{ __('patients.brief.show_more_fields', ['count' => count($stageItems) - $visibleItems]) }}
+                        </button>
+                    @endif
                 </div>
             @endforeach
         </div>
@@ -211,7 +276,21 @@
 
 {{-- Full clinical phases --}}
 @if($clinicalProfile && !empty($brief['phases']))
-    <x-card :title="__('patients.brief.clinical_phases')" :flush="true">
+    @php $totalPhaseItems = collect($brief['phases'])->sum(fn ($phase) => count($phase['items'] ?? [])); @endphp
+    <x-card class="mb-4">
+        <div class="card-header bg-white border-bottom py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <h6 class="mb-0 fw-semibold">{{ __('patients.brief.clinical_phases') }}</h6>
+            @if($totalPhaseItems > 8)
+                <button type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#briefClinicalPhases"
+                        aria-expanded="false">
+                    {{ __('patients.brief.expand_phases') }}
+                </button>
+            @endif
+        </div>
+        <div @class(['collapse' => $totalPhaseItems > 8]) id="briefClinicalPhases">
         @foreach($brief['phases'] as $phaseCode => $phase)
             <div class="clinical-phase-panel m-3" style="--clinical-phase-bg: {{ $phase['background'] }}; --clinical-phase-color: {{ $phase['color'] }};">
                 <div class="clinical-phase-panel__header">
@@ -236,6 +315,7 @@
                                             <x-clinical-value
                                                 :value="$item['value']"
                                                 :type="$item['type'] ?? null"
+                                                :field-definition="$item['field_definition'] ?? []"
                                                 :link-label="$item['label']"
                                             />
                                         </td>
@@ -248,8 +328,26 @@
                 </div>
             </div>
         @endforeach
+        </div>
     </x-card>
 @endif
+
+@push('scripts')
+<script>
+document.querySelectorAll('[data-brief-stage-toggle]').forEach((button) => {
+    button.addEventListener('click', () => {
+        const card = button.closest('.patient-brief-stage-card');
+        const extras = card?.querySelectorAll('.brief-stage-extra');
+        if (!extras?.length) return;
+
+        const expanded = button.dataset.expanded === '1';
+        extras.forEach((item) => item.classList.toggle('d-none', expanded));
+        button.dataset.expanded = expanded ? '0' : '1';
+        button.textContent = expanded ? button.dataset.showMore : button.dataset.showLess;
+    });
+});
+</script>
+@endpush
 
 <div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top">
     <a href="{{ route('patients.show', $patient) }}" class="btn btn-outline-primary btn-sm">

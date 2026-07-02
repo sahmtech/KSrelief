@@ -23,6 +23,10 @@ class PatientClinicalFieldRegistry
             return $this->preOperationFields();
         }
 
+        if ($stageCode === 'post_operation') {
+            return $this->postOperationFields();
+        }
+
         $fields = config("patient_clinical.stage_fields.{$stageCode}", []);
 
         return $this->resolveFieldDefinitions($fields);
@@ -33,6 +37,12 @@ class PatientClinicalFieldRegistry
      */
     private function preOperationFields(): array
     {
+        $stageFields = config('patient_clinical.stage_fields.pre_operation', []);
+
+        if ($stageFields !== []) {
+            return $this->resolveFieldDefinitions($stageFields);
+        }
+
         $keys = config('patient_clinical.pre_operation_field_keys', []);
         $screening = $this->screeningFields();
         $fields = [];
@@ -44,6 +54,16 @@ class PatientClinicalFieldRegistry
         }
 
         return $fields;
+    }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private function postOperationFields(): array
+    {
+        return $this->resolveFieldDefinitions(
+            config('patient_clinical.stage_fields.post_operation', [])
+        );
     }
 
     /**
@@ -132,6 +152,14 @@ class PatientClinicalFieldRegistry
                     ->mapWithKeys(fn ($option): array => [$option->id => $option->name])
                     ->all();
                 $resolved[$key]['mri_options'] = $lookup->getMriFindingOptions()
+                    ->mapWithKeys(fn ($option): array => [$option->id => $option->name])
+                    ->all();
+                $resolved[$key]['allow_add_options'] = $definition['allow_add_options'] ?? false;
+            }
+
+            if (($definition['type'] ?? '') === 'pre_op_speech_assessment') {
+                $lookup = app(LookupService::class);
+                $resolved[$key]['expectation_options'] = $lookup->getExpectationPostCiOptions()
                     ->mapWithKeys(fn ($option): array => [$option->id => $option->name])
                     ->all();
             }

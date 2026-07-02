@@ -19,7 +19,7 @@
         </div>
         <div class="timeline-content">
             <div class="d-flex align-items-center gap-2 mb-1">
-                <span class="fw-semibold" style="color: {{ $stageColor }};">{{ $stage->name }}</span>
+                <span class="fw-semibold" style="color: {{ $stageColor }};">{{ $stage->displayName() }}</span>
                 @if($item['current'])
                     <span class="badge bg-primary-subtle text-primary small">{{ __('workflow.timeline.current') }}</span>
                 @elseif($item['completed'])

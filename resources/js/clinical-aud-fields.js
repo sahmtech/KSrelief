@@ -25,6 +25,21 @@ function createAudMetricRow(root, index) {
     return row;
 }
 
+export function setAudMetrics(root, metrics) {
+    const body = root?.querySelector('[data-aud-metrics-body]');
+    if (!root || !body) return;
+
+    body.innerHTML = '';
+    (metrics || []).forEach((metric, index) => {
+        const row = createAudMetricRow(root, index);
+        const keyInput = row.querySelector('[data-aud-key]');
+        const valueInput = row.querySelector('[data-aud-value]');
+        if (keyInput) keyInput.value = metric?.key ?? '';
+        if (valueInput) valueInput.value = metric?.value ?? '';
+        body.appendChild(row);
+    });
+}
+
 function bindClinicalAudDelegation() {
     if (window.__clinicalAudFieldsBound) return;
     window.__clinicalAudFieldsBound = true;
@@ -59,3 +74,4 @@ export function initClinicalAudFields() {
 
 bindClinicalAudDelegation();
 window.initClinicalAudFields = initClinicalAudFields;
+window.setAudMetrics = setAudMetrics;

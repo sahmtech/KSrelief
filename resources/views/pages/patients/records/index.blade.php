@@ -48,7 +48,7 @@
                                 @if($record->stage)
                                     <span class="badge rounded-pill px-2 py-1"
                                           style="background-color: {{ $record->stage->color ?? '#3B82F6' }}; color:#fff;">
-                                        {{ $record->stage->name }}
+                                        {{ $record->stage->displayName() }}
                                     </span>
                                 @else
                                     <span class="text-muted">—</span>

@@ -117,7 +117,7 @@
                         @if($patient->currentStage)
                             <span class="badge rounded-pill px-3 py-2"
                                   style="background-color: {{ $patient->currentStage->color ?? '#3B82F6' }}; color: #fff;">
-                                {{ $patient->currentStage->name }}
+                                {{ $patient->currentStage->displayName() }}
                             </span>
                         @else
                             <span class="text-muted">—</span>
@@ -135,7 +135,7 @@
                     <option value="">{{ __('patients.placeholders.select_stage') }}</option>
                     @foreach($patientStages as $stage)
                         <option value="{{ $stage->id }}" @selected((string) old('current_stage_id') === (string) $stage->id)>
-                            {{ $stage->name }}
+                            {{ $stage->displayName() }}
                         </option>
                     @endforeach
                 </x-form-input>

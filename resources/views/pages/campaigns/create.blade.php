@@ -17,7 +17,7 @@
     @csrf
 
     @include('pages.campaigns.partials.form', [
-        'statuses' => $statuses,
+        'statuses' => $statuses ?? [],
     ])
 
     <div class="d-flex gap-2 mt-3">

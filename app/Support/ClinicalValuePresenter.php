@@ -9,6 +9,10 @@ final class ClinicalValuePresenter
      */
     public static function present(mixed $value, ?string $type = null, ?string $fieldLabel = null): array
     {
+        if (is_array($value)) {
+            return self::plain('—');
+        }
+
         $text = trim((string) ($value ?? ''));
 
         if ($text === '') {

@@ -53,7 +53,7 @@
         <x-form-input :label="__('activities.fields.workflow_stage')" name="patient_stage_id" type="select">
             <option value="">{{ __('common.select') }}</option>
             @foreach($patientStages as $stage)
-                <option value="{{ $stage->id }}" @selected((string) old('patient_stage_id', $activity?->patient_stage_id) === (string) $stage->id)>{{ $stage->name }}</option>
+                <option value="{{ $stage->id }}" @selected((string) old('patient_stage_id', $activity?->patient_stage_id) === (string) $stage->id)>{{ $stage->displayName() }}</option>
             @endforeach
         </x-form-input>
     </div>

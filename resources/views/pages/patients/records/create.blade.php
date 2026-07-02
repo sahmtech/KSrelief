@@ -26,23 +26,99 @@
             @csrf
 
             @include('pages.patients.records._form', [
-                'patient'         => $patient,
-                'stages'          => $stages,
-                'stageFields'     => $stageFields,
-                'stageCode'       => $stageCode,
-                'teamMembers'     => $teamMembers,
-                'selectedStageId' => $selectedStageId ?? null,
+                'patient'                         => $patient,
+                'stages'                          => $stages,
+                'stageFields'                     => $stageFields,
+                'stageCode'                       => $stageCode,
+                'teamMembers'                     => $teamMembers,
+                'selectedStageId'                 => $selectedStageId ?? null,
+                'enableFollowUpTemplateActions'   => true,
+                'hasFollowUpDefaults'             => $hasFollowUpDefaults ?? false,
+                'enableOperationTemplateActions'  => true,
+                'hasOperationDefaults'            => $hasOperationDefaults ?? false,
+                'hasCampaignOperationDefaults'    => $hasCampaignOperationDefaults ?? false,
             ])
 
-            <div class="d-flex gap-2 mt-3">
+            <div class="record-form-actions d-flex flex-wrap align-items-center gap-2 mt-3 pt-3 border-top">
                 <button type="submit" class="btn btn-primary">
                     <i class="ti ti-device-floppy me-1"></i> {{ __('common.save') }}
                 </button>
-                <a href="{{ route('patients.show', $patient) }}" class="btn btn-light">
+                <button type="submit"
+                        id="operationSaveDefaultBtn"
+                        name="save_operation_defaults"
+                        value="1"
+                        class="btn btn-outline-secondary"
+                        @hidden(($stageCode ?? '') !== 'operation')>
+                    <i class="ti ti-bookmark me-1"></i>{{ __('workflow.operation.save_as_default') }}
+                </button>
+                <button type="submit"
+                        id="followUpSaveDefaultBtn"
+                        name="save_follow_up_defaults"
+                        value="1"
+                        class="btn btn-outline-secondary"
+                        @hidden(($stageCode ?? '') !== 'follow_up')>
+                    <i class="ti ti-bookmark me-1"></i>{{ __('workflow.follow_up.save_as_default') }}
+                </button>
+                <a href="{{ route('patients.show', $patient) }}" class="btn btn-light ms-md-auto">
                     {{ __('common.cancel') }}
                 </a>
             </div>
+            <p id="operationDefaultHint" class="form-text mt-2 mb-0" @hidden(($stageCode ?? '') !== 'operation')>
+                {{ __('workflow.operation.save_as_default_hint') }}
+            </p>
+            <p id="followUpDefaultHint" class="form-text mt-2 mb-0" @hidden(($stageCode ?? '') !== 'follow_up')>
+                {{ __('workflow.follow_up.save_as_default_hint') }}
+            </p>
         </form>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    window.configureCampaignOperationDefaultsActions?.({
+        url: @json($campaignOperationDefaultsUrl ?? ''),
+        hasDefaults: @json($hasCampaignOperationDefaults ?? false),
+        messages: {
+            successTitle: @json(__('messages.success')),
+            errorTitle: @json(__('messages.error')),
+            selectCompany: @json(__('workflow.operation.select_company_for_campaign_defaults')),
+            noCampaignDefaults: @json(__('workflow.operation.no_campaign_defaults')),
+            campaignDefaultsLoaded: @json(__('workflow.operation.campaign_defaults_loaded')),
+            loadFailed: @json(__('workflow.operation.campaign_defaults_load_failed')),
+        },
+    });
+
+    window.configureOperationTemplateActions?.({
+        saveBtn: document.getElementById('operationSaveDefaultBtn'),
+        hint: document.getElementById('operationDefaultHint'),
+        stageSelect: document.getElementById('stageSelect'),
+        url: @json($operationDefaultsUrl ?? ''),
+        hasDefaults: @json($hasOperationDefaults ?? false),
+        messages: {
+            successTitle: @json(__('messages.success')),
+            errorTitle: @json(__('messages.error')),
+            noTemplate: @json(__('workflow.operation.no_template')),
+            templateLoaded: @json(__('workflow.operation.template_loaded')),
+            loadFailed: @json(__('workflow.operation.template_load_failed')),
+        },
+    });
+
+    window.configureFollowUpTemplateActions?.({
+        saveBtn: document.getElementById('followUpSaveDefaultBtn'),
+        hint: document.getElementById('followUpDefaultHint'),
+        stageSelect: document.getElementById('stageSelect'),
+        url: @json($followUpDefaultsUrl ?? ''),
+        hasDefaults: @json($hasFollowUpDefaults ?? false),
+        messages: {
+            successTitle: @json(__('messages.success')),
+            errorTitle: @json(__('messages.error')),
+            noTemplate: @json(__('workflow.follow_up.no_template')),
+            templateLoaded: @json(__('workflow.follow_up.template_loaded')),
+            loadFailed: @json(__('workflow.follow_up.template_load_failed')),
+        },
+    });
+});
+</script>
+@endpush

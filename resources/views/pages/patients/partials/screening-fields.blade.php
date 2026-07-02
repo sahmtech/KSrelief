@@ -19,7 +19,9 @@
             @endphp
             <div class="{{ $colClass }}">
                 <div class="clinical-field-shell" style="--clinical-phase-bg: {{ $phaseStyle }};">
+                    @if($inputType !== 'yes_no')
                     <label class="form-label fw-semibold small mb-1">{{ $fieldDef['label'] }}</label>
+                    @endif
                     @if($inputType === 'clinical_aud')
                         <x-clinical-aud-input
                             :name-prefix="$inputName"
@@ -55,6 +57,12 @@
                         />
                     @elseif($inputType === 'textarea')
                         <textarea name="{{ $inputName }}" class="form-control form-control-sm" rows="3">{{ $savedValue }}</textarea>
+                    @elseif($inputType === 'yes_no')
+                        <x-yes-no-input
+                            :name-prefix="$inputName"
+                            :saved-value="$savedValue"
+                            :label="$fieldDef['label']"
+                        />
                     @elseif($inputType === 'select' && isset($fieldDef['options']))
                         <select name="{{ $inputName }}" class="form-select form-select-sm">
                             <option value="">— {{ __('common.select') }} —</option>

@@ -224,6 +224,36 @@ Route::middleware('auth')->group(function () {
             Route::post('/', [MedicalRecordController::class, 'store'])
                 ->middleware('permission:medical_record.create')
                 ->name('store');
+            Route::post('follow-up-defaults', [MedicalRecordController::class, 'storeFollowUpDefaults'])
+                ->middleware('permission:medical_record.create')
+                ->name('follow-up-defaults');
+            Route::get('follow-up-defaults', [MedicalRecordController::class, 'showFollowUpDefaults'])
+                ->middleware('permission:medical_record.create')
+                ->name('follow-up-defaults.show');
+            Route::get('operation-defaults', [MedicalRecordController::class, 'showOperationDefaults'])
+                ->middleware('permission:medical_record.create')
+                ->name('operation-defaults.show');
+            Route::get('campaign-operation-defaults', [MedicalRecordController::class, 'showCampaignOperationDefaults'])
+                ->middleware('permission:medical_record.create')
+                ->name('campaign-operation-defaults.show');
+            Route::get('operation-quick-fill', [MedicalRecordController::class, 'showOperationQuickFill'])
+                ->middleware('permission:medical_record.create')
+                ->name('operation-quick-fill');
+            Route::post('operation-defaults', [MedicalRecordController::class, 'storeOperationDefaults'])
+                ->middleware('permission:medical_record.create')
+                ->name('operation-defaults');
+            Route::post('clinical-select-options', [MedicalRecordController::class, 'storeClinicalSelectOption'])
+                ->middleware('permission:medical_record.create')
+                ->name('clinical-select-options.store');
+            Route::post('imaging-options/ct', [MedicalRecordController::class, 'storeCtFindingOption'])
+                ->middleware('permission:medical_record.create')
+                ->name('imaging-options.ct.store');
+            Route::post('imaging-options/mri', [MedicalRecordController::class, 'storeMriFindingOption'])
+                ->middleware('permission:medical_record.create')
+                ->name('imaging-options.mri.store');
+            Route::post('expectation-options', [MedicalRecordController::class, 'storeExpectationPostCiOption'])
+                ->middleware('permission:medical_record.create')
+                ->name('expectation-options.store');
             Route::get('stage-fields', [MedicalRecordController::class, 'stageFields'])
                 ->middleware('permission:medical_record.create')
                 ->name('stage-fields');

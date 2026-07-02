@@ -39,7 +39,7 @@
                         @if($record->stage)
                             <span class="badge rounded-pill"
                                   style="background-color: {{ $record->stage->color ?? '#3B82F6' }}; color:#fff;">
-                                {{ $record->stage->name }}
+                                {{ $record->stage->displayName() }}
                             </span>
                         @else
                             —
@@ -57,15 +57,25 @@
     </div>
 
     <div class="col-md-8">
-        @if(!empty($stageFields) && !empty($record->fields_json))
+        @if(!empty($stageFields))
+        @php
+            $visibleFieldCount = 0;
+            foreach ($stageFields as $fieldKey => $fieldDef) {
+                $val = $record->field($fieldKey);
+                if (\App\Support\ClinicalCompositeFields::hasContent($fieldKey, $val, $fieldDef)) {
+                    $visibleFieldCount++;
+                }
+            }
+        @endphp
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-header bg-white border-bottom py-3">
                 <h6 class="mb-0 fw-semibold">
                     <i class="ti ti-clipboard-list me-2 text-primary"></i>
-                    {{ ucfirst(str_replace('_', ' ', $record->stage?->code ?? '')) }}
+                    {{ $record->stage?->displayName() ?? \App\Models\PatientStage::displayNameForCode($record->stage?->code) }}
                 </h6>
             </div>
             <div class="card-body">
+                @if($visibleFieldCount > 0)
                 <dl class="row small mb-0">
                     @foreach($stageFields as $fieldKey => $fieldDef)
                     @php $val = $record->field($fieldKey); @endphp
@@ -83,6 +93,14 @@
                     @endif
                     @endforeach
                 </dl>
+                @else
+                <p class="text-muted mb-0 small">{{ __('workflow.records.no_stage_fields_saved') }}</p>
+                @can('medical_record.update')
+                    <a href="{{ route('patients.records.edit', [$patient, $record]) }}" class="btn btn-outline-primary btn-sm mt-3">
+                        <i class="ti ti-pencil me-1"></i>{{ __('workflow.records.edit') }}
+                    </a>
+                @endcan
+                @endif
             </div>
         </div>
         @endif

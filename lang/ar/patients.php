@@ -28,6 +28,16 @@ return [
         'no_media' => 'لا توجد صور أو فيديوهات أو ملفات مرفوعة بعد.',
         'photos_videos' => 'الصور والفيديوهات',
         'documents' => 'المستندات والملفات الأخرى',
+        'records_snapshot' => ':total سجل طبي — يُعرض أحدث إدخال لكل مرحلة.',
+        'records_history_hint' => 'الإدخالات الأقدم لنفس المرحلة لا تظهر في هذا الملخص. افتح الملف الكامل للسجل الكامل.',
+        'view_all_records' => 'عرض كل السجلات',
+        'stage_latest' => 'الأحدث: :date',
+        'stage_record_count' => ':count سجل',
+        'view_record' => 'فتح السجل',
+        'show_more_fields' => 'عرض :count حقول إضافية',
+        'show_less_fields' => 'عرض أقل',
+        'collapse_phases' => 'طي',
+        'expand_phases' => 'عرض الملف السريري الكامل',
     ],
 
     'show' => [

@@ -60,4 +60,29 @@ class PatientStage extends Model
     {
         return $query->where('is_default', true);
     }
+
+    public static function displayNameForCode(?string $code, ?string $fallbackName = null): string
+    {
+        if ($code === null || $code === '') {
+            return $fallbackName ?? '';
+        }
+
+        $key = 'workflow.stages.'.$code;
+        $translated = __($key);
+
+        if ($translated !== $key) {
+            return $translated;
+        }
+
+        if ($fallbackName !== null && $fallbackName !== '') {
+            return $fallbackName;
+        }
+
+        return ucfirst(str_replace('_', ' ', $code));
+    }
+
+    public function displayName(): string
+    {
+        return self::displayNameForCode($this->code, (string) $this->name);
+    }
 }

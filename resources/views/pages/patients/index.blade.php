@@ -78,7 +78,7 @@
             <select name="current_stage_id" class="form-group-admin__input">
                 <option value="">{{ __('patients.filters.all_stages') }}</option>
                 @foreach($patientStages as $stage)
-                    <option value="{{ $stage->id }}" @selected((string) $filters['current_stage_id'] === (string) $stage->id)>{{ $stage->name }}</option>
+                    <option value="{{ $stage->id }}" @selected((string) $filters['current_stage_id'] === (string) $stage->id)>{{ $stage->displayName() }}</option>
                 @endforeach
             </select>
         </div>
@@ -166,7 +166,7 @@
                         —
                     @endif
                 </td>
-                <td>{{ $patient->currentStage?->name ?? '—' }}</td>
+                <td>{{ $patient->currentStage?->displayName() ?? '—' }}</td>
                 <td><span class="badge-status {{ $patient->admissionBadgeClass() }}">{{ $patient->admissionLabel() }}</span></td>
                 <td>{{ $patient->created_at->format('Y-m-d') }}</td>
                 <td class="text-end table-actions">

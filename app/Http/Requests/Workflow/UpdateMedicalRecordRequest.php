@@ -2,10 +2,13 @@
 
 namespace App\Http\Requests\Workflow;
 
+use App\Http\Requests\Workflow\Concerns\MergesMedicalRecordFieldInputs;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateMedicalRecordRequest extends FormRequest
 {
+    use MergesMedicalRecordFieldInputs;
+
     public function authorize(): bool
     {
         return $this->user()->can('medical_record.update');
@@ -18,7 +21,6 @@ class UpdateMedicalRecordRequest extends FormRequest
             'specialty_id' => ['nullable', 'integer', 'exists:specialties,id'],
             'record_date' => ['required', 'date'],
             'notes'       => ['nullable', 'string', 'max:2000'],
-            'field_*'     => ['nullable'],
             'fields'      => ['nullable', 'array'],
             'admission_attachments' => ['nullable', 'array'],
             'admission_attachments.*' => ['file', 'mimes:pdf,jpg,jpeg,png,gif,webp,doc,docx,xls,xlsx', 'max:10240'],

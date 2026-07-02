@@ -1,9 +1,23 @@
-@props([
-    'campaign' => null,
-    'statuses' => [],
-])
-
 @php
+    $campaign = $campaign ?? null;
+    $statuses = $statuses ?? [];
+
+    $operationDefaultsService = app(\App\Services\CampaignOperationDefaultService::class);
+    $lookupService = app(\App\Services\LookupService::class);
+
+    if ($campaign) {
+        $operationDefaultsService->ensureDefaultsForCampaign($campaign);
+    }
+
+    $operationDefaultCompanies = $operationDefaultsService->supportedCompanies();
+    $operationDefaultsByCompany = $operationDefaultsService->defaultsForForm($campaign);
+    $operationElectrodesByCompany = collect($operationDefaultsByCompany)->mapWithKeys(
+        fn (array $defaults, int|string $companyId): array => [
+            (int) $companyId => $lookupService->getImplantElectrodeTypes((int) $companyId),
+        ]
+    )->all();
+    $insertionApproaches = $lookupService->getInsertionApproaches();
+
     $selectedCountryId = old('country_id', $campaign?->country_id);
     $selectedCityId = old('city_id', $campaign?->city_id);
     $selectedCountry = $selectedCountryId
@@ -103,4 +117,13 @@
             @endif
         </x-card>
     </div>
+</div>
+
+<div class="row g-3 mt-1">
+    @include('pages.campaigns.partials.operation-defaults', [
+        'operationDefaultCompanies' => $operationDefaultCompanies,
+        'operationDefaultsByCompany' => $operationDefaultsByCompany,
+        'operationElectrodesByCompany' => $operationElectrodesByCompany,
+        'insertionApproaches' => $insertionApproaches,
+    ])
 </div>

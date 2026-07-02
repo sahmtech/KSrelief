@@ -22,6 +22,11 @@ import { initActivityParticipantMultiselects } from './activity-participants';
 import { initTableDropdowns, resetTableDropdowns } from './table-dropdown';
 import { initPatientNavbarSearch } from './patient-search';
 import './clinical-aud-fields';
+import './follow-up-template';
+import './pre-operation-fields';
+import './operation-template';
+import './operation-quick-fill';
+import './operation-insertion-depth';
 
 function getBodyI18n() {
     const body = document.body;

@@ -25,8 +25,12 @@ final class MedicalRecordFieldPresenter
             return $member?->full_name ?? (string) $value;
         }
 
-        if ($type === 'select' && isset($fieldDef['options'][$value])) {
+        if (($type === 'select' || $type === 'yes_no') && isset($fieldDef['options'][$value])) {
             return (string) $fieldDef['options'][$value];
+        }
+
+        if ($type === 'yes_no' && isset($fieldDef['options_key'])) {
+            return ScreeningFieldSupport::optionLabel((string) $value, (string) $fieldDef['options_key']);
         }
 
         return (string) $value;

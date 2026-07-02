@@ -12,10 +12,14 @@ class CampaignService
 {
     public function __construct(
         private readonly RecordCodeGenerator $codeGenerator,
+        private readonly CampaignOperationDefaultService $campaignOperationDefaultService,
     ) {}
     public function createCampaign(array $data, User $user): Campaign
     {
         return DB::transaction(function () use ($data, $user): Campaign {
+            $operationDefaults = $data['operation_defaults'] ?? null;
+            unset($data['operation_defaults']);
+
             $campaign = Campaign::create([
                 ...$this->withCampaignDays($data),
                 'campaign_status_id' => $data['campaign_status_id'] ?? $this->defaultStatusId(),
@@ -27,6 +31,12 @@ class CampaignService
                 'code' => $this->codeGenerator->generateCampaignCode($campaign),
             ]);
 
+            if (is_array($operationDefaults)) {
+                $this->campaignOperationDefaultService->syncForCampaign($campaign, $operationDefaults);
+            } else {
+                $this->campaignOperationDefaultService->seedSystemDefaults($campaign);
+            }
+
             return $campaign->load(['country', 'city', 'specialty', 'campaignStatus', 'creator']);
         });
     }
@@ -34,10 +44,19 @@ class CampaignService
     public function updateCampaign(Campaign $campaign, array $data, User $user): Campaign
     {
         return DB::transaction(function () use ($campaign, $data, $user): Campaign {
+            $operationDefaults = $data['operation_defaults'] ?? null;
+            unset($data['operation_defaults']);
+
             $campaign->update([
                 ...$this->withCampaignDays($data),
                 'updated_by' => $user->id,
             ]);
+
+            if (is_array($operationDefaults)) {
+                $this->campaignOperationDefaultService->syncForCampaign($campaign, $operationDefaults);
+            } else {
+                $this->campaignOperationDefaultService->ensureDefaultsForCampaign($campaign);
+            }
 
             return $campaign->fresh(['country', 'city', 'specialty', 'campaignStatus', 'creator', 'updater']);
         });

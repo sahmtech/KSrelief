@@ -6,6 +6,10 @@ use App\Models\MedicalRecord;
 use App\Models\Patient;
 use App\Models\User;
 use App\Support\ClinicalCompositeFields;
+use App\Support\FollowUpFieldSupport;
+use App\Support\OperationFieldSupport;
+use App\Support\PostOperationFieldSupport;
+use App\Support\PreOperationFieldSupport;
 use App\Support\ScreeningFieldSupport;
 use App\Support\PatientClinicalFieldRegistry;
 use Illuminate\Database\Eloquent\Collection;
@@ -154,6 +158,58 @@ class MedicalRecordService
 
         if ($type === 'imaging_findings' && is_array($value)) {
             return ScreeningFieldSupport::normalizeImagingFindings($value);
+        }
+
+        if ($type === 'follow_up_clinical_assessment' && is_array($value)) {
+            return FollowUpFieldSupport::normalizeClinicalAssessment($value);
+        }
+
+        if ($type === 'follow_up_audiology_assessment' && is_array($value)) {
+            return FollowUpFieldSupport::normalizeAudiologyAssessment($value);
+        }
+
+        if ($type === 'follow_up_speech_assessment' && is_array($value)) {
+            return FollowUpFieldSupport::normalizeSpeechAssessment($value);
+        }
+
+        if ($type === 'follow_up_notes') {
+            return FollowUpFieldSupport::normalizeNotes($value);
+        }
+
+        if ($type === 'pre_op_physician_assessment' && is_array($value)) {
+            return PreOperationFieldSupport::normalizePhysicianAssessment($value);
+        }
+
+        if ($type === 'pre_op_audiology_decision' && is_array($value)) {
+            return PreOperationFieldSupport::normalizeAudiologyDecision($value);
+        }
+
+        if ($type === 'pre_op_speech_assessment' && is_array($value)) {
+            return PreOperationFieldSupport::normalizeSpeechAssessment($value);
+        }
+
+        if ($type === 'operation_insertion_depth' && is_array($value)) {
+            return OperationFieldSupport::normalizeInsertionDepth($value);
+        }
+
+        if ($type === 'operation_audio_test' && is_array($value)) {
+            return OperationFieldSupport::normalizeAudioTest($value);
+        }
+
+        if ($type === 'operation_intra_op_findings') {
+            return filled($value) ? (string) $value : null;
+        }
+
+        if ($type === 'post_op_physician_assessment' && is_array($value)) {
+            return PostOperationFieldSupport::normalizePhysicianAssessment($value);
+        }
+
+        if ($type === 'post_op_clinical_aud' && is_array($value)) {
+            return PostOperationFieldSupport::normalizeClinicalAud($value);
+        }
+
+        if ($type === 'post_op_notes') {
+            return PostOperationFieldSupport::normalizeNotes($value);
         }
 
         return $value;
