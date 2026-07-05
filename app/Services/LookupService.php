@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\MemberStatus;
 use App\Models\ActivityType;
 use App\Models\AttendanceStatus;
+use App\Models\CampaignMember;
 use App\Models\CampaignStatusRecord;
 use App\Models\City;
 use App\Models\Country;
@@ -170,24 +171,93 @@ class LookupService
      */
     public function getCampaignTeamMembers(int $campaignId): array
     {
-        $members = Member::query()
-            ->with(['memberRole', 'specialty'])
-            ->where('status', MemberStatus::Active->value)
-            ->whereHas('campaignAssignments', function ($query) use ($campaignId): void {
-                $query->where('campaign_id', $campaignId)
-                    ->where(function ($q): void {
-                        $q->whereNull('assigned_to')
-                            ->orWhereDate('assigned_to', '>=', now());
-                    });
-            })
-            ->orderBy('full_name')
-            ->get();
+        if ($campaignId <= 0) {
+            return [
+                'doctors' => collect(),
+                'specialists' => collect(),
+                'coordinators' => collect(),
+            ];
+        }
 
-        return [
-            'doctors' => $members->filter(fn (Member $m) => $m->memberRole?->code === 'doctor')->values(),
-            'specialists' => $members->filter(fn (Member $m) => $m->memberRole?->code === 'specialist')->values(),
-            'coordinators' => $members->filter(fn (Member $m) => $m->memberRole?->code === 'coordinator')->values(),
+        $assignments = CampaignMember::query()
+            ->with(['member.memberRole', 'member.specialty'])
+            ->where('campaign_id', $campaignId)
+            ->whereHas('member', fn ($query) => $query->where('status', MemberStatus::Active->value))
+            ->get()
+            ->filter(fn (CampaignMember $assignment) => $assignment->isActiveOn(now()));
+
+        $grouped = [
+            'doctors' => collect(),
+            'specialists' => collect(),
+            'coordinators' => collect(),
         ];
+
+        foreach ($assignments as $assignment) {
+            $member = $assignment->member;
+
+            if (! $member) {
+                continue;
+            }
+
+            if ($this->memberMatchesCampaignRole($member, $assignment->assigned_role, 'doctor')) {
+                $grouped['doctors']->push($member);
+            }
+
+            if ($this->memberMatchesCampaignRole($member, $assignment->assigned_role, 'specialist')) {
+                $grouped['specialists']->push($member);
+            }
+
+            if ($this->memberMatchesCampaignRole($member, $assignment->assigned_role, 'coordinator')) {
+                $grouped['coordinators']->push($member);
+            }
+        }
+
+        foreach ($grouped as $key => $members) {
+            $grouped[$key] = $members->unique('id')->sortBy('full_name')->values();
+        }
+
+        return $grouped;
+    }
+
+    private function memberMatchesCampaignRole(Member $member, ?string $assignedRole, string $roleCode): bool
+    {
+        if ($member->memberRole?->code === $roleCode) {
+            return true;
+        }
+
+        return $this->assignedRoleMatchesCode($assignedRole, $roleCode);
+    }
+
+    private function assignedRoleMatchesCode(?string $assignedRole, string $roleCode): bool
+    {
+        if ($assignedRole === null || trim($assignedRole) === '') {
+            return false;
+        }
+
+        $normalized = mb_strtolower(trim($assignedRole));
+
+        if ($normalized === $roleCode) {
+            return true;
+        }
+
+        static $roleLabels = null;
+
+        if ($roleLabels === null) {
+            $roleLabels = MemberRole::query()
+                ->active()
+                ->get(['code', 'name'])
+                ->mapWithKeys(fn (MemberRole $role): array => [
+                    $role->code => array_unique(array_filter([
+                        mb_strtolower($role->code),
+                        mb_strtolower($role->name),
+                    ])),
+                ])
+                ->all();
+        }
+
+        $labels = $roleLabels[$roleCode] ?? [mb_strtolower($roleCode)];
+
+        return in_array($normalized, $labels, true);
     }
 
     /**

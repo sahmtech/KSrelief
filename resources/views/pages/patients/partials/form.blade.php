@@ -8,6 +8,7 @@
     'admissionStatuses' => [],
     'recordStatuses' => [],
     'screeningFields' => [],
+    'preOperationStageFields' => [],
     'surgicalSides' => [],
 ])
 
@@ -160,12 +161,26 @@
         </x-card>
     </div>
 
-    <div class="col-12">
-        @include('pages.patients.partials.screening-fields', [
-            'patient' => $patient,
-            'screeningFields' => $screeningFields,
-        ])
-    </div>
+    @if($patient)
+        <div class="col-12">
+            @include('pages.patients.partials.screening-fields', [
+                'patient' => $patient,
+                'screeningFields' => $screeningFields,
+            ])
+        </div>
+    @endif
+
+    @if(! $patient)
+        <div class="col-12">
+            @include('pages.patients.records._pre_operation_stage_fields', [
+                'patient' => null,
+                'record' => null,
+                'stageFields' => $preOperationStageFields ?? [],
+                'patientCreateMode' => true,
+            ])
+            <p class="text-muted small mt-2 mb-0">{{ __('patients.sections.pre_op_create_hint') }}</p>
+        </div>
+    @endif
 
     <div class="col-lg-6">
         <x-card :title="__('patients.sections.attachments')">

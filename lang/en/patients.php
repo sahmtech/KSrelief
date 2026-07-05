@@ -109,8 +109,9 @@ return [
         'medical' => 'Medical Classification',
         'contact' => 'Contact Information',
         'attachments' => 'Attachments',
-        'screening' => 'Pre-Operative Screening',
-        'screening_hint' => 'Screening and imaging data (yellow/orange fields in the campaign sheet). For large files, paste a Google Drive link instead of uploading.',
+        'screening' => 'Screening & Eligibility',
+        'screening_hint' => 'Initial screening data (hearing, speech, eligibility). All fields are optional.',
+        'pre_op_create_hint' => 'Optional. Any data entered here is saved as a Pre Operation medical record that you can view and edit later.',
         'audit' => 'Record Information',
     ],
 

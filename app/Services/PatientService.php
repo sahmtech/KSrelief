@@ -257,6 +257,11 @@ class PatientService
             if (str_starts_with($key, 'screening_')) {
                 $fieldKey = substr($key, 10);
                 $definition = $definitions[$fieldKey] ?? [];
+
+                if (($definition['phase'] ?? 'screening') !== 'screening') {
+                    continue;
+                }
+
                 $normalized = $this->normalizeScreeningValue($fieldKey, $value, $definition);
 
                 if (ClinicalCompositeFields::hasContent($fieldKey, $normalized, $definition)) {

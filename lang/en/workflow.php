@@ -169,7 +169,7 @@ return [
             'farther_investigation' => 'Farther investigation',
             'need_ct_tb' => 'Need CT TB',
             'need_x_ray' => 'Need X ray',
-            'need_rmi' => 'Need RMI',
+            'need_rmi' => 'Need MRI',
             'medically_free' => 'Medically free',
             'need_clearance' => 'Need clearance',
         ],

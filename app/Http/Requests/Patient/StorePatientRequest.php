@@ -67,7 +67,41 @@ class StorePatientRequest extends FormRequest
             'attachments' => ['nullable', 'array'],
             'attachments.*' => ['file', 'mimes:pdf,jpg,jpeg,png,gif,webp,doc,docx,xls,xlsx', 'max:10240'],
             ...$this->screeningFieldRules(),
+            ...$this->preOperationFieldRules(),
         ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function preOperationFieldRules(): array
+    {
+        $rules = [];
+
+        foreach (array_keys(config('patient_clinical.stage_fields.pre_operation', [])) as $key) {
+            $rules['field_'.$key] = ['nullable'];
+        }
+
+        return $rules;
+    }
+
+    /**
+     * @return array<string, mixed>|mixed
+     */
+    public function validated($key = null, $default = null): mixed
+    {
+        $validated = array_merge(
+            parent::validated(),
+            collect($this->all())
+                ->filter(fn (mixed $value, string $name): bool => str_starts_with($name, 'field_'))
+                ->all()
+        );
+
+        if ($key === null) {
+            return $validated;
+        }
+
+        return data_get($validated, $key, $default);
     }
 
     /**

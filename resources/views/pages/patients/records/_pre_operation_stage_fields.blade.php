@@ -2,13 +2,23 @@
 
 @php
     $phaseStyle = config('patient_clinical.phases.pre_op', []);
-    $patientModel = $patient ?? null;
     $recordModel = $record ?? null;
+    $patientModel = $patient ?? null;
+    $isPatientCreate = (bool) ($patientCreateMode ?? false) || ! $patientModel;
 
-    $clinicalSelectOptionUrl = route('patients.records.clinical-select-options.store', $patient);
-    $ctOptionUrl = route('patients.records.imaging-options.ct.store', $patient);
-    $mriOptionUrl = route('patients.records.imaging-options.mri.store', $patient);
-    $expectationOptionUrl = route('patients.records.expectation-options.store', $patient);
+    $clinicalSelectOptionUrl = $isPatientCreate
+        ? ''
+        : route('patients.records.clinical-select-options.store', $patient);
+    $ctOptionUrl = $isPatientCreate
+        ? ''
+        : ($ctOptionUrl ?? route('patients.records.imaging-options.ct.store', $patient));
+    $mriOptionUrl = $isPatientCreate
+        ? ''
+        : ($mriOptionUrl ?? route('patients.records.imaging-options.mri.store', $patient));
+    $expectationOptionUrl = $isPatientCreate
+        ? ''
+        : route('patients.records.expectation-options.store', $patient);
+    $allowAddImagingOptions = ! $isPatientCreate;
 
     $legacyMedicalHistory = $recordModel?->field('medical_history') ?? ($patientModel?->screening('medical_history'));
     $legacyClinicalAud = $recordModel?->field('clinical_aud') ?? ($patientModel?->screening('clinical_aud'));
@@ -61,7 +71,7 @@
                     :saved-value="$imagingFindings"
                     :ct-options="$imagingDef['ct_options'] ?? []"
                     :mri-options="$imagingDef['mri_options'] ?? []"
-                    :allow-add-options="true"
+                    :allow-add-options="$allowAddImagingOptions"
                     :ct-add-url="$ctOptionUrl"
                     :mri-add-url="$mriOptionUrl"
                 />

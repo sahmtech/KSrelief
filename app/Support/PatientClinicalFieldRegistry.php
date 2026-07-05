@@ -32,6 +32,13 @@ class PatientClinicalFieldRegistry
         return $this->resolveFieldDefinitions($fields);
     }
 
+    public function eligibilityScreeningFields(): array
+    {
+        return collect($this->screeningFields())
+            ->filter(fn (array $definition): bool => ($definition['phase'] ?? 'screening') === 'screening')
+            ->all();
+    }
+
     /**
      * @return array<string, array<string, mixed>>
      */

@@ -23,6 +23,8 @@
         'genders' => $genders,
         'admissionStatuses' => $admissionStatuses,
         'recordStatuses' => $recordStatuses,
+        'screeningFields' => $screeningFields ?? [],
+        'preOperationStageFields' => $preOperationStageFields ?? [],
     ])
     <div class="d-flex gap-2 mt-3">
         <button type="submit" class="btn btn-primary"><i class="ti ti-check me-1"></i> {{ __('common.create') }}</button>

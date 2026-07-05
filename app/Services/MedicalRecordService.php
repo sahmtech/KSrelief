@@ -241,7 +241,55 @@ class MedicalRecordService
      */
     public function getScreeningFields(): array
     {
-        return $this->fieldRegistry->screeningFields();
+        return $this->fieldRegistry->eligibilityScreeningFields();
+    }
+
+    /**
+     * @return array<string, array{label: string, type: string, required: bool}>
+     */
+    public function getEligibilityScreeningFields(): array
+    {
+        return $this->fieldRegistry->eligibilityScreeningFields();
+    }
+
+    public function createPreOperationRecordIfFilled(Patient $patient, array $data, User $user): ?MedicalRecord
+    {
+        $stageId = \App\Models\PatientStage::query()
+            ->where('code', 'pre_operation')
+            ->value('id');
+
+        if (! $stageId) {
+            return null;
+        }
+
+        $recordData = [
+            'stage_id' => (int) $stageId,
+            'record_date' => now()->toDateString(),
+            'notes' => null,
+        ];
+
+        foreach ($data as $key => $value) {
+            if (str_starts_with($key, 'field_')) {
+                $recordData[$key] = $value;
+            }
+        }
+
+        $fieldsJson = $this->buildFieldsJson($recordData);
+        $definitions = $this->fieldRegistry->getStageFields('pre_operation');
+
+        $hasContent = false;
+        foreach ($fieldsJson as $fieldKey => $value) {
+            if (ClinicalCompositeFields::hasContent($fieldKey, $value, $definitions[$fieldKey] ?? [])) {
+                $hasContent = true;
+                break;
+            }
+        }
+
+        if (! $hasContent) {
+            return null;
+        }
+
+        return $this->createRecord($patient, $recordData, $user);
     }
 
     /**

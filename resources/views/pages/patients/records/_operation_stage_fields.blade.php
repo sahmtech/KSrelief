@@ -113,11 +113,13 @@
                         </label>
                         <select name="field_surgeon" id="field_surgeon" class="form-select operation-surgeon-select" autocomplete="off" @required($fieldRequired('surgeon'))>
                             <option value="">— {{ __('common.select') }} —</option>
-                            @foreach($doctors as $member)
+                            @forelse($doctors as $member)
                                 <option value="{{ $member->id }}" @selected((string) $surgeon === (string) $member->id)>
                                     {{ $member->full_name }}@if($member->specialty) — {{ $member->specialty->name }}@endif
                                 </option>
-                            @endforeach
+                            @empty
+                                <option value="" disabled>{{ __('workflow.messages.no_campaign_members') }}</option>
+                            @endforelse
                         </select>
                     </div>
 

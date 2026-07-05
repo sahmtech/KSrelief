@@ -87,6 +87,12 @@ class PatientController extends Controller
             $request->file('photo')
         );
 
+        $this->recordService->createPreOperationRecordIfFilled(
+            $patient,
+            $request->all(),
+            $request->user()
+        );
+
         return redirect()
             ->route('patients.show', $patient)
             ->with('success', __('patients.messages.created'));
@@ -252,7 +258,8 @@ class PatientController extends Controller
             'genders' => Gender::cases(),
             'admissionStatuses' => AdmissionStatus::cases(),
             'recordStatuses' => PatientRecordStatus::cases(),
-            'screeningFields' => $this->recordService->getScreeningFields(),
+            'screeningFields' => $this->recordService->getEligibilityScreeningFields(),
+            'preOperationStageFields' => $this->recordService->getStageFields('pre_operation'),
             'clinicalPhases' => $this->recordService->clinicalPhases(),
             'surgicalSides' => ['left', 'right', 'bilateral'],
         ];
