@@ -17,6 +17,11 @@
                 <i class="ti ti-file-spreadsheet me-1"></i> {{ __('patients.import.create_title') }}
             </a>
         @endcan
+        @can('export', \App\Models\Patient::class)
+            <a href="{{ route('patients.export.create') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="ti ti-download me-1"></i> {{ __('patients.export.create_title') }}
+            </a>
+        @endcan
         @can('create', \App\Models\Patient::class)
             <a href="{{ route('patients.create') }}" class="btn btn-primary btn-sm">
                 <i class="ti ti-plus me-1"></i> {{ __('patients.add') }}
@@ -119,9 +124,9 @@
     <x-datatable
         id="patientsTable"
         :options="[
-            'order' => [[8, 'desc']],
+            'order' => [[1, 'asc']],
             'columnDefs' => [
-                ['targets' => 9, 'orderable' => false, 'width' => '60px', 'className' => 'text-end'],
+                ['targets' => 5, 'orderable' => false, 'width' => '60px', 'className' => 'text-end'],
             ],
         ]"
     >
@@ -130,19 +135,15 @@
                 <th>{{ __('patients.table.file_number') }}</th>
                 <th>{{ __('patients.table.name') }}</th>
                 <th>{{ __('patients.table.campaign') }}</th>
-                <th>{{ __('patients.table.age') }}</th>
-                <th>{{ __('patients.table.gender') }}</th>
-                <th>{{ __('patients.table.eligibility') }}</th>
                 <th>{{ __('patients.table.stage') }}</th>
-                <th>{{ __('patients.table.admission') }}</th>
-                <th>{{ __('patients.table.created_at') }}</th>
+                <th>{{ __('patients.table.eligibility') }}</th>
                 <th class="text-end">{{ __('patients.table.actions') }}</th>
             </tr>
         </x-slot:head>
         @forelse($patients as $patient)
             <tr>
                 <td>
-                    <x-record-code-link :href="route('patients.show', $patient)" :code="$patient->file_number" />
+                    <x-patient-file-number :patient="$patient" />
                 </td>
                 <td>
                     <div class="d-flex align-items-center gap-2 min-w-0">
@@ -155,8 +156,13 @@
                 <td>
                     <x-record-code-link :href="route('campaigns.show', $patient->campaign)" :code="$patient->campaign->code" />
                 </td>
-                <td>{{ $patient->ageLabel() }}</td>
-                <td>{{ $patient->gender?->label() ?? '—' }}</td>
+                <td>
+                    @if($patient->currentStage)
+                        <span class="badge bg-light text-dark border">{{ $patient->currentStage->displayName() }}</span>
+                    @else
+                        —
+                    @endif
+                </td>
                 <td>
                     @if($patient->eligibilityStatus)
                         <span class="badge border" style="background-color: {{ $patient->eligibilityStatus->color }}20; color: {{ $patient->eligibilityStatus->color }};">
@@ -166,9 +172,6 @@
                         —
                     @endif
                 </td>
-                <td>{{ $patient->currentStage?->displayName() ?? '—' }}</td>
-                <td><span class="badge-status {{ $patient->admissionBadgeClass() }}">{{ $patient->admissionLabel() }}</span></td>
-                <td>{{ $patient->created_at->format('Y-m-d') }}</td>
                 <td class="text-end table-actions">
                     <div class="dropdown">
                         <button
@@ -212,7 +215,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="10" class="text-center text-muted py-4">{{ __('patients.messages.empty') }}</td>
+                <td colspan="6" class="text-center text-muted py-4">{{ __('patients.messages.empty') }}</td>
             </tr>
         @endforelse
     </x-datatable>

@@ -137,7 +137,9 @@
                                                             @else
                                                                 {{ $patient->patient_name }}
                                                             @endcan
-                                                            <span class="text-muted small">{{ $patient->file_number }}</span>
+                                                            <span class="text-muted small">
+                                                                <x-patient-file-number :patient="$patient" />
+                                                            </span>
                                                         </li>
                                                     @endforeach
                                                 </ul>

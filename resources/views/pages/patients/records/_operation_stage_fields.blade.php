@@ -21,6 +21,8 @@
     $implantCompanyId = old('field_implant_company_id', $recordModel?->field('implant_company_id'));
     $electrodeTypeId = old('field_electrode_type_id', $recordModel?->field('electrode_type_id'));
     $insertionApproachId = old('field_insertion_approach_id', $recordModel?->field('insertion_approach_id'));
+    $sideOfSurgery = old('field_side_of_surgery', $recordModel?->field('side_of_surgery'));
+    $sideOfSurgeryOptions = \App\Support\ScreeningFieldSupport::optionsFromKey('operation_side_of_surgery_options');
     $insertionDepth = old('field_insertion_depth', $recordModel?->field('insertion_depth'));
     $timeInSurgery = old('field_time_in_surgery', $recordModel?->field('time_in_surgery'));
     $timeOutSurgery = old('field_time_out_surgery', $recordModel?->field('time_out_surgery'));
@@ -171,6 +173,21 @@
                             @foreach($approaches as $approach)
                                 <option value="{{ $approach->id }}" @selected((string) $insertionApproachId === (string) $approach->id)>
                                     {{ $approach->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small mb-1">
+                            {{ __('workflow.fields.side_of_surgery') }}
+                            @if($fieldRequired('side_of_surgery'))<span class="text-danger">*</span>@endif
+                        </label>
+                        <select name="field_side_of_surgery" id="sideOfSurgerySelect" class="form-select" @required($fieldRequired('side_of_surgery'))>
+                            <option value="">— {{ __('common.select') }} —</option>
+                            @foreach($sideOfSurgeryOptions as $value => $label)
+                                <option value="{{ $value }}" @selected((string) $sideOfSurgery === (string) $value)>
+                                    {{ $label }}
                                 </option>
                             @endforeach
                         </select>

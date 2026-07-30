@@ -70,7 +70,7 @@
     </span>
 
 @elseif($type === 'imaging_findings')
-    <span class="clinical-brief-inline clinical-brief-inline--multiline">{{ \Illuminate\Support\Str::limit(\App\Support\ScreeningFieldSupport::presentImagingFindings($value), 120) }}</span>
+    <x-imaging-findings-value :value="$value" />
 
 @elseif($type === 'expandable_checklist')
     <span class="clinical-brief-inline">{{ \Illuminate\Support\Str::limit(\App\Support\ScreeningFieldSupport::presentExpandableChecklist($value, $fieldDefinition), 100) }}</span>

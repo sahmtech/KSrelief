@@ -36,12 +36,24 @@
                 'hasFollowUpDefaults'             => $hasFollowUpDefaults ?? false,
                 'enableOperationTemplateActions'  => true,
                 'hasOperationDefaults'            => $hasOperationDefaults ?? false,
+                'enablePreOperationTemplateActions' => true,
+                'hasPreOperationDefaults'         => $hasPreOperationDefaults ?? false,
+                'enablePostOperationTemplateActions' => true,
+                'hasPostOperationDefaults'        => $hasPostOperationDefaults ?? false,
                 'hasCampaignOperationDefaults'    => $hasCampaignOperationDefaults ?? false,
             ])
 
             <div class="record-form-actions d-flex flex-wrap align-items-center gap-2 mt-3 pt-3 border-top">
                 <button type="submit" class="btn btn-primary">
                     <i class="ti ti-device-floppy me-1"></i> {{ __('common.save') }}
+                </button>
+                <button type="submit"
+                        id="operationSaveExportPdfBtn"
+                        name="export_pdf"
+                        value="1"
+                        class="btn btn-success"
+                        @hidden(($stageCode ?? '') !== 'operation')>
+                    <i class="ti ti-file-type-pdf me-1"></i>{{ __('workflow.operation.save_and_export_pdf') }}
                 </button>
                 <button type="submit"
                         id="operationSaveDefaultBtn"
@@ -59,6 +71,22 @@
                         @hidden(($stageCode ?? '') !== 'follow_up')>
                     <i class="ti ti-bookmark me-1"></i>{{ __('workflow.follow_up.save_as_default') }}
                 </button>
+                <button type="submit"
+                        id="preOpSaveDefaultBtn"
+                        name="save_pre_operation_defaults"
+                        value="1"
+                        class="btn btn-outline-secondary"
+                        @hidden(($stageCode ?? '') !== 'pre_operation')>
+                    <i class="ti ti-bookmark me-1"></i>{{ __('workflow.pre_op.save_as_default') }}
+                </button>
+                <button type="submit"
+                        id="postOpSaveDefaultBtn"
+                        name="save_post_operation_defaults"
+                        value="1"
+                        class="btn btn-outline-secondary"
+                        @hidden(($stageCode ?? '') !== 'post_operation')>
+                    <i class="ti ti-bookmark me-1"></i>{{ __('workflow.post_op.save_as_default') }}
+                </button>
                 <a href="{{ route('patients.show', $patient) }}" class="btn btn-light ms-md-auto">
                     {{ __('common.cancel') }}
                 </a>
@@ -66,8 +94,17 @@
             <p id="operationDefaultHint" class="form-text mt-2 mb-0" @hidden(($stageCode ?? '') !== 'operation')>
                 {{ __('workflow.operation.save_as_default_hint') }}
             </p>
+            <p id="operationExportPdfHint" class="form-text mt-1 mb-0" @hidden(($stageCode ?? '') !== 'operation')>
+                {{ __('workflow.operation.export_pdf_hint') }}
+            </p>
             <p id="followUpDefaultHint" class="form-text mt-2 mb-0" @hidden(($stageCode ?? '') !== 'follow_up')>
                 {{ __('workflow.follow_up.save_as_default_hint') }}
+            </p>
+            <p id="preOpDefaultHint" class="form-text mt-2 mb-0" @hidden(($stageCode ?? '') !== 'pre_operation')>
+                {{ __('workflow.pre_op.save_as_default_hint') }}
+            </p>
+            <p id="postOpDefaultHint" class="form-text mt-2 mb-0" @hidden(($stageCode ?? '') !== 'post_operation')>
+                {{ __('workflow.post_op.save_as_default_hint') }}
             </p>
         </form>
     </div>
@@ -119,6 +156,48 @@ document.addEventListener('DOMContentLoaded', function () {
             loadFailed: @json(__('workflow.follow_up.template_load_failed')),
         },
     });
+
+    window.configurePreOperationTemplateActions?.({
+        saveBtn: document.getElementById('preOpSaveDefaultBtn'),
+        hint: document.getElementById('preOpDefaultHint'),
+        stageSelect: document.getElementById('stageSelect'),
+        url: @json($preOperationDefaultsUrl ?? ''),
+        hasDefaults: @json($hasPreOperationDefaults ?? false),
+        messages: {
+            successTitle: @json(__('messages.success')),
+            errorTitle: @json(__('messages.error')),
+            noTemplate: @json(__('workflow.pre_op.no_template')),
+            templateLoaded: @json(__('workflow.pre_op.template_loaded')),
+            loadFailed: @json(__('workflow.pre_op.template_load_failed')),
+        },
+    });
+
+    window.configurePostOperationTemplateActions?.({
+        saveBtn: document.getElementById('postOpSaveDefaultBtn'),
+        hint: document.getElementById('postOpDefaultHint'),
+        stageSelect: document.getElementById('stageSelect'),
+        url: @json($postOperationDefaultsUrl ?? ''),
+        hasDefaults: @json($hasPostOperationDefaults ?? false),
+        messages: {
+            successTitle: @json(__('messages.success')),
+            errorTitle: @json(__('messages.error')),
+            noTemplate: @json(__('workflow.post_op.no_template')),
+            templateLoaded: @json(__('workflow.post_op.template_loaded')),
+            loadFailed: @json(__('workflow.post_op.template_load_failed')),
+        },
+    });
+
+    const exportPdfBtn = document.getElementById('operationSaveExportPdfBtn');
+    const exportPdfHint = document.getElementById('operationExportPdfHint');
+    const stageSelect = document.getElementById('stageSelect');
+    const syncOperationExportPdf = () => {
+        const code = stageSelect?.selectedOptions?.[0]?.dataset?.code || '';
+        const isOperation = code === 'operation';
+        if (exportPdfBtn) exportPdfBtn.hidden = !isOperation;
+        if (exportPdfHint) exportPdfHint.hidden = !isOperation;
+    };
+    stageSelect?.addEventListener('change', syncOperationExportPdf);
+    syncOperationExportPdf();
 });
 </script>
 @endpush

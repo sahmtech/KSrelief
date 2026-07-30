@@ -20,7 +20,7 @@ class UploadPatientImportRequest extends FormRequest
     {
         return [
             'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:20480'],
-            'campaign_id' => ['nullable', 'integer', Rule::exists('campaigns', 'id')],
+            'campaign_id' => ['required', 'integer', Rule::exists('campaigns', 'id')],
             'notes' => ['nullable', 'string', 'max:1000'],
         ];
     }

@@ -14,6 +14,13 @@
     ]"
 >
     <div class="d-flex gap-2">
+        @if(($record->stage?->code ?? '') === 'operation')
+            @can('view', $record)
+            <a href="{{ route('patients.records.export-operation-pdf', [$patient, $record]) }}" class="btn btn-success">
+                <i class="ti ti-file-type-pdf me-1"></i> {{ __('workflow.operation.export_pdf') }}
+            </a>
+            @endcan
+        @endif
         @can('medical_record.update')
         <a href="{{ route('patients.records.edit', [$patient, $record]) }}" class="btn btn-warning">
             <i class="ti ti-edit me-1"></i> {{ __('workflow.records.edit') }}

@@ -23,6 +23,14 @@
                 <i class="ti ti-clipboard-list me-2"></i>
                 {{ __('workflow.title') }} — {{ __('workflow.post_op.title') }}
             </h6>
+            @if(! isset($record) && ($enablePostOperationTemplateActions ?? false))
+                <button type="button"
+                        data-post-op-load-template
+                        class="btn btn-outline-primary btn-sm"
+                        @disabled(!($hasPostOperationDefaults ?? false))>
+                    <i class="ti ti-template me-1"></i>{{ __('workflow.post_op.load_template') }}
+                </button>
+            @endif
         </div>
     </div>
 

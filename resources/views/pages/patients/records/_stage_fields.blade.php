@@ -4,6 +4,8 @@
         'record' => $record ?? null,
         'patient' => $patient ?? null,
         'stageFields' => $stageFields ?? [],
+        'enablePreOperationTemplateActions' => $enablePreOperationTemplateActions ?? false,
+        'hasPreOperationDefaults' => $hasPreOperationDefaults ?? false,
     ])
 @elseif(($stageCode ?? '') === 'operation')
     @include('pages.patients.records._operation_stage_fields', [
@@ -30,6 +32,8 @@
     @include('pages.patients.records._post_operation_stage_fields', [
         'record' => $record ?? null,
         'patient' => $patient ?? null,
+        'enablePostOperationTemplateActions' => $enablePostOperationTemplateActions ?? false,
+        'hasPostOperationDefaults' => $hasPostOperationDefaults ?? false,
     ])
 @else
 @include('pages.patients.partials.clinical-fallback-styles')
@@ -185,8 +189,6 @@
                     <x-imaging-findings-input
                         :name-prefix="$inputName"
                         :saved-value="$savedValue"
-                        :ct-options="$fieldDef['ct_options'] ?? []"
-                        :mri-options="$fieldDef['mri_options'] ?? []"
                     />
 
                 @elseif($inputType === 'textarea')

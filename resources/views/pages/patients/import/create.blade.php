@@ -14,7 +14,7 @@
     ]"
 >
     <x-slot:actions>
-        <a href="{{ route('patients.import.template', $selectedCampaign ? ['campaign_id' => $selectedCampaign->id] : []) }}" class="btn btn-outline-primary btn-sm">
+        <a href="{{ route('patients.import.template') }}" class="btn btn-outline-primary btn-sm">
             <i class="ti ti-download me-1"></i> {{ __('patients.import.download_template') }}
         </a>
     </x-slot:actions>
@@ -40,8 +40,8 @@
                         @endif
                     </div>
                 @else
-                    <x-form-input :label="__('patients.import.fields.campaign')" name="campaign_id" type="select">
-                        <option value="">{{ __('patients.filters.all_campaigns') }}</option>
+                    <x-form-input :label="__('patients.import.fields.campaign')" name="campaign_id" type="select" required>
+                        <option value="">{{ __('patients.placeholders.select_campaign') }}</option>
                         @foreach($campaigns as $campaign)
                             <option value="{{ $campaign->id }}" @selected(old('campaign_id') == $campaign->id)>
                                 {{ $campaign->name }} @if($campaign->code)({{ $campaign->code }})@endif
@@ -83,14 +83,6 @@
                 @endforeach
             </ul>
         </x-card>
-
-        <x-card :title="__('patients.import.campaign_workbook.title')" class="mt-3">
-            <ul class="mb-0 ps-3" style="font-size: 0.875rem;">
-                @foreach(__('patients.import.campaign_workbook.instructions') as $instruction)
-                    <li class="mb-2 text-muted">{{ $instruction }}</li>
-                @endforeach
-            </ul>
-        </x-card>
     </div>
 
     <div class="col-lg-7">
@@ -109,11 +101,6 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="gender-ref-tab" data-bs-toggle="tab" data-bs-target="#gender-ref" type="button" role="tab">
                         {{ __('patients.fields.gender') }}
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="campaigns-ref-tab" data-bs-toggle="tab" data-bs-target="#campaigns-ref" type="button" role="tab">
-                        {{ __('patients.import.fields.campaign') }}
                     </button>
                 </li>
             </ul>
@@ -167,22 +154,6 @@
                                 {{ $gender->label() }} → <code>{{ $gender->value }}</code>
                             </div>
                         @endforeach
-                    </div>
-                </div>
-
-                <div class="tab-pane fade" id="campaigns-ref" role="tabpanel">
-                    <div class="table-responsive">
-                        <table class="table table-sm table-hover mb-0">
-                            <thead><tr><th>{{ __('campaigns.fields.name') }}</th><th>Code</th></tr></thead>
-                            <tbody>
-                                @foreach($campaigns as $campaign)
-                                    <tr>
-                                        <td>{{ $campaign->name }}</td>
-                                        <td><code>{{ $campaign->code ?? '—' }}</code></td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             </div>

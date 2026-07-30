@@ -229,6 +229,43 @@ class Patient extends Model
         return __('workflow.sides.'.$this->surgical_side);
     }
 
+    public function fileNumberAccentColor(): ?string
+    {
+        if (array_key_exists('file_number_accent_color', $this->attributes)) {
+            return filled($this->attributes['file_number_accent_color'])
+                ? (string) $this->attributes['file_number_accent_color']
+                : null;
+        }
+
+        return $this->resolveFileNumberAccentColor();
+    }
+
+    private function resolveFileNumberAccentColor(): ?string
+    {
+        $operationStageId = PatientStage::query()
+            ->where('code', 'operation')
+            ->value('id');
+
+        if (! $operationStageId) {
+            return null;
+        }
+
+        $record = MedicalRecord::query()
+            ->where('patient_id', $this->id)
+            ->where('stage_id', $operationStageId)
+            ->orderByDesc('record_date')
+            ->orderByDesc('id')
+            ->first();
+
+        $companyId = $record?->field('implant_company_id');
+
+        if (! filled($companyId)) {
+            return null;
+        }
+
+        return ImplantCompany::query()->find((int) $companyId)?->color;
+    }
+
     /**
      * @param  Builder<Patient>  $query
      */

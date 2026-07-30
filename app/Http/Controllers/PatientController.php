@@ -20,6 +20,7 @@ use App\Services\PatientStatisticsService;
 use App\Services\PatientWorkflowService;
 use App\Services\ActivityStatisticsService;
 use App\Services\TransportationStatisticsService;
+use App\Support\PatientFileNumberStyleSupport;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -58,6 +59,8 @@ class PatientController extends Controller
             ->filter($filters)
             ->orderByDesc('created_at')
             ->get();
+
+        PatientFileNumberStyleSupport::applyAccentColors($patients);
 
         return view('pages.patients.index', [
             'patients' => $patients,

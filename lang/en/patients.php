@@ -13,13 +13,24 @@ return [
 
     'brief' => [
         'title' => 'Patient Clinical Brief',
-        'subtitle' => 'Snapshot for clinical review',
+        'subtitle' => 'Pre-operative clinical review snapshot',
+        'preop_review' => 'Pre-op clinical review',
+        'print' => 'Print',
         'full_profile' => 'Full Profile',
+        'at_a_glance' => 'At a glance',
+        'at_a_glance_hint' => 'Surgery-critical facts for the operating team.',
+        'clinical_alerts' => 'Clinical alerts',
+        'records_label' => 'Medical records',
         'surgery_context' => 'Surgery & Status',
-        'priority_clinical' => 'Key Clinical Data (Pre-Op)',
+        'priority_clinical' => 'Key Clinical Data',
+        'priority_clinical_hint' => 'Highest-yield findings before entering theatre.',
         'demographics' => 'Patient Identity',
-        'stage_records' => 'Medical Records by Stage',
+        'workflow_progress' => 'Workflow progress',
+        'stage_records' => 'Clinical course by stage',
+        'stage_records_hint' => 'Latest completed entry for each workflow stage.',
+        'stage_n' => 'Stage :n',
         'clinical_phases' => 'Full Clinical File',
+        'clinical_phases_hint' => 'Complete dossier grouped by clinical phase.',
         'media' => 'Photos, Videos & Files',
         'upload_media' => 'Upload',
         'upload_files_label' => 'Select files',
@@ -150,8 +161,8 @@ return [
     ],
 
     'hints' => [
-        'file_number_auto' => 'Auto-generated as country-campaign-sequence (e.g. NG-SAMA-001). Unique system-wide.',
-        'file_number_generated_on_save' => 'Generated automatically on save and cannot be changed later.',
+        'file_number_auto' => 'Auto-generated as country + year + month + sequence (e.g. SYR2026071). Unique system-wide.',
+        'file_number_generated_on_save' => 'Generated automatically on save from the campaign country and registration date. Cannot be changed later.',
     ],
 
     'placeholders' => [
@@ -220,11 +231,30 @@ return [
         'remove_attachment' => 'Remove',
     ],
 
+    'operative_note_export' => [
+        'button' => 'Export Operative Note',
+        'modal_title' => 'Export Operative Note',
+        'modal_subtitle' => 'Download the intra-operative PDF for this patient.',
+        'latest_label' => 'Latest operation',
+        'latest_badge' => 'Latest',
+        'export_latest' => 'Export latest Operative Note',
+        'or_choose' => 'Or choose a previous operation',
+        'export_row' => 'Export',
+        'columns' => [
+            'date' => 'Date',
+            'surgeon' => 'Surgeon',
+            'side' => 'Side',
+            'company' => 'Company',
+            'implant' => 'Implant',
+            'action' => 'Action',
+        ],
+    ],
+
     'import' => [
         'title' => 'Patient Imports',
-        'subtitle' => 'Import patients from Excel spreadsheets',
+        'subtitle' => 'Import basic patient demographics for a selected campaign',
         'create_title' => 'Import Patients',
-        'create_subtitle' => 'Upload an Excel file to import patients in bulk',
+        'create_subtitle' => 'Select a campaign, upload the Excel template, and import basic patient information only',
         'show_title' => 'Import Batch',
         'show_subtitle' => 'Review and approve imported data',
         'download_template' => 'Download Template',
@@ -283,28 +313,21 @@ return [
         ],
 
         'instructions' => [
-            'Download the Excel template and fill in patient data.',
-            'Column campaign_code is required and must match an existing campaign code.',
-            'Columns eligibility_status and admission_status must use the codes from the reference table.',
+            'Select the target campaign before uploading the file.',
+            'Download the Excel template and fill in basic patient information only.',
+            'Required columns: patient_name, date_of_birth, gender, eligibility_status, admission_status.',
+            'Optional columns: file_number, height_cm, weight_kg, contact_number, stage, surgery_day_number, rank, surgical_side, approval_reason, patient_notes.',
+            'Clinical and screening data are not imported — add them later from the patient workflow.',
             'Date of birth format: YYYY-MM-DD (e.g. 2015-06-20).',
             'Gender must be: male or female.',
             'Stage column is optional — leave blank to use the default admission stage.',
             'File number must be unique within the same campaign.',
             'Rows with errors will be rejected — valid rows can still be approved.',
-            'The import will be processed in the background. Refresh the page to check status.',
         ],
 
         'campaign_workbook' => [
             'title' => 'Campaign Workbook Import',
-            'instructions' => [
-                'Upload the full campaign Excel workbook (e.g. Main Patients File + Day1, Day2, Day3 sheets).',
-                'Select the target campaign before uploading — it is required for workbook imports.',
-                'The Main Patients File sheet imports screening data and patient demographics.',
-                'Day sheets import surgery day, rank, and clinical fields (pre-op, intra-op, post-op).',
-                'Patients are matched across sheets by name.',
-                'Approval status text is mapped automatically (accepted, waiting list, rejected, etc.).',
-                'Rows missing date of birth or gender will be flagged for review.',
-            ],
+            'instructions' => [],
         ],
 
         'actions' => [
@@ -337,8 +360,58 @@ return [
             'duplicate_in_database' => 'Patient code ":file_number" already exists in the system.',
             'duplicate_name_in_database' => 'Patient ":name" already exists in this campaign.',
             'campaign_required_workbook' => 'A campaign must be selected when importing a campaign workbook.',
+            'campaign_required' => 'Please select a campaign before uploading.',
+            'workbook_not_supported' => 'Campaign workbook files are not supported. Use the basic patient import template instead.',
             'no_importable_rows' => 'No valid rows found to import.',
             'confirm_approve' => 'Approve this import? This will create :count patient record(s) and cannot be undone.',
+        ],
+    ],
+
+    'export' => [
+        'create_title' => 'Export Patients',
+        'create_subtitle' => 'Download patient data for a selected campaign',
+
+        'fields' => [
+            'campaign' => 'Campaign',
+            'all_stages' => 'All medical record stages',
+        ],
+
+        'sections' => [
+            'options' => 'Export Options',
+            'medical_records' => 'Medical Records',
+            'instructions' => 'Instructions',
+            'structure' => 'File Structure',
+        ],
+
+        'sheets' => [
+            'patients' => 'Patients',
+        ],
+
+        'hints' => [
+            'basic_sheet' => 'The Patients sheet is always included with basic demographic and workflow information.',
+            'multiple_records' => 'If a patient has more than one record for the same stage, each record is exported on its own row with a record_sequence number.',
+        ],
+
+        'instructions' => [
+            'Select the campaign whose patients you want to export.',
+            'Basic patient information is always exported on the Patients sheet.',
+            'Optionally select one or more medical record stages, or choose all stages.',
+            'Leave all stage checkboxes unchecked to export basic patient data only.',
+            'Each selected stage gets its own Excel sheet.',
+        ],
+
+        'structure' => [
+            'Patients sheet: file_number, name, date of birth, gender, contact, eligibility, admission, current stage, surgery day, rank, side, and notes.',
+            'Stage sheets: patient identifiers, record_sequence, record_date, submitter, and all stage fields as readable text.',
+            'record_sequence starts at 1 for each patient within the same stage and increments for additional records.',
+        ],
+
+        'actions' => [
+            'download' => 'Download Excel',
+        ],
+
+        'messages' => [
+            'failed' => 'Export failed. Please try again or contact support.',
         ],
     ],
 

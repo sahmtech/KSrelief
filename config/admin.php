@@ -104,6 +104,7 @@ return [
                 ['key' => 'ct_finding_options', 'route' => 'settings.ct-finding-options.index', 'permission' => 'ct_finding_option.view'],
                 ['key' => 'mri_finding_options', 'route' => 'settings.mri-finding-options.index', 'permission' => 'mri_finding_option.view'],
                 ['key' => 'expectation_post_ci_options', 'route' => 'settings.expectation-post-ci-options.index', 'permission' => 'expectation_post_ci_option.view'],
+                ['key' => 'operative_note_pdf', 'route' => 'settings.operative-note-pdf.edit', 'permission' => 'operative_note_pdf.view'],
             ],
         ],
     ],

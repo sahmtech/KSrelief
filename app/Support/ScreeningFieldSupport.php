@@ -2,9 +2,7 @@
 
 namespace App\Support;
 
-use App\Models\CtFindingOption;
 use App\Models\ExpectationPostCiOption;
-use App\Models\MriFindingOption;
 
 final class ScreeningFieldSupport
 {
@@ -261,27 +259,34 @@ final class ScreeningFieldSupport
     }
 
     /**
-     * @return array{right: array{ct: list<int>, mri: list<int>, ct_drive_link: string, mri_drive_link: string}, left: array{ct: list<int>, mri: list<int>, ct_drive_link: string, mri_drive_link: string}}
+     * @return array{right: array{ct: list<string>, mri: list<string>, ct_notes: string, mri_notes: string, ct_drive_link: string, mri_drive_link: string}, left: array{ct: list<string>, mri: list<string>, ct_notes: string, mri_notes: string, ct_drive_link: string, mri_drive_link: string}}
      */
     public static function emptyImagingFindings(): array
     {
+        $ear = [
+            'ct' => [],
+            'mri' => [],
+            'ct_notes' => '',
+            'mri_notes' => '',
+            'ct_drive_link' => '',
+            'mri_drive_link' => '',
+        ];
+
         return [
-            'right' => ['ct' => [], 'mri' => [], 'ct_drive_link' => '', 'mri_drive_link' => ''],
-            'left' => ['ct' => [], 'mri' => [], 'ct_drive_link' => '', 'mri_drive_link' => ''],
+            'right' => $ear,
+            'left' => $ear,
         ];
     }
 
     /**
-     * @return list<int>
+     * @return list<string>
      */
-    private static function normalizeImagingOptionIds(mixed $values): array
+    private static function normalizeImagingSelectionKeys(mixed $values, string $modality): array
     {
-        return collect(is_array($values) ? $values : [])
-            ->map(fn ($value): int => (int) $value)
-            ->filter(fn (int $value): bool => $value > 0)
-            ->unique()
-            ->values()
-            ->all();
+        return ImagingFindingsTreeSupport::normalizeSelection(
+            $modality,
+            is_array($values) ? $values : []
+        );
     }
 
     private static function normalizeImagingDriveLink(mixed $value): string
@@ -289,8 +294,30 @@ final class ScreeningFieldSupport
         return trim((string) ($value ?? ''));
     }
 
+    private static function normalizeImagingNotes(mixed $value): string
+    {
+        return trim((string) ($value ?? ''));
+    }
+
     /**
-     * @return array{right: array{ct: list<int>, mri: list<int>, ct_drive_link: string, mri_drive_link: string}, left: array{ct: list<int>, mri: list<int>, ct_drive_link: string, mri_drive_link: string}}
+     * @return array{ct: list<string>, mri: list<string>, ct_notes: string, mri_notes: string, ct_drive_link: string, mri_drive_link: string}
+     */
+    private static function normalizeImagingEar(mixed $earInput): array
+    {
+        $ear = is_array($earInput) ? $earInput : [];
+
+        return [
+            'ct' => self::normalizeImagingSelectionKeys($ear['ct'] ?? [], 'ct'),
+            'mri' => self::normalizeImagingSelectionKeys($ear['mri'] ?? [], 'mri'),
+            'ct_notes' => self::normalizeImagingNotes($ear['ct_notes'] ?? null),
+            'mri_notes' => self::normalizeImagingNotes($ear['mri_notes'] ?? null),
+            'ct_drive_link' => self::normalizeImagingDriveLink($ear['ct_drive_link'] ?? null),
+            'mri_drive_link' => self::normalizeImagingDriveLink($ear['mri_drive_link'] ?? null),
+        ];
+    }
+
+    /**
+     * @return array{right: array{ct: list<string>, mri: list<string>, ct_notes: string, mri_notes: string, ct_drive_link: string, mri_drive_link: string}, left: array{ct: list<string>, mri: list<string>, ct_notes: string, mri_notes: string, ct_drive_link: string, mri_drive_link: string}}
      */
     public static function normalizeImagingFindings(mixed $input): array
     {
@@ -303,23 +330,13 @@ final class ScreeningFieldSupport
         }
 
         return [
-            'right' => [
-                'ct' => self::normalizeImagingOptionIds($input['right']['ct'] ?? []),
-                'mri' => self::normalizeImagingOptionIds($input['right']['mri'] ?? []),
-                'ct_drive_link' => self::normalizeImagingDriveLink($input['right']['ct_drive_link'] ?? null),
-                'mri_drive_link' => self::normalizeImagingDriveLink($input['right']['mri_drive_link'] ?? null),
-            ],
-            'left' => [
-                'ct' => self::normalizeImagingOptionIds($input['left']['ct'] ?? []),
-                'mri' => self::normalizeImagingOptionIds($input['left']['mri'] ?? []),
-                'ct_drive_link' => self::normalizeImagingDriveLink($input['left']['ct_drive_link'] ?? null),
-                'mri_drive_link' => self::normalizeImagingDriveLink($input['left']['mri_drive_link'] ?? null),
-            ],
+            'right' => self::normalizeImagingEar($input['right'] ?? []),
+            'left' => self::normalizeImagingEar($input['left'] ?? []),
         ];
     }
 
     /**
-     * @return array{right: array{ct: list<int>, mri: list<int>, ct_drive_link: string, mri_drive_link: string}, left: array{ct: list<int>, mri: list<int>, ct_drive_link: string, mri_drive_link: string}}
+     * @return array{right: array{ct: list<string>, mri: list<string>, ct_notes: string, mri_notes: string, ct_drive_link: string, mri_drive_link: string}, left: array{ct: list<string>, mri: list<string>, ct_notes: string, mri_notes: string, ct_drive_link: string, mri_drive_link: string}}
      */
     public static function resolveImagingFindingsForForm(mixed $saved): array
     {
@@ -337,6 +354,8 @@ final class ScreeningFieldSupport
         foreach (['right', 'left'] as $ear) {
             if (($data[$ear]['ct'] ?? []) !== []
                 || ($data[$ear]['mri'] ?? []) !== []
+                || filled($data[$ear]['ct_notes'] ?? null)
+                || filled($data[$ear]['mri_notes'] ?? null)
                 || filled($data[$ear]['ct_drive_link'] ?? null)
                 || filled($data[$ear]['mri_drive_link'] ?? null)) {
                 return true;
@@ -347,22 +366,19 @@ final class ScreeningFieldSupport
     }
 
     /**
-     * @param  list<int>  $ids
+     * @param  list<string>  $keys
      * @return list<string>
      */
-    private static function imagingOptionLabels(array $ids, string $modelClass): array
+    private static function imagingSelectionLabels(array $keys, string $modality): array
     {
-        if ($ids === []) {
-            return [];
-        }
+        return ImagingFindingsTreeSupport::breadcrumbLabelsForKeys($modality, $keys);
+    }
 
-        /** @var class-string<CtFindingOption|MriFindingOption> $modelClass */
-        return $modelClass::query()
-            ->whereIn('id', $ids)
-            ->orderBy('sort_order')
-            ->orderBy('name')
-            ->pluck('name')
-            ->all();
+    public static function imagingModalityEarTitle(string $modality, string $ear): string
+    {
+        $modalityLabel = strtoupper($modality);
+
+        return $modalityLabel.' — '.__('workflow.fields.imaging_ear_'.$ear);
     }
 
     public static function presentImagingFindings(mixed $value): string
@@ -375,41 +391,41 @@ final class ScreeningFieldSupport
         $sections = [];
 
         foreach (['right', 'left'] as $ear) {
-            $ctLabels = self::imagingOptionLabels($data[$ear]['ct'] ?? [], CtFindingOption::class);
-            $mriLabels = self::imagingOptionLabels($data[$ear]['mri'] ?? [], MriFindingOption::class);
-            $ctDriveLink = (string) ($data[$ear]['ct_drive_link'] ?? '');
-            $mriDriveLink = (string) ($data[$ear]['mri_drive_link'] ?? '');
+            foreach (['ct', 'mri'] as $modality) {
+                $labels = self::imagingSelectionLabels($data[$ear][$modality] ?? [], $modality);
+                $notes = (string) ($data[$ear]["{$modality}_notes"] ?? '');
+                $driveLink = (string) ($data[$ear]["{$modality}_drive_link"] ?? '');
 
-            if ($ctLabels === [] && $mriLabels === [] && ! filled($ctDriveLink) && ! filled($mriDriveLink)) {
-                continue;
+                if ($labels === [] && ! filled($notes) && ! filled($driveLink)) {
+                    continue;
+                }
+
+                $lines = [self::imagingModalityEarTitle($modality, $ear)];
+
+                foreach ($labels as $label) {
+                    $lines[] = '• '.$label;
+                }
+
+                if (filled($notes)) {
+                    $lines[] = __('workflow.fields.imaging_notes').': '.$notes;
+                }
+
+                if (filled($driveLink)) {
+                    $driveLabel = $modality === 'ct'
+                        ? __('workflow.fields.imaging_ct_drive_link')
+                        : __('workflow.fields.imaging_mri_drive_link');
+                    $lines[] = $driveLabel.': '.$driveLink;
+                }
+
+                $sections[] = implode("\n", $lines);
             }
-
-            $lines = [__('workflow.fields.imaging_ear_'.$ear)];
-
-            if ($ctLabels !== []) {
-                $lines[] = __('workflow.fields.ct_findings').': '.implode(', ', $ctLabels);
-            }
-
-            if (filled($ctDriveLink)) {
-                $lines[] = __('workflow.fields.imaging_ct_drive_link').': '.$ctDriveLink;
-            }
-
-            if ($mriLabels !== []) {
-                $lines[] = __('workflow.fields.mri_findings').': '.implode(', ', $mriLabels);
-            }
-
-            if (filled($mriDriveLink)) {
-                $lines[] = __('workflow.fields.imaging_mri_drive_link').': '.$mriDriveLink;
-            }
-
-            $sections[] = implode("\n", $lines);
         }
 
         return $sections === [] ? '—' : implode("\n\n", $sections);
     }
 
     /**
-     * @return list<array{ear: string, ct_labels: list<string>, mri_labels: list<string>, ct_drive_link: string, mri_drive_link: string}>
+     * @return list<array{ear: string, modality: string, title: string, labels: list<string>, notes: string, drive_link: string}>
      */
     public static function imagingFindingsDisplaySections(mixed $value): array
     {
@@ -421,22 +437,24 @@ final class ScreeningFieldSupport
         $sections = [];
 
         foreach (['right', 'left'] as $ear) {
-            $ctLabels = self::imagingOptionLabels($data[$ear]['ct'] ?? [], CtFindingOption::class);
-            $mriLabels = self::imagingOptionLabels($data[$ear]['mri'] ?? [], MriFindingOption::class);
-            $ctDriveLink = (string) ($data[$ear]['ct_drive_link'] ?? '');
-            $mriDriveLink = (string) ($data[$ear]['mri_drive_link'] ?? '');
+            foreach (['ct', 'mri'] as $modality) {
+                $labels = self::imagingSelectionLabels($data[$ear][$modality] ?? [], $modality);
+                $notes = (string) ($data[$ear]["{$modality}_notes"] ?? '');
+                $driveLink = (string) ($data[$ear]["{$modality}_drive_link"] ?? '');
 
-            if ($ctLabels === [] && $mriLabels === [] && ! filled($ctDriveLink) && ! filled($mriDriveLink)) {
-                continue;
+                if ($labels === [] && ! filled($notes) && ! filled($driveLink)) {
+                    continue;
+                }
+
+                $sections[] = [
+                    'ear' => $ear,
+                    'modality' => $modality,
+                    'title' => self::imagingModalityEarTitle($modality, $ear),
+                    'labels' => $labels,
+                    'notes' => $notes,
+                    'drive_link' => $driveLink,
+                ];
             }
-
-            $sections[] = [
-                'ear' => $ear,
-                'ct_labels' => $ctLabels,
-                'mri_labels' => $mriLabels,
-                'ct_drive_link' => $ctDriveLink,
-                'mri_drive_link' => $mriDriveLink,
-            ];
         }
 
         return $sections;

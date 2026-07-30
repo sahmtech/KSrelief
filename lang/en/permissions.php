@@ -79,6 +79,8 @@ return [
         'report_export_pdf' => 'Export reports (PDF)',
         'settings_view' => 'View settings',
         'settings_update' => 'Update settings',
+        'operative_note_pdf_view' => 'View operative note PDF template',
+        'operative_note_pdf_update' => 'Update operative note PDF template',
         'user_view' => 'View users',
         'user_create' => 'Create users',
         'user_update' => 'Update users',

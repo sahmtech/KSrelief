@@ -6,12 +6,16 @@ final class FollowUpFieldSupport
 {
     /** @var list<string> */
     public const AUDIOLOGY_DEFAULT_KEYS = [
-        'Hearing level',
-        'SRT',
-        'SDS',
         'Impedance',
         'Ecap',
         'Magnet power',
+    ];
+
+    /** @var list<string> */
+    private const AUDIOLOGY_REMOVED_KEYS = [
+        'Hearing level',
+        'SRT',
+        'SDS',
     ];
 
     /**
@@ -65,11 +69,14 @@ final class FollowUpFieldSupport
      */
     public static function defaultAudiologyAssessment(): array
     {
-        return ['metrics' => ClinicalCompositeFields::defaultMetrics(self::AUDIOLOGY_DEFAULT_KEYS)];
+        return array_merge(
+            HearingAssessmentSupport::defaultPayload(),
+            ['metrics' => ClinicalCompositeFields::defaultMetrics(self::AUDIOLOGY_DEFAULT_KEYS)]
+        );
     }
 
     /**
-     * @return array{communication_mood: ?string, true_word: ?string, phrases: ?string}
+     * @return array{communication_mood: ?string, true_word: ?string, phrases: ?string, cap: string, sir: string}
      */
     public static function defaultSpeechAssessment(): array
     {
@@ -77,6 +84,8 @@ final class FollowUpFieldSupport
             'communication_mood' => null,
             'true_word' => null,
             'phrases' => null,
+            'cap' => '',
+            'sir' => '',
         ];
     }
 
@@ -107,9 +116,13 @@ final class FollowUpFieldSupport
             return self::defaultClinicalAssessment();
         }
 
+        if (self::isLegacyClinicalAssessment($input)) {
+            $input = self::migrateLegacyClinicalAssessment($input);
+        }
+
         return [
-            'wound' => filled($input['wound'] ?? null) ? (string) $input['wound'] : null,
-            'implant_bed' => filled($input['implant_bed'] ?? null) ? (string) $input['implant_bed'] : null,
+            'wound' => self::normalizeSelectValue($input['wound'] ?? null),
+            'implant_bed' => self::normalizeSelectValue($input['implant_bed'] ?? null),
         ];
     }
 
@@ -122,13 +135,33 @@ final class FollowUpFieldSupport
             return self::defaultAudiologyAssessment();
         }
 
+        $metricsInput = collect($input['metrics'] ?? [])
+            ->reject(fn ($row): bool => is_array($row) && in_array(
+                trim((string) ($row['key'] ?? '')),
+                self::AUDIOLOGY_REMOVED_KEYS,
+                true
+            ))
+            ->values()
+            ->all();
+
         $metrics = ClinicalCompositeFields::resolveAudForForm(
-            ['metrics' => $input['metrics'] ?? []],
+            ['metrics' => $metricsInput],
             self::AUDIOLOGY_DEFAULT_KEYS,
             false
         )['metrics'];
 
-        return ['metrics' => $metrics];
+        $metrics = collect($metrics)
+            ->reject(fn (array $row): bool => in_array(
+                trim((string) ($row['key'] ?? '')),
+                self::AUDIOLOGY_REMOVED_KEYS,
+                true
+            ))
+            ->values()
+            ->all();
+
+        return HearingAssessmentSupport::mergeInto([
+            'metrics' => $metrics,
+        ], $input);
     }
 
     /**
@@ -156,7 +189,8 @@ final class FollowUpFieldSupport
             return self::defaultAudiologyAssessment();
         }
 
-        if (collect($saved['metrics'] ?? [])->contains(fn (array $row): bool => filled($row['value'] ?? null))) {
+        if (collect($saved['metrics'] ?? [])->contains(fn (array $row): bool => filled($row['value'] ?? null))
+            || HearingAssessmentSupport::hasContent($saved)) {
             return self::normalizeAudiologyAssessment($saved);
         }
 
@@ -164,7 +198,7 @@ final class FollowUpFieldSupport
     }
 
     /**
-     * @return array{communication_mood: ?string, true_word: ?string, phrases: ?string}
+     * @return array{communication_mood: ?string, true_word: ?string, phrases: ?string, cap: string, sir: string}
      */
     public static function normalizeSpeechAssessment(mixed $input): array
     {
@@ -173,15 +207,11 @@ final class FollowUpFieldSupport
         }
 
         return [
-            'communication_mood' => filled($input['communication_mood'] ?? null)
-                ? (string) $input['communication_mood']
-                : null,
-            'true_word' => filled($input['true_word'] ?? null)
-                ? (string) $input['true_word']
-                : null,
-            'phrases' => filled($input['phrases'] ?? null)
-                ? (string) $input['phrases']
-                : null,
+            'communication_mood' => self::normalizeSelectValue($input['communication_mood'] ?? null),
+            'true_word' => self::normalizeSelectValue($input['true_word'] ?? null),
+            'phrases' => self::normalizeSelectValue($input['phrases'] ?? null),
+            'cap' => trim((string) ($input['cap'] ?? '')),
+            'sir' => trim((string) ($input['sir'] ?? '')),
         ];
     }
 
@@ -221,8 +251,10 @@ final class FollowUpFieldSupport
 
     public static function hasAudiologyAssessmentContent(mixed $value): bool
     {
-        return collect(self::normalizeAudiologyAssessment($value)['metrics'] ?? [])
-            ->contains(fn (array $row): bool => filled($row['value'] ?? null));
+        $data = self::normalizeAudiologyAssessment($value);
+
+        return HearingAssessmentSupport::hasContent($data)
+            || collect($data['metrics'] ?? [])->contains(fn (array $row): bool => filled($row['value'] ?? null));
     }
 
     public static function hasSpeechAssessmentContent(mixed $value): bool
@@ -231,7 +263,9 @@ final class FollowUpFieldSupport
 
         return filled($data['communication_mood'])
             || filled($data['true_word'])
-            || filled($data['phrases']);
+            || filled($data['phrases'])
+            || filled($data['cap'])
+            || filled($data['sir']);
     }
 
     public static function hasNotesContent(mixed $value): bool
@@ -259,12 +293,23 @@ final class FollowUpFieldSupport
 
     public static function presentAudiologyAssessment(mixed $value): string
     {
-        $lines = collect(self::normalizeAudiologyAssessment($value)['metrics'] ?? [])
+        $data = self::normalizeAudiologyAssessment($value);
+        $sections = [];
+
+        if ($hearingLines = HearingAssessmentSupport::present($data)) {
+            $sections[] = $hearingLines;
+        }
+
+        $metricLines = collect($data['metrics'] ?? [])
             ->filter(fn (array $row): bool => filled($row['value'] ?? null))
             ->map(fn (array $row): string => ($row['key'] ?? '').': '.($row['value'] ?? ''))
             ->all();
 
-        return $lines === [] ? '—' : implode("\n", $lines);
+        if ($metricLines !== []) {
+            $sections[] = __('workflow.hearing_assessment.metrics_table').': '.implode(', ', $metricLines);
+        }
+
+        return $sections === [] ? '—' : implode("\n\n", $sections);
     }
 
     public static function presentSpeechAssessment(mixed $value): string
@@ -281,6 +326,14 @@ final class FollowUpFieldSupport
             $label = __('workflow.follow_up.fields.'.$field);
             $optionLabel = $groups[$field][$data[$field]] ?? $data[$field];
             $lines[] = "{$label}: {$optionLabel}";
+        }
+
+        foreach (['cap', 'sir'] as $field) {
+            if (! filled($data[$field])) {
+                continue;
+            }
+
+            $lines[] = __('workflow.follow_up.fields.'.$field).': '.$data[$field];
         }
 
         return $lines === [] ? '—' : implode("\n", $lines);
@@ -321,20 +374,63 @@ final class FollowUpFieldSupport
                 continue;
             }
 
-            foreach ($table['metrics'] ?? [] as $row) {
-                $metricKey = strtolower(trim((string) ($row['key'] ?? '')));
-                $metricValue = strtolower(trim((string) ($row['value'] ?? '')));
-                $candidate = $metricValue !== '' ? $metricValue : $metricKey;
-
-                $result[$key] = match ($candidate) {
-                    'clean' => 'clean',
-                    'infected' => 'infected',
-                    'dehiscent' => 'dehiscent',
-                    default => $result[$key],
-                };
-            }
+            $result[$key] = self::extractLegacySelectFromMetricsTable($table) ?? $result[$key];
         }
 
         return $result;
+    }
+
+    private static function normalizeSelectValue(mixed $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (is_string($value) || is_numeric($value)) {
+            return (string) $value;
+        }
+
+        if (! is_array($value)) {
+            return null;
+        }
+
+        if (array_key_exists('metrics', $value)) {
+            return self::extractLegacySelectFromMetricsTable($value);
+        }
+
+        if (filled($value['value'] ?? null) && (is_string($value['value']) || is_numeric($value['value']))) {
+            return (string) $value['value'];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  array<string, mixed>  $table
+     */
+    private static function extractLegacySelectFromMetricsTable(array $table): ?string
+    {
+        foreach ($table['metrics'] ?? [] as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+
+            $metricKey = strtolower(trim((string) ($row['key'] ?? '')));
+            $metricValue = strtolower(trim((string) ($row['value'] ?? '')));
+            $candidate = $metricValue !== '' ? $metricValue : $metricKey;
+
+            $resolved = match ($candidate) {
+                'clean' => 'clean',
+                'infected' => 'infected',
+                'dehiscent' => 'dehiscent',
+                default => null,
+            };
+
+            if ($resolved !== null) {
+                return $resolved;
+            }
+        }
+
+        return null;
     }
 }

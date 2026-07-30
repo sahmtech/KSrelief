@@ -11,6 +11,7 @@ use App\Http\Controllers\Settings\ImplantCompanyController;
 use App\Http\Controllers\Settings\InsertionApproachController;
 use App\Http\Controllers\Settings\MriFindingOptionController;
 use App\Http\Controllers\Settings\MemberRoleController;
+use App\Http\Controllers\Settings\OperativeNotePdfTemplateController;
 use App\Http\Controllers\Settings\PatientEligibilityStatusController;
 use App\Http\Controllers\Settings\PatientStageController;
 use App\Http\Controllers\Settings\RecordCodeBackfillController;
@@ -30,6 +31,20 @@ Route::prefix('settings')->name('settings.')->group(function (): void {
     Route::post('backfill-record-codes', [RecordCodeBackfillController::class, 'store'])
         ->middleware(['permission:settings.view', 'app.debug'])
         ->name('backfill-record-codes');
+
+    Route::post('migrate-patient-file-numbers', [RecordCodeBackfillController::class, 'migratePatientFileNumbers'])
+        ->middleware(['permission:settings.view', 'app.debug'])
+        ->name('migrate-patient-file-numbers');
+
+    Route::get('operative-note-pdf', [OperativeNotePdfTemplateController::class, 'edit'])
+        ->middleware('permission:operative_note_pdf.view')
+        ->name('operative-note-pdf.edit');
+    Route::put('operative-note-pdf', [OperativeNotePdfTemplateController::class, 'update'])
+        ->middleware('permission:operative_note_pdf.update')
+        ->name('operative-note-pdf.update');
+    Route::post('operative-note-pdf/reset', [OperativeNotePdfTemplateController::class, 'reset'])
+        ->middleware('permission:operative_note_pdf.update')
+        ->name('operative-note-pdf.reset');
 
     $settingsResource = function (string $uri, string $controller, string $prefix): void {
         Route::resource($uri, $controller)->middleware([

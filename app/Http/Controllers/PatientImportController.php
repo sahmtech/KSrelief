@@ -60,7 +60,7 @@ class PatientImportController extends Controller
         $batch = $this->importService->uploadFile(
             $request->file('file'),
             $request->user(),
-            $request->input('campaign_id') ? (int) $request->input('campaign_id') : null,
+            (int) $request->input('campaign_id'),
             $request->input('notes')
         );
 
@@ -118,17 +118,8 @@ class PatientImportController extends Controller
     {
         abort_unless($request->user()?->can('patient.import_excel'), 403);
 
-        $campaignCode = 'CAMP-0001';
-
-        if ($request->query('campaign_id')) {
-            $campaign = Campaign::query()->find($request->query('campaign_id'));
-            if ($campaign?->code) {
-                $campaignCode = $campaign->code;
-            }
-        }
-
         return \Maatwebsite\Excel\Facades\Excel::download(
-            new \App\Exports\PatientTemplateExport($campaignCode),
+            new \App\Exports\PatientTemplateExport,
             'patient-import-template.xlsx'
         );
     }

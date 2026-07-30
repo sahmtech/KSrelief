@@ -41,6 +41,18 @@ function initPatientNavbarSearch() {
         }
     };
 
+    const renderCodeBadge = (fileNumber, color) => {
+        if (!fileNumber) {
+            return '';
+        }
+
+        const style = color
+            ? ` style="color: ${escapeHtml(color)}; border: 1px solid ${escapeHtml(color)}33; background-color: ${escapeHtml(color)}14;"`
+            : '';
+
+        return `<code class="patient-search__item-code"${style}>${escapeHtml(fileNumber)}</code>`;
+    };
+
     const renderResults = (items) => {
         currentItems = items;
         activeIndex = -1;
@@ -61,7 +73,7 @@ function initPatientNavbarSearch() {
             >
                 <div class="patient-search__item-main">
                     <span class="patient-search__item-name">${escapeHtml(item.name)}</span>
-                    ${item.file_number ? `<code class="patient-search__item-code">${escapeHtml(item.file_number)}</code>` : ''}
+                    ${renderCodeBadge(item.file_number, item.file_number_color)}
                 </div>
                 <div class="patient-search__item-meta">
                     ${item.campaign ? `<span>${escapeHtml(item.campaign)}</span>` : ''}

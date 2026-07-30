@@ -68,6 +68,23 @@
         </div>
     </div>
 
+    <div class="row g-3 mt-1">
+        <div class="col-md-6">
+            <label class="form-label fw-semibold small mb-1">{{ __('workflow.pre_op.fields.cap') }}</label>
+            <input type="text"
+                   name="{{ $namePrefix }}[cap]"
+                   class="form-control"
+                   value="{{ $data['cap'] ?? '' }}">
+        </div>
+        <div class="col-md-6">
+            <label class="form-label fw-semibold small mb-1">{{ __('workflow.pre_op.fields.sir') }}</label>
+            <input type="text"
+                   name="{{ $namePrefix }}[sir]"
+                   class="form-control"
+                   value="{{ $data['sir'] ?? '' }}">
+        </div>
+    </div>
+
     <div class="mt-3">
         <label class="form-label fw-semibold small mb-1">{{ __('workflow.pre_op.fields.speech_notes') }}</label>
         <textarea name="{{ $namePrefix }}[notes]" class="form-control follow-up-notes-textarea" rows="4">{{ $data['notes'] ?? '' }}</textarea>

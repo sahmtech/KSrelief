@@ -17,12 +17,26 @@ class RecordCodeBackfillController extends Controller
         abort_unless(config('app.debug'), 404);
         abort_unless(auth()->user()?->can('settings.view'), 403);
 
-        $result = $this->backfillService->backfill();
+        $result = $this->backfillService->backfillMissing();
 
         return redirect()
             ->route('settings.dashboard')
             ->with('success', __('settings.debug.backfill_success', [
                 'campaigns' => $result['campaigns'],
+                'patients' => $result['patients'],
+            ]));
+    }
+
+    public function migratePatientFileNumbers(): RedirectResponse
+    {
+        abort_unless(config('app.debug'), 404);
+        abort_unless(auth()->user()?->can('settings.view'), 403);
+
+        $result = $this->backfillService->migrateLegacyPatientFileNumbers();
+
+        return redirect()
+            ->route('settings.dashboard')
+            ->with('success', __('settings.debug.migrate_success', [
                 'patients' => $result['patients'],
             ]));
     }

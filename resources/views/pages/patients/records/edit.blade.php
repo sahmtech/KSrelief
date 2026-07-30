@@ -35,14 +35,22 @@
                 'selectedStageId' => $selectedStageId ?? null,
             ])
 
-            <div class="d-flex gap-2 mt-3">
+            <div class="d-flex flex-wrap gap-2 mt-3">
                 <button type="submit" class="btn btn-primary">
                     <i class="ti ti-device-floppy me-1"></i> {{ __('common.save') }}
                 </button>
+                @if(($stageCode ?? '') === 'operation')
+                    <button type="submit" name="export_pdf" value="1" class="btn btn-success">
+                        <i class="ti ti-file-type-pdf me-1"></i>{{ __('workflow.operation.save_and_export_pdf') }}
+                    </button>
+                @endif
                 <a href="{{ route('patients.show', $patient) }}" class="btn btn-light">
                     {{ __('common.cancel') }}
                 </a>
             </div>
+            @if(($stageCode ?? '') === 'operation')
+                <p class="form-text mt-2 mb-0">{{ __('workflow.operation.export_pdf_hint') }}</p>
+            @endif
         </form>
     </div>
 </div>

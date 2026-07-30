@@ -27,19 +27,8 @@ class PatientImportService
 
     public const AUDIT_APPROVED = 'patient.import.approved';
 
-    /** @var list<string> */
-    public const REQUIRED_COLUMNS = [
-        'campaign_code',
-        'patient_name',
-        'date_of_birth',
-        'gender',
-        'eligibility_status',
-        'admission_status',
-    ];
-
     public function __construct(
         private readonly PatientService $patientService,
-        private readonly MedicalRecordService $medicalRecordService,
         private readonly CampaignWorkbookImportParser $workbookParser,
     ) {}
 
@@ -49,6 +38,10 @@ class PatientImportService
         ?int $campaignId = null,
         ?string $notes = null
     ): PatientImportBatch {
+        if (! $campaignId) {
+            throw new \InvalidArgumentException(__('patients.import.messages.campaign_required'));
+        }
+
         $storedName = Str::uuid().'.'.$file->getClientOriginalExtension();
 
         $batch = PatientImportBatch::create([
@@ -87,13 +80,17 @@ class PatientImportService
         $fullPath = Storage::disk('local')->path($path);
         $batch->logs()->delete();
 
+        if (! $batch->campaign_id) {
+            throw new \RuntimeException(__('patients.import.messages.campaign_required'));
+        }
+
         $sheetNames = $this->workbookParser->sheetNames($fullPath);
 
         if ($this->workbookParser->isCampaignWorkbook($sheetNames)) {
-            $this->processCampaignWorkbook($batch, $fullPath);
-        } else {
-            $this->processTemplateImport($batch, $fullPath);
+            throw new \RuntimeException(__('patients.import.messages.workbook_not_supported'));
         }
+
+        $this->processTemplateImport($batch, $fullPath);
 
         $this->refreshBatchCounts($batch);
 
@@ -270,17 +267,15 @@ class PatientImportService
                     'weight_kg' => filled($data['weight_kg'] ?? null) ? $data['weight_kg'] : null,
                     'contact_number' => $data['contact_number'] ?? null,
                     'eligibility_status_id' => $data['resolved_eligibility_status_id'],
-                    'current_stage_id' => $data['resolved_stage_id'] ?? $this->resolveImportedStageId($data),
+                    'current_stage_id' => $data['resolved_stage_id'] ?? null,
                     'admission_status' => $data['admission_status'],
                     'surgery_day_number' => filled($data['surgery_day_number'] ?? null) ? (int) $data['surgery_day_number'] : null,
                     'rank' => filled($data['rank'] ?? null) ? (int) $data['rank'] : null,
                     'surgical_side' => $data['surgical_side'] ?? null,
                     'approval_reason' => $data['approval_reason'] ?? null,
                     'notes' => $data['patient_notes'] ?? null,
-                    'screening_data' => $data['screening_data'] ?? [],
+                    'screening_data' => [],
                 ], $user);
-
-                $this->importMedicalRecords($patient, $data, $user);
 
                 $log->update(['patient_id' => $patient->id]);
                 $imported++;
@@ -450,31 +445,22 @@ class PatientImportService
         Collection $eligibilityMap,
         Collection $stageMap
     ): array {
-        if (($data['import_source'] ?? null) === 'campaign_workbook') {
-            return $this->validateWorkbookRowData($data, $batch, $eligibilityMap);
-        }
-
         $errors = [];
+
+        if (! $batch->campaign_id) {
+            $errors[] = __('patients.import.messages.campaign_required');
+        }
 
         $campaignCode = $data['campaign_code'] ?? null;
 
-        if ($batch->campaign_id) {
+        if ($batch->campaign_id && filled($campaignCode)) {
             $batchCampaign = $batch->campaign ?? Campaign::query()->find($batch->campaign_id);
 
-            if (! filled($campaignCode) && $batchCampaign) {
-                $campaignCode = Str::lower((string) $batchCampaign->code);
-                $data['campaign_code'] = $campaignCode;
-            } elseif ($batchCampaign && Str::lower((string) $campaignCode) !== Str::lower((string) $batchCampaign->code)) {
+            if ($batchCampaign && Str::lower((string) $campaignCode) !== Str::lower((string) $batchCampaign->code)) {
                 $errors[] = __('patients.import.messages.campaign_mismatch', [
                     'expected' => $batchCampaign->code,
                 ]);
             }
-        }
-
-        if (! filled($campaignCode)) {
-            $errors[] = __('patients.import.messages.required', ['field' => 'campaign_code']);
-        } elseif (! $campaignMap->has(Str::lower((string) $campaignCode))) {
-            $errors[] = __('patients.import.messages.invalid_campaign', ['code' => $campaignCode]);
         }
 
         if (! filled($data['patient_name'] ?? null)) {
@@ -509,55 +495,6 @@ class PatientImportService
 
         if (filled($data['stage'] ?? null) && ! $stageMap->has($data['stage'])) {
             $errors[] = __('patients.import.messages.invalid_stage', ['code' => $data['stage']]);
-        }
-
-        return $errors;
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     * @param  Collection<string, int>  $eligibilityMap
-     * @return list<string>
-     */
-    private function validateWorkbookRowData(
-        array $data,
-        PatientImportBatch $batch,
-        Collection $eligibilityMap
-    ): array {
-        $errors = [];
-
-        if (! $batch->campaign_id) {
-            $errors[] = __('patients.import.messages.campaign_required_workbook');
-        }
-
-        if (! filled($data['patient_name'] ?? null)) {
-            $errors[] = __('patients.import.messages.required', ['field' => 'patient_name']);
-        }
-
-        if (! filled($data['date_of_birth'] ?? null)) {
-            $errors[] = __('patients.import.messages.required', ['field' => 'date_of_birth']);
-        } elseif ($data['date_of_birth'] === null) {
-            $errors[] = __('patients.import.messages.invalid_date');
-        } elseif (now()->parse($data['date_of_birth'])->isFuture()) {
-            $errors[] = __('patients.import.messages.future_date');
-        }
-
-        if (! filled($data['gender'] ?? null)) {
-            $errors[] = __('patients.import.messages.required', ['field' => 'gender']);
-        } elseif (! in_array($data['gender'], Gender::values(), true)) {
-            $errors[] = __('patients.import.messages.invalid_gender');
-        }
-
-        $eligibility = $data['eligibility_status'] ?? 'accepted';
-
-        if (! $eligibilityMap->has($eligibility)) {
-            $errors[] = __('patients.import.messages.invalid_eligibility', ['code' => $eligibility]);
-        }
-
-        $admission = $data['admission_status'] ?? 'not_admitted';
-
-        if (! in_array($admission, AdmissionStatus::values(), true)) {
-            $errors[] = __('patients.import.messages.invalid_admission');
         }
 
         return $errors;
@@ -626,7 +563,7 @@ class PatientImportService
 
         $header = $this->normalizeHeaderRow($rows[0]);
 
-        foreach (self::REQUIRED_COLUMNS as $column) {
+        foreach (config('patient_import.required_columns', []) as $column) {
             if (! in_array($column, $header, true)) {
                 throw new \RuntimeException(__('patients.import.messages.missing_column', ['column' => $column]));
             }
@@ -635,98 +572,6 @@ class PatientImportService
         $parsedRows = $this->parseFile($rows, $header);
         $this->validateRows($batch, $parsedRows);
         $this->detectDuplicates($batch);
-    }
-
-    private function processCampaignWorkbook(PatientImportBatch $batch, string $fullPath): void
-    {
-        if (! $batch->campaign_id) {
-            throw new \RuntimeException(__('patients.import.messages.campaign_required_workbook'));
-        }
-
-        $campaign = Campaign::query()->findOrFail($batch->campaign_id);
-        $patients = $this->workbookParser->parse($fullPath);
-
-        if ($patients === []) {
-            throw new \RuntimeException(__('patients.import.messages.empty_file'));
-        }
-
-        $parsedRows = [];
-
-        foreach ($patients as $index => $patientData) {
-            $parsedRows[] = [
-                'row_number' => $index + 2,
-                'data' => array_merge($patientData, [
-                    'campaign_code' => Str::lower((string) $campaign->code),
-                    'eligibility_status' => $patientData['eligibility_status'] ?? 'accepted',
-                    'admission_status' => $patientData['admission_status'] ?? 'not_admitted',
-                ]),
-            ];
-        }
-
-        $this->validateRows($batch, $parsedRows);
-        $this->detectDuplicates($batch);
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     */
-    private function resolveImportedStageId(array $data): ?int
-    {
-        $records = $data['medical_records'] ?? [];
-
-        if (! is_array($records) || $records === []) {
-            return null;
-        }
-
-        $stageOrder = ['rehab_education', 'activation', 'post_operation', 'operation', 'anesthesia'];
-        $stageMap = PatientStage::query()->active()->pluck('id', 'code');
-
-        foreach ($stageOrder as $stageCode) {
-            $fields = $records[$stageCode] ?? [];
-            if (is_array($fields) && collect($fields)->filter(fn ($value) => filled($value))->isNotEmpty()) {
-                return $stageMap->get($stageCode);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     */
-    private function importMedicalRecords(Patient $patient, array $data, User $user): void
-    {
-        $records = $data['medical_records'] ?? [];
-
-        if (! is_array($records) || $records === []) {
-            return;
-        }
-
-        $stageMap = PatientStage::query()->active()->pluck('id', 'code');
-
-        foreach ($records as $stageCode => $fields) {
-            if (! is_array($fields)) {
-                continue;
-            }
-
-            $filtered = array_filter($fields, fn ($value) => filled($value));
-
-            if ($filtered === []) {
-                continue;
-            }
-
-            $stageId = $stageMap->get($stageCode);
-
-            if ($stageId === null) {
-                continue;
-            }
-
-            $this->medicalRecordService->createRecord($patient, [
-                'stage_id' => $stageId,
-                'record_date' => now()->toDateString(),
-                'fields' => $filtered,
-            ], $user);
-        }
     }
 
     private function parseDate(mixed $value): ?string

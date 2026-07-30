@@ -10,6 +10,7 @@ use App\Enums\TripStatus;
 use App\Models\Campaign;
 use App\Models\Member;
 use App\Models\Patient;
+use App\Support\PatientFileNumberStyleSupport;
 use App\Models\TransportationTrip;
 use App\Models\TransportationTripPassenger;
 use App\Services\LookupService;
@@ -110,6 +111,10 @@ class TransportationTripController extends Controller
 
         $existingMemberIds = $trip->passengers->pluck('member_id')->filter()->all();
         $existingPatientIds = $trip->passengers->pluck('patient_id')->filter()->all();
+
+        PatientFileNumberStyleSupport::applyAccentColors(
+            $trip->passengers->pluck('patient')->filter()->merge($campaignPatients)
+        );
 
         return view('pages.transportation.show', [
             'trip' => $trip,

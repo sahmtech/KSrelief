@@ -28,7 +28,7 @@
                             {{ $patient->campaign->name }}
                         </a>
                         @if($patient->file_number)
-                            · <x-record-code-link :href="route('patients.show', $patient)" :code="$patient->file_number" />
+                            · <x-patient-file-number :patient="$patient" />
                         @endif
                     </p>
                     <div class="user-profile-hero__meta">
@@ -48,6 +48,7 @@
                 </div>
             </div>
             <div class="user-profile-hero__actions">
+                <x-export-operative-note-button :patient="$patient" size="sm" />
                 @can('update', $patient)
                     <a href="{{ route('patients.edit', $patient) }}" class="btn btn-primary btn-sm">
                         <i class="ti ti-pencil me-1"></i> {{ __('patients.actions.edit') }}
@@ -139,7 +140,7 @@
                             <div class="user-info-list__label">{{ __('patients.fields.file_number') }}</div>
                             <div class="user-info-list__value">
                                 @if($patient->file_number)
-                                    <x-record-code-link :href="route('patients.show', $patient)" :code="$patient->file_number" />
+                                    <x-patient-file-number :patient="$patient" />
                                 @else
                                     —
                                 @endif

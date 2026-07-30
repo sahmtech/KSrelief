@@ -61,6 +61,26 @@ final class PostOperationFieldSupport
         return ['metrics' => ClinicalCompositeFields::defaultMetrics(self::CLINICAL_AUD_KEYS)];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    public static function defaultFormPayload(): array
+    {
+        return [
+            'physician_assessment' => self::defaultPhysicianAssessment(),
+            'clinical_aud' => self::defaultClinicalAud(),
+            'counselling' => 'no',
+            'post_op_notes' => '',
+        ];
+    }
+
+    public static function normalizeCounselling(mixed $input): string
+    {
+        $value = is_bool($input) ? ($input ? 'yes' : 'no') : strtolower(trim((string) $input));
+
+        return in_array($value, ['yes', '1', 'true'], true) ? 'yes' : 'no';
+    }
+
     public static function normalizeNotes(mixed $input): string
     {
         return trim((string) $input);

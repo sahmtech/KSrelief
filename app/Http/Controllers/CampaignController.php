@@ -21,6 +21,7 @@ use App\Services\LookupService;
 use App\Services\MemberService;
 use App\Services\PatientStatisticsService;
 use App\Services\TransportationStatisticsService;
+use App\Support\PatientFileNumberStyleSupport;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -135,6 +136,18 @@ class CampaignController extends Controller
             'patients.eligibilityStatus',
             'patients.currentStage',
         ]);
+
+        PatientFileNumberStyleSupport::applyAccentColors($campaign->patients);
+
+        $scheduledPatients = collect($surgeryDaysSchedule)
+            ->flatMap(fn (array $day): \Illuminate\Support\Collection => $day['patients'] ?? collect());
+
+        PatientFileNumberStyleSupport::applyAccentColors($scheduledPatients);
+
+        $dailyPatients = collect($dailySchedule)
+            ->flatMap(fn (array $day): \Illuminate\Support\Collection => $day['patients'] ?? collect());
+
+        PatientFileNumberStyleSupport::applyAccentColors($dailyPatients);
 
         return view('pages.campaigns.show', [
             'campaign' => $campaign,

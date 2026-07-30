@@ -75,6 +75,13 @@
                                                 <i class="ti ti-eye me-2"></i> {{ __('workflow.records.view') }}
                                             </a>
                                         </li>
+                                        @if(($record->stage?->code ?? '') === 'operation')
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('patients.records.export-operation-pdf', [$patient, $record]) }}">
+                                                <i class="ti ti-file-type-pdf me-2"></i> {{ __('workflow.operation.export_pdf') }}
+                                            </a>
+                                        </li>
+                                        @endif
                                         @endcan
                                         @can('update', $record)
                                         <li>

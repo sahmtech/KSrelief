@@ -40,4 +40,5 @@ return [
     'ct_finding_options' => 'خيارات نتائج CT',
     'mri_finding_options' => 'خيارات نتائج MRI',
     'expectation_post_ci_options' => 'خيارات التوقعات بعد الزراعة',
+    'operative_note_pdf' => 'قالب تقرير العملية PDF',
 ];

@@ -79,6 +79,10 @@ final class PermissionRegistry
             'settings.view',
             'settings.update',
         ],
+        'operative_note_pdf' => [
+            'operative_note_pdf.view',
+            'operative_note_pdf.update',
+        ],
         'countries' => [
             'country.view',
             'country.create',
@@ -202,6 +206,7 @@ final class PermissionRegistry
             'activities',
             'reports',
             'settings',
+            'operative_note_pdf',
             'countries',
             'cities',
             'specialties',

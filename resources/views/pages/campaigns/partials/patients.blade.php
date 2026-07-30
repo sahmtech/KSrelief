@@ -47,6 +47,11 @@
                         <i class="ti ti-file-spreadsheet me-1"></i> {{ __('patients.import.create_title') }}
                     </a>
                 @endcan
+                @can('export', \App\Models\Patient::class)
+                    <a href="{{ route('patients.export.create', ['campaign_id' => $campaign->id]) }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="ti ti-download me-1"></i> {{ __('patients.export.create_title') }}
+                    </a>
+                @endcan
                 @can('create', \App\Models\Patient::class)
                     <a href="{{ route('patients.create', ['campaign_id' => $campaign->id]) }}" class="btn btn-primary btn-sm">
                         <i class="ti ti-plus me-1"></i> {{ __('patients.campaign.add_patient') }}
@@ -73,7 +78,7 @@
                             @foreach($campaign->patients as $patient)
                                 <tr>
                                     <td>
-                                        <x-record-code-link :href="route('patients.show', $patient)" :code="$patient->file_number" />
+                                        <x-patient-file-number :patient="$patient" />
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center gap-2 min-w-0">

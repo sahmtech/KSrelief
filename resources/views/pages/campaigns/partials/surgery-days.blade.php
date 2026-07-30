@@ -45,7 +45,7 @@
                                                 <tr>
                                                     <td>{{ $patient->rank ?? '—' }}</td>
                                                     <td>
-                                                        <x-record-code-link :href="route('patients.show', $patient)" :code="$patient->file_number" />
+                                                        <x-patient-file-number :patient="$patient" />
                                                     </td>
                                                     <td class="fw-medium">
                                                         <a href="{{ route('patients.show', $patient) }}" class="text-decoration-none">{{ $patient->patient_name }}</a>

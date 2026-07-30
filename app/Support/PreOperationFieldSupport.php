@@ -6,7 +6,17 @@ use App\Services\ClinicalSelectOptionService;
 
 final class PreOperationFieldSupport
 {
-    public const HEARING_ASSESSMENT_KEYS = ['Diagnosis', 'HA usage', 'Deafness age', 'Hearing level'];
+    public const HEARING_ASSESSMENT_KEYS = [
+        'HA usage',
+        'Duration of HA Usage',
+        'Deafness age',
+    ];
+
+    /** @var list<string> */
+    private const HEARING_ASSESSMENT_REMOVED_KEYS = [
+        'Diagnosis',
+        'Hearing level',
+    ];
 
     /** @var array<string, string> */
     public const SELECT_CATEGORY_CONFIG = [
@@ -64,12 +74,15 @@ final class PreOperationFieldSupport
      */
     public static function defaultAudiologyDecision(): array
     {
-        return [
-            'status' => null,
-            'decision' => null,
-            'metrics' => ClinicalCompositeFields::defaultMetrics(self::HEARING_ASSESSMENT_KEYS),
-            'audiology_link' => '',
-        ];
+        return array_merge(
+            HearingAssessmentSupport::defaultPayload(),
+            [
+                'status' => null,
+                'decision' => null,
+                'metrics' => ClinicalCompositeFields::defaultMetrics(self::HEARING_ASSESSMENT_KEYS),
+                'audiology_link' => '',
+            ]
+        );
     }
 
     /**
@@ -83,10 +96,25 @@ final class PreOperationFieldSupport
             'cognitive_function' => null,
             'true_word' => null,
             'phrases' => null,
+            'cap' => '',
+            'sir' => '',
             'expectations_post_ci' => null,
             'assessment' => null,
             'speech_decision' => null,
             'notes' => '',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function defaultFormPayload(): array
+    {
+        return [
+            'physician_assessment' => self::defaultPhysicianAssessment(),
+            'imaging_findings' => ScreeningFieldSupport::emptyImagingFindings(),
+            'audiology_decision' => self::defaultAudiologyDecision(),
+            'speech_assessment' => self::defaultSpeechAssessment(),
         ];
     }
 
@@ -142,18 +170,33 @@ final class PreOperationFieldSupport
             return self::defaultAudiologyDecision();
         }
 
+        $metricsInput = collect($input['metrics'] ?? [])
+            ->filter(fn ($row): bool => is_array($row))
+            ->reject(fn (array $row): bool => in_array(
+                trim((string) ($row['key'] ?? '')),
+                self::HEARING_ASSESSMENT_REMOVED_KEYS,
+                true
+            ))
+            ->filter(fn (array $row): bool => in_array(
+                trim((string) ($row['key'] ?? '')),
+                self::HEARING_ASSESSMENT_KEYS,
+                true
+            ))
+            ->values()
+            ->all();
+
         $metrics = ClinicalCompositeFields::resolveAudForForm(
-            ['metrics' => $input['metrics'] ?? []],
+            ['metrics' => $metricsInput],
             self::HEARING_ASSESSMENT_KEYS,
             false
         )['metrics'];
 
-        return [
+        return HearingAssessmentSupport::mergeInto([
             'status' => self::normalizeAudiologyStatus($input['status'] ?? null),
             'decision' => filled($input['decision'] ?? null) ? (string) $input['decision'] : null,
             'metrics' => $metrics,
             'audiology_link' => trim((string) ($input['audiology_link'] ?? '')),
-        ];
+        ], $input);
     }
 
     public static function normalizeAudiologyStatus(mixed $status): ?string
@@ -183,6 +226,7 @@ final class PreOperationFieldSupport
             filled($saved['status'] ?? null)
             || filled($saved['decision'] ?? null)
             || filled($saved['audiology_link'] ?? null)
+            || HearingAssessmentSupport::hasContent($saved)
             || collect($saved['metrics'] ?? [])->contains(fn (array $row): bool => filled($row['value'] ?? null))
         )) {
             return self::normalizeAudiologyDecision($saved);
@@ -231,6 +275,8 @@ final class PreOperationFieldSupport
             'cognitive_function' => filled($input['cognitive_function'] ?? null) ? (string) $input['cognitive_function'] : null,
             'true_word' => filled($input['true_word'] ?? null) ? (string) $input['true_word'] : null,
             'phrases' => filled($input['phrases'] ?? null) ? (string) $input['phrases'] : null,
+            'cap' => trim((string) ($input['cap'] ?? '')),
+            'sir' => trim((string) ($input['sir'] ?? '')),
             'expectations_post_ci' => filled($expectations) ? (string) $expectations : null,
             'assessment' => filled($input['assessment'] ?? null) ? (string) $input['assessment'] : null,
             'speech_decision' => filled($input['speech_decision'] ?? null) ? (string) $input['speech_decision'] : null,
@@ -292,6 +338,7 @@ final class PreOperationFieldSupport
         return filled($data['status'])
             || filled($data['decision'])
             || filled($data['audiology_link'])
+            || HearingAssessmentSupport::hasContent($data)
             || collect($data['metrics'])->contains(fn (array $row): bool => filled($row['value'] ?? null));
     }
 
@@ -358,7 +405,11 @@ final class PreOperationFieldSupport
             ->all();
 
         if ($metricLines !== []) {
-            $lines[] = __('workflow.pre_op.fields.hearing_assessment').': '.implode(', ', $metricLines);
+            $lines[] = __('workflow.pre_op.fields.hearing_assessment_table').': '.implode(', ', $metricLines);
+        }
+
+        if ($hearingLines = HearingAssessmentSupport::present($data)) {
+            $lines[] = __('workflow.hearing_assessment.summary_heading').":\n".$hearingLines;
         }
 
         if (filled($data['audiology_link'])) {
@@ -398,6 +449,12 @@ final class PreOperationFieldSupport
         if (filled($data['expectations_post_ci'])) {
             $label = $expectationOptions[$data['expectations_post_ci']] ?? $data['expectations_post_ci'];
             $lines[] = __('workflow.fields.expectations_post_ci').': '.$label;
+        }
+
+        foreach (['cap' => 'workflow.pre_op.fields.cap', 'sir' => 'workflow.pre_op.fields.sir'] as $field => $labelKey) {
+            if (filled($data[$field])) {
+                $lines[] = __($labelKey).': '.$data[$field];
+            }
         }
 
         if (filled($data['notes'])) {

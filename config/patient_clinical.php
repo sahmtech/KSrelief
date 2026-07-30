@@ -266,6 +266,12 @@ return [
         'csf_gusher' => 'workflow.operation.options.intra_op_findings.csf_gusher',
     ],
 
+    'operation_side_of_surgery_options' => [
+        'right' => 'workflow.sides.right',
+        'left' => 'workflow.sides.left',
+        'bilateral' => 'workflow.sides.bilateral',
+    ],
+
     'post_op_wound_options' => [
         'clean' => 'workflow.post_op.options.wound.clean',
         'swelling' => 'workflow.post_op.options.wound.swelling',
@@ -354,6 +360,7 @@ return [
             'implant_company_id' => ['type' => 'company_select', 'phase' => 'intra_op', 'label' => 'workflow.fields.implant_company', 'required' => true],
             'electrode_type_id' => ['type' => 'electrode_select', 'phase' => 'intra_op', 'label' => 'workflow.fields.electrode_type', 'depends_on' => 'implant_company_id', 'required' => true],
             'insertion_approach_id' => ['type' => 'insertion_approach_select', 'phase' => 'intra_op', 'label' => 'workflow.fields.insertion_approach'],
+            'side_of_surgery' => ['type' => 'select', 'phase' => 'intra_op', 'label' => 'workflow.fields.side_of_surgery', 'options_key' => 'operation_side_of_surgery_options'],
             'insertion_depth' => ['type' => 'operation_insertion_depth', 'phase' => 'intra_op', 'label' => 'workflow.operation.fields.insertion_depth'],
             'time_in_surgery' => ['type' => 'time', 'phase' => 'intra_op', 'label' => 'workflow.fields.time_in_surgery'],
             'time_out_surgery' => ['type' => 'time', 'phase' => 'intra_op', 'label' => 'workflow.fields.time_out_surgery'],

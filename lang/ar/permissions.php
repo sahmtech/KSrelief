@@ -79,6 +79,8 @@ return [
         'report_export_pdf' => 'تصدير التقارير (PDF)',
         'settings_view' => 'عرض الإعدادات',
         'settings_update' => 'تعديل الإعدادات',
+        'operative_note_pdf_view' => 'عرض قالب تقرير العملية PDF',
+        'operative_note_pdf_update' => 'تعديل قالب تقرير العملية PDF',
         'user_view' => 'عرض المستخدمين',
         'user_create' => 'إنشاء مستخدمين',
         'user_update' => 'تعديل المستخدمين',

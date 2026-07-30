@@ -8,10 +8,6 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 
 class PatientTemplateExport implements FromArray, WithHeadings, WithTitle
 {
-    public function __construct(
-        private readonly string $campaignCode = 'CAMP-0001'
-    ) {}
-
     /**
      * @return list<list<string>>
      */
@@ -19,7 +15,6 @@ class PatientTemplateExport implements FromArray, WithHeadings, WithTitle
     {
         return [
             [
-                $this->campaignCode,
                 'Ahmed Al-Zahrani',
                 '',
                 '2015-06-20',
@@ -37,14 +32,14 @@ class PatientTemplateExport implements FromArray, WithHeadings, WithTitle
                 'Pediatric cardiac case',
             ],
             [
-                $this->campaignCode,
                 'Sara Al-Otaibi',
                 '',
                 '2018-11-05',
                 'female',
                 '105',
                 '28',
-                'postponed',
+                '',
+                'accepted',
                 'not_admitted',
                 '',
                 '',
@@ -62,7 +57,6 @@ class PatientTemplateExport implements FromArray, WithHeadings, WithTitle
     public function headings(): array
     {
         return [
-            'campaign_code',
             'patient_name',
             'file_number',
             'date_of_birth',

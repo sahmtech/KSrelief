@@ -12,6 +12,7 @@ use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PatientAttachmentController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientSearchController;
+use App\Http\Controllers\PatientExportController;
 use App\Http\Controllers\PatientImportController;
 use App\Http\Controllers\MedicalRecordController;
 use App\Http\Controllers\PatientWorkflowController;
@@ -200,6 +201,15 @@ Route::middleware('auth')->group(function () {
                 ->name('errors');
         });
 
+        Route::prefix('export')->name('export.')->group(function () {
+            Route::get('create', [PatientExportController::class, 'create'])
+                ->middleware('permission:patient.export')
+                ->name('create');
+            Route::post('/', [PatientExportController::class, 'store'])
+                ->middleware('permission:patient.export')
+                ->name('store');
+        });
+
         // Workflow — must be before {patient} wildcard
         Route::prefix('{patient}/workflow')->name('workflow.')->group(function () {
             Route::get('/', [PatientWorkflowController::class, 'timeline'])
@@ -242,6 +252,18 @@ Route::middleware('auth')->group(function () {
             Route::post('operation-defaults', [MedicalRecordController::class, 'storeOperationDefaults'])
                 ->middleware('permission:medical_record.create')
                 ->name('operation-defaults');
+            Route::get('pre-operation-defaults', [MedicalRecordController::class, 'showPreOperationDefaults'])
+                ->middleware('permission:medical_record.create')
+                ->name('pre-operation-defaults.show');
+            Route::post('pre-operation-defaults', [MedicalRecordController::class, 'storePreOperationDefaults'])
+                ->middleware('permission:medical_record.create')
+                ->name('pre-operation-defaults');
+            Route::get('post-operation-defaults', [MedicalRecordController::class, 'showPostOperationDefaults'])
+                ->middleware('permission:medical_record.create')
+                ->name('post-operation-defaults.show');
+            Route::post('post-operation-defaults', [MedicalRecordController::class, 'storePostOperationDefaults'])
+                ->middleware('permission:medical_record.create')
+                ->name('post-operation-defaults');
             Route::post('clinical-select-options', [MedicalRecordController::class, 'storeClinicalSelectOption'])
                 ->middleware('permission:medical_record.create')
                 ->name('clinical-select-options.store');
@@ -263,6 +285,9 @@ Route::middleware('auth')->group(function () {
             Route::get('{record}', [MedicalRecordController::class, 'show'])
                 ->middleware('permission:medical_record.view')
                 ->name('show');
+            Route::get('{record}/export-operation-pdf', [MedicalRecordController::class, 'exportOperationPdf'])
+                ->middleware('permission:medical_record.view')
+                ->name('export-operation-pdf');
             Route::get('{record}/edit', [MedicalRecordController::class, 'edit'])
                 ->middleware('permission:medical_record.update')
                 ->name('edit');

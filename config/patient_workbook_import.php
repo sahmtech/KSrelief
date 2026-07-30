@@ -62,6 +62,7 @@ return [
         'surgeon' => ['surgeon'],
         'electrode_type' => ['electrode type'],
         'insertion_approach_id' => ['insertion approach', 'insertion'],
+        'side_of_surgery' => ['side of surgery', 'surgery side'],
         'implant_company_id' => ['company', 'implant company'],
         'electrode_type_id' => ['electrode type'],
         'insertion_depth_note' => ['insertion depth', 'ab'],
@@ -87,7 +88,7 @@ return [
 
     'stage_field_map' => [
         'anesthesia' => ['anesthesia_type', 'npo_time', 'asa_score'],
-        'operation' => ['surgeon', 'implant_company_id', 'electrode_type_id', 'insertion_approach_id', 'insertion_depth_note', 'time_in_surgery', 'time_out_surgery', 'intra_op_findings', 'impedance_testing'],
+        'operation' => ['surgeon', 'implant_company_id', 'electrode_type_id', 'insertion_approach_id', 'side_of_surgery', 'insertion_depth_note', 'time_in_surgery', 'time_out_surgery', 'intra_op_findings', 'impedance_testing'],
         'post_operation' => ['post_op_exam', 'post_op_xray', 'swelling_size', 'pain_score', 'flacc_score', 'ear_angle', 'magnet_bulge', 'redness', 'fever', 'radiology_copy'],
         'activation' => ['switch_on', 'switch_on_note'],
         'rehab_education' => ['post_op_audio_education', 'post_op_speech_education'],

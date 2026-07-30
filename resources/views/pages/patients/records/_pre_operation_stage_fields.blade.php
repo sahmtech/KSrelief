@@ -49,6 +49,14 @@
                 <i class="ti ti-clipboard-list me-2"></i>
                 {{ __('workflow.title') }} — {{ __('workflow.phases.pre_op') }}
             </h6>
+            @if(! isset($record) && ($enablePreOperationTemplateActions ?? false))
+                <button type="button"
+                        data-pre-op-load-template
+                        class="btn btn-outline-primary btn-sm"
+                        @disabled(!($hasPreOperationDefaults ?? false))>
+                    <i class="ti ti-template me-1"></i>{{ __('workflow.pre_op.load_template') }}
+                </button>
+            @endif
         </div>
     </div>
 
@@ -69,11 +77,6 @@
                 <x-imaging-findings-input
                     name-prefix="field_imaging_findings"
                     :saved-value="$imagingFindings"
-                    :ct-options="$imagingDef['ct_options'] ?? []"
-                    :mri-options="$imagingDef['mri_options'] ?? []"
-                    :allow-add-options="$allowAddImagingOptions"
-                    :ct-add-url="$ctOptionUrl"
-                    :mri-add-url="$mriOptionUrl"
                 />
             </div>
         </div>

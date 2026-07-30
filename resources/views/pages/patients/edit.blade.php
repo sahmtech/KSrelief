@@ -12,8 +12,11 @@
         ['label' => $patient->patient_name, 'url' => route('patients.show', $patient)],
         ['label' => __('patients.edit_title')],
     ]"
-/>
-
+>
+    <x-slot:actions>
+        <x-export-operative-note-button :patient="$patient" size="sm" />
+    </x-slot:actions>
+</x-page-header>
 <form method="POST" action="{{ route('patients.update', $patient) }}" enctype="multipart/form-data">
     @csrf
     @method('PUT')

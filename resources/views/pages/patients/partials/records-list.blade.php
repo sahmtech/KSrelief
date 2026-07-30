@@ -40,6 +40,12 @@
                                class="btn btn-xs btn-light" title="{{ __('workflow.records.view') }}">
                                 <i class="ti ti-eye"></i>
                             </a>
+                            @if(($record->stage?->code ?? '') === 'operation')
+                            <a href="{{ route('patients.records.export-operation-pdf', [$patient, $record]) }}"
+                               class="btn btn-xs btn-light text-success" title="{{ __('workflow.operation.export_pdf') }}">
+                                <i class="ti ti-file-type-pdf"></i>
+                            </a>
+                            @endif
                             @endcan
                             @can('update', $record)
                             <a href="{{ route('patients.records.edit', [$patient, $record]) }}"

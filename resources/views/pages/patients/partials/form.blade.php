@@ -22,7 +22,7 @@
                 <div class="mb-3">
                     <label class="form-group-admin__label">{{ __('patients.fields.file_number') }}</label>
                     <div class="form-control form-control-sm bg-light">
-                        <code>{{ $patient->file_number }}</code>
+                        <x-patient-file-number :patient="$patient" :href="route('patients.show', $patient)" />
                     </div>
                     <div class="form-text">{{ __('patients.hints.file_number_auto') }}</div>
                 </div>

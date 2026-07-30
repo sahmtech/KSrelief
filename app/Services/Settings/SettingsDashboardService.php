@@ -42,6 +42,14 @@ class SettingsDashboardService
             $this->buildCard('ct_finding_options', CtFindingOption::class, 'settings.ct-finding-options.index', 'ct_finding_option.view'),
             $this->buildCard('mri_finding_options', MriFindingOption::class, 'settings.mri-finding-options.index', 'mri_finding_option.view'),
             $this->buildCard('expectation_post_ci_options', ExpectationPostCiOption::class, 'settings.expectation-post-ci-options.index', 'expectation_post_ci_option.view'),
+            [
+                'key' => 'operative_note_pdf',
+                'label' => __('settings.dashboard.cards.operative_note_pdf'),
+                'route' => 'settings.operative-note-pdf.edit',
+                'permission' => 'operative_note_pdf.view',
+                'total' => 1,
+                'active' => \App\Models\OperativeNotePdfTemplate::query()->exists() ? 1 : 0,
+            ],
         ];
     }
 

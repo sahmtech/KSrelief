@@ -43,13 +43,20 @@
         </div>
     </div>
 
+    <div class="pre-op-section-divider mb-3">
+        <x-hearing-assessment-workflow-input
+            :name-prefix="$namePrefix"
+            :saved-value="$data"
+        />
+    </div>
+
     <div class="mb-3">
-        <div class="small fw-semibold text-muted mb-2">{{ __('workflow.pre_op.fields.hearing_assessment') }}</div>
+        <div class="small fw-semibold text-muted mb-2">{{ __('workflow.pre_op.fields.hearing_assessment_table') }}</div>
         <x-kv-metrics-input
             :name-prefix="$namePrefix"
             :saved-value="['metrics' => $data['metrics'] ?? []]"
             :default-keys="\App\Support\PreOperationFieldSupport::HEARING_ASSESSMENT_KEYS"
-            :allow-add-rows="true"
+            :allow-add-rows="false"
         />
     </div>
 

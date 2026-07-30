@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Patient;
+use App\Support\PatientFileNumberStyleSupport;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -53,11 +54,14 @@ class PatientSearchController extends Controller
                 'rank',
             ]);
 
+        PatientFileNumberStyleSupport::applyAccentColors($patients);
+
         return response()->json([
             'results' => $patients->map(fn (Patient $patient): array => [
                 'id' => $patient->id,
                 'name' => $patient->patient_name,
                 'file_number' => $patient->file_number,
+                'file_number_color' => $patient->fileNumberAccentColor(),
                 'campaign' => $patient->campaign?->name,
                 'age' => $patient->ageLabel(),
                 'gender' => $patient->gender?->label(),

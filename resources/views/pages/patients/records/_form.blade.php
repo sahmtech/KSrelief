@@ -40,6 +40,10 @@
         'hasFollowUpDefaults' => $hasFollowUpDefaults ?? false,
         'enableOperationTemplateActions' => $enableOperationTemplateActions ?? false,
         'hasOperationDefaults' => $hasOperationDefaults ?? false,
+        'enablePreOperationTemplateActions' => $enablePreOperationTemplateActions ?? false,
+        'hasPreOperationDefaults' => $hasPreOperationDefaults ?? false,
+        'enablePostOperationTemplateActions' => $enablePostOperationTemplateActions ?? false,
+        'hasPostOperationDefaults' => $hasPostOperationDefaults ?? false,
         'hasCampaignOperationDefaults' => $hasCampaignOperationDefaults ?? false,
         'operationQuickFillUrl' => $operationQuickFillUrl ?? '',
         'campaignDefaultCompanies' => $campaignDefaultCompanies ?? collect(),
@@ -73,6 +77,8 @@
             window.initOperationStageFields?.(container);
             window.bindPreOperationFields?.();
             window.initOperationQuickFill?.(container);
+            window.initHearingAssessmentWorkflow?.(container);
+            window.initImagingFindingsTrees?.(container);
         })
         .catch(() => {
             container.innerHTML = '<div class="alert alert-danger mb-0">{{ __('workflow.messages.stage_fields_load_failed') }}</div>';
@@ -154,6 +160,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const container = document.getElementById('stageFields');
     window.initOperationStageFields?.(container);
+    window.initHearingAssessmentWorkflow?.(container || document);
 });
 })();
 </script>

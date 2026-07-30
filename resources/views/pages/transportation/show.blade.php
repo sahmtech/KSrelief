@@ -180,7 +180,11 @@
                                         <div class="text-muted small">{{ $passenger->member?->memberRole?->name }}</div>
                                     @else
                                         <a href="{{ route('patients.show', $passenger->patient) }}" class="fw-medium text-decoration-none">{{ $passenger->patient?->patient_name }}</a>
-                                        <div class="text-muted small"><code>{{ $passenger->patient?->file_number }}</code></div>
+                                        <div class="text-muted small">
+                                            @if($passenger->patient)
+                                                <x-patient-file-number :patient="$passenger->patient" />
+                                            @endif
+                                        </div>
                                     @endif
                                 </td>
                                 <td>{{ $passenger->passengerTypeLabel() }}</td>

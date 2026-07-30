@@ -30,7 +30,7 @@ class PatientBriefService
     /** @var list<string> */
     private const PRIORITY_STAGE_KEYS = [
         'anesthesia' => ['npo_time', 'asa_score', 'anesthesia_type'],
-        'operation' => ['operation_date', 'surgeon', 'implant_company_id', 'electrode_type_id', 'insertion_approach_id', 'insertion_depth', 'audio_test', 'intra_op_findings', 'operation_notes'],
+        'operation' => ['operation_date', 'surgeon', 'implant_company_id', 'electrode_type_id', 'insertion_approach_id', 'side_of_surgery', 'insertion_depth', 'audio_test', 'intra_op_findings', 'operation_notes'],
         'follow_up' => ['clinical_assessment', 'audiology_assessment', 'speech_assessment', 'follow_up_notes'],
         'pre_operation' => ['physician_assessment', 'imaging_findings', 'audiology_decision', 'speech_assessment'],
         'post_operation' => ['physician_assessment', 'clinical_aud', 'counselling', 'post_op_notes'],

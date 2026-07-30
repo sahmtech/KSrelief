@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Models\Campaign;
 use App\Models\Country;
 use App\Models\Patient;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Str;
 
 final class RecordCodeGenerator
@@ -72,18 +73,103 @@ final class RecordCodeGenerator
         return $this->ensureUniqueCampaignCode($base, $campaign->id);
     }
 
-    public function generatePatientFileNumber(Campaign $campaign, ?int $exceptPatientId = null): string
+    public function generatePatientFileNumber(
+        Campaign $campaign,
+        ?int $exceptPatientId = null,
+        ?CarbonInterface $registeredAt = null
+    ): string {
+        $registeredAt ??= now();
+        $prefix = $this->patientFileNumberBucketPrefix($campaign, $registeredAt);
+        $sequence = $this->nextPatientSequenceForBucket($prefix, $exceptPatientId);
+
+        return $prefix.$sequence;
+    }
+
+    public function patientCountryPrefix(?Country $country): string
+    {
+        $length = (int) config('patient_file_number.country_prefix_length', 3);
+
+        if ($country === null) {
+            return str_repeat('X', $length);
+        }
+
+        if (filled($country->iso3)) {
+            $iso3 = Str::upper(preg_replace('/[^A-Za-z]/', '', (string) $country->iso3) ?? '');
+
+            if ($iso3 !== '') {
+                return Str::upper(Str::substr($iso3, 0, $length));
+            }
+        }
+
+        if (filled($country->iso2)) {
+            $iso2 = Str::upper(preg_replace('/[^A-Za-z]/', '', (string) $country->iso2) ?? '');
+
+            if ($iso2 !== '') {
+                return Str::upper(str_pad($iso2, $length, 'X'));
+            }
+        }
+
+        return Str::upper(Str::substr($this->countryCode($country), 0, $length));
+    }
+
+    public function patientFileNumberBucketPrefix(Campaign $campaign, CarbonInterface $registeredAt): string
     {
         $campaign->loadMissing('country');
 
-        if (! filled($campaign->code)) {
-            $campaign->forceFill(['code' => $this->generateCampaignCode($campaign)])->saveQuietly();
-            $campaign->refresh();
+        return sprintf(
+            '%s%s%s',
+            $this->patientCountryPrefix($campaign->country),
+            $registeredAt->format('Y'),
+            $registeredAt->format('m'),
+        );
+    }
+
+    public function isModernPatientFileNumber(?string $fileNumber): bool
+    {
+        if (! filled($fileNumber)) {
+            return false;
         }
 
-        $sequence = $this->nextPatientSequence((string) $campaign->code, $exceptPatientId);
+        $pattern = config('patient_file_number.pattern', '/^[A-Z]{3}\d{6}\d+$/');
 
-        return sprintf('%s-%03d', $campaign->code, $sequence);
+        return (bool) preg_match($pattern, Str::upper(trim($fileNumber)));
+    }
+
+    /**
+     * @return array{
+     *     country_prefix: string,
+     *     year: string,
+     *     month: string,
+     *     sequence: int,
+     *     bucket_prefix: string,
+     * }|null
+     */
+    public function describeModernPatientFileNumber(?string $fileNumber): ?array
+    {
+        if (! $this->isModernPatientFileNumber($fileNumber)) {
+            return null;
+        }
+
+        $normalized = Str::upper(trim((string) $fileNumber));
+
+        if (! preg_match('/^([A-Z]{3})(\d{4})(\d{2})(\d+)$/', $normalized, $matches)) {
+            return null;
+        }
+
+        return [
+            'country_prefix' => $matches[1],
+            'year' => $matches[2],
+            'month' => $matches[3],
+            'sequence' => (int) $matches[4],
+            'bucket_prefix' => $matches[1].$matches[2].$matches[3],
+        ];
+    }
+
+    public function examplePatientFileNumber(?Country $country = null): string
+    {
+        $prefix = $this->patientCountryPrefix($country);
+
+        return sprintf('%s%s%s1', $prefix, now()->format('Y'), now()->format('m'));
     }
 
     private function ensureUniqueCampaignCode(string $base, ?int $exceptId = null): string
@@ -107,22 +193,21 @@ final class RecordCodeGenerator
             ->exists();
     }
 
-    private function nextPatientSequence(string $campaignCode, ?int $exceptPatientId): int
+    private function nextPatientSequenceForBucket(string $bucketPrefix, ?int $exceptPatientId): int
     {
-        $prefix = $campaignCode.'-';
         $max = 0;
 
         Patient::query()
             ->withTrashed()
-            ->where('file_number', 'like', $prefix.'%')
+            ->where('file_number', 'like', $bucketPrefix.'%')
             ->when($exceptPatientId, fn ($query) => $query->where('id', '!=', $exceptPatientId))
             ->pluck('file_number')
-            ->each(function (string $fileNumber) use ($prefix, &$max): void {
-                if (! str_starts_with($fileNumber, $prefix)) {
+            ->each(function (string $fileNumber) use ($bucketPrefix, &$max): void {
+                if (! str_starts_with($fileNumber, $bucketPrefix)) {
                     return;
                 }
 
-                $suffix = Str::after($fileNumber, $prefix);
+                $suffix = Str::after($fileNumber, $bucketPrefix);
 
                 if (ctype_digit($suffix)) {
                     $max = max($max, (int) $suffix);

@@ -31,4 +31,16 @@
             </div>
         </div>
     @endforeach
+
+    @foreach(['cap' => __('workflow.follow_up.fields.cap'), 'sir' => __('workflow.follow_up.fields.sir')] as $fieldKey => $fieldLabel)
+        <div class="col-md-6">
+            <div class="follow-up-speech-field">
+                <label class="form-label fw-semibold small mb-1">{{ $fieldLabel }}</label>
+                <input type="text"
+                       name="{{ $namePrefix }}[{{ $fieldKey }}]"
+                       class="form-control"
+                       value="{{ $data[$fieldKey] ?? '' }}">
+            </div>
+        </div>
+    @endforeach
 </div>

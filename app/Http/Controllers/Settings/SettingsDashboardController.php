@@ -21,7 +21,7 @@ class SettingsDashboardController extends Controller
         $debugBackfill = null;
 
         if (config('app.debug')) {
-            $debugBackfill = $this->recordCodeBackfillService->missingCounts();
+            $debugBackfill = $this->recordCodeBackfillService->audit();
         }
 
         return view('pages.settings.dashboard', [

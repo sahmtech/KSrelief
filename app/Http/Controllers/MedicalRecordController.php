@@ -15,7 +15,10 @@ use App\Services\LookupService;
 use App\Services\MedicalRecordService;
 use App\Services\OperationFormDefaultService;
 use App\Services\OperationQuickFillService;
+use App\Services\OperationReportPdfService;
 use App\Services\PatientService;
+use App\Services\PostOperationFormDefaultService;
+use App\Services\PreOperationFormDefaultService;
 use App\Services\Settings\CtFindingOptionSettingService;
 use App\Services\Settings\ExpectationPostCiOptionSettingService;
 use App\Services\Settings\MriFindingOptionSettingService;
@@ -27,6 +30,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
 
 class MedicalRecordController extends Controller
 {
@@ -36,8 +40,11 @@ class MedicalRecordController extends Controller
         private readonly PatientService $patientService,
         private readonly FollowUpFormDefaultService $followUpDefaultService,
         private readonly OperationFormDefaultService $operationDefaultService,
+        private readonly PreOperationFormDefaultService $preOperationDefaultService,
+        private readonly PostOperationFormDefaultService $postOperationDefaultService,
         private readonly CampaignOperationDefaultService $campaignOperationDefaultService,
         private readonly OperationQuickFillService $operationQuickFillService,
+        private readonly OperationReportPdfService $operationReportPdfService,
         private readonly ClinicalSelectOptionService $clinicalSelectOptionService,
         private readonly CtFindingOptionSettingService $ctFindingOptionSettingService,
         private readonly MriFindingOptionSettingService $mriFindingOptionSettingService,
@@ -87,6 +94,10 @@ class MedicalRecordController extends Controller
                 'hasFollowUpDefaults' => $formData['hasFollowUpDefaults'],
                 'enableOperationTemplateActions' => true,
                 'hasOperationDefaults' => $formData['hasOperationDefaults'],
+                'enablePreOperationTemplateActions' => true,
+                'hasPreOperationDefaults' => $formData['hasPreOperationDefaults'],
+                'enablePostOperationTemplateActions' => true,
+                'hasPostOperationDefaults' => $formData['hasPostOperationDefaults'],
                 'hasCampaignOperationDefaults' => $formData['hasCampaignOperationDefaults'],
                 'campaignOperationDefaultsUrl' => $formData['campaignOperationDefaultsUrl'],
                 'operationQuickFillUrl' => $formData['operationQuickFillUrl'],
@@ -140,6 +151,22 @@ class MedicalRecordController extends Controller
             $successMessage = __('workflow.follow_up.record_and_defaults_saved');
         }
 
+        if ($request->boolean('save_pre_operation_defaults') && $stageCode === 'pre_operation') {
+            $this->preOperationDefaultService->saveFromRequestInput($request->user(), $request->all());
+            $successMessage = __('workflow.pre_op.record_and_defaults_saved');
+        }
+
+        if ($request->boolean('save_post_operation_defaults') && $stageCode === 'post_operation') {
+            $this->postOperationDefaultService->saveFromRequestInput($request->user(), $request->all());
+            $successMessage = __('workflow.post_op.record_and_defaults_saved');
+        }
+
+        if ($request->boolean('export_pdf') && $stageCode === 'operation') {
+            return redirect()
+                ->route('patients.records.export-operation-pdf', [$patient, $record])
+                ->with('success', $successMessage);
+        }
+
         return redirect()
             ->to(route('patients.show', $patient).'#records')
             ->with('success', $successMessage);
@@ -169,6 +196,76 @@ class MedicalRecordController extends Controller
         $this->authorize('create', [MedicalRecord::class, $patient]);
 
         $template = $this->followUpDefaultService->templateForForm(auth()->user());
+
+        if (! is_array($template)) {
+            return response()->json(['has_defaults' => false]);
+        }
+
+        return response()->json([
+            'has_defaults' => true,
+            'data' => $template,
+        ]);
+    }
+
+    public function storePreOperationDefaults(Request $request, Patient $patient): RedirectResponse
+    {
+        $this->authorize('create', [MedicalRecord::class, $patient]);
+
+        $stage = PatientStage::query()->find($request->integer('stage_id'));
+
+        if (($stage?->code ?? '') !== 'pre_operation') {
+            return redirect()
+                ->route('patients.records.create', $patient)
+                ->with('error', __('workflow.pre_op.defaults_stage_required'));
+        }
+
+        $this->preOperationDefaultService->saveFromRequestInput($request->user(), $request->all());
+
+        return redirect()
+            ->route('patients.records.create', ['patient' => $patient, 'stage_id' => $stage->id])
+            ->with('success', __('workflow.pre_op.defaults_saved'));
+    }
+
+    public function showPreOperationDefaults(Patient $patient): JsonResponse
+    {
+        $this->authorize('create', [MedicalRecord::class, $patient]);
+
+        $template = $this->preOperationDefaultService->templateForForm(auth()->user());
+
+        if (! is_array($template)) {
+            return response()->json(['has_defaults' => false]);
+        }
+
+        return response()->json([
+            'has_defaults' => true,
+            'data' => $template,
+        ]);
+    }
+
+    public function storePostOperationDefaults(Request $request, Patient $patient): RedirectResponse
+    {
+        $this->authorize('create', [MedicalRecord::class, $patient]);
+
+        $stage = PatientStage::query()->find($request->integer('stage_id'));
+
+        if (($stage?->code ?? '') !== 'post_operation') {
+            return redirect()
+                ->route('patients.records.create', $patient)
+                ->with('error', __('workflow.post_op.defaults_stage_required'));
+        }
+
+        $this->postOperationDefaultService->saveFromRequestInput($request->user(), $request->all());
+
+        return redirect()
+            ->route('patients.records.create', ['patient' => $patient, 'stage_id' => $stage->id])
+            ->with('success', __('workflow.post_op.defaults_saved'));
+    }
+
+    public function showPostOperationDefaults(Patient $patient): JsonResponse
+    {
+        $this->authorize('create', [MedicalRecord::class, $patient]);
+
+        $template = $this->postOperationDefaultService->templateForForm(auth()->user());
 
         if (! is_array($template)) {
             return response()->json(['has_defaults' => false]);
@@ -246,9 +343,32 @@ class MedicalRecordController extends Controller
             }
         }
 
+        $stageCode = PatientStage::query()->find($validated['stage_id'] ?? $record->stage_id)?->code
+            ?? $record->stage?->code;
+
+        if ($request->boolean('export_pdf') && $stageCode === 'operation') {
+            return redirect()
+                ->route('patients.records.export-operation-pdf', [$patient, $record])
+                ->with('success', __('workflow.messages.record_updated'));
+        }
+
         return redirect()
             ->to(route('patients.show', $patient).'#records')
             ->with('success', __('workflow.messages.record_updated'));
+    }
+
+    public function exportOperationPdf(Patient $patient, MedicalRecord $record): Response
+    {
+        $this->authorize('view', $record);
+
+        $record->loadMissing('stage');
+
+        abort_unless(
+            $record->patient_id === $patient->id && ($record->stage?->code ?? '') === 'operation',
+            404
+        );
+
+        return $this->operationReportPdfService->download($patient, $record);
     }
 
     public function destroy(Patient $patient, MedicalRecord $record): RedirectResponse
@@ -318,6 +438,10 @@ class MedicalRecordController extends Controller
             'followUpDefaultsUrl' => route('patients.records.follow-up-defaults.show', $patient),
             'hasOperationDefaults' => $this->operationDefaultService->hasForUser(auth()->user()),
             'operationDefaultsUrl' => route('patients.records.operation-defaults.show', $patient),
+            'hasPreOperationDefaults' => $this->preOperationDefaultService->hasForUser(auth()->user()),
+            'preOperationDefaultsUrl' => route('patients.records.pre-operation-defaults.show', $patient),
+            'hasPostOperationDefaults' => $this->postOperationDefaultService->hasForUser(auth()->user()),
+            'postOperationDefaultsUrl' => route('patients.records.post-operation-defaults.show', $patient),
             'hasCampaignOperationDefaults' => $this->campaignOperationDefaultService->hasForCampaign($patient->campaign),
             'campaignOperationDefaultsUrl' => route('patients.records.campaign-operation-defaults.show', $patient),
             'operationQuickFillUrl' => route('patients.records.operation-quick-fill', $patient),

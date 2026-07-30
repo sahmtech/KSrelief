@@ -10,46 +10,48 @@
 @if($sections === [])
     <span class="text-muted">—</span>
 @else
-    <div class="clinical-imaging-findings-value text-break" style="white-space: pre-line;">
+    <div class="clinical-imaging-findings-value">
         @foreach($sections as $index => $section)
             @php
-                $ctDrive = ClinicalValuePresenter::present($section['ct_drive_link'], 'url', __('workflow.fields.imaging_ct_drive_link'));
-                $mriDrive = ClinicalValuePresenter::present($section['mri_drive_link'], 'url', __('workflow.fields.imaging_mri_drive_link'));
+                $driveLabel = $section['modality'] === 'ct'
+                    ? __('workflow.fields.imaging_ct_drive_link')
+                    : __('workflow.fields.imaging_mri_drive_link');
+                $drive = ClinicalValuePresenter::present($section['drive_link'], 'url', $driveLabel);
             @endphp
-            @if($index > 0)
-                <div class="mt-2"></div>
-            @endif
-            <div class="fw-semibold small">{{ __('workflow.fields.imaging_ear_'.$section['ear']) }}</div>
-            @if($section['ct_labels'] !== [])
-                <div class="small">{{ __('workflow.fields.ct_findings') }}: {{ implode(', ', $section['ct_labels']) }}</div>
-            @endif
-            @if(filled($ctDrive['url'] ?? null))
-                <div class="small">
-                    {{ __('workflow.fields.imaging_ct_drive_link') }}:
-                    <a href="{{ $ctDrive['url'] }}"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       class="clinical-link clinical-link--{{ $ctDrive['variant'] }}">
-                        <i class="ti ti-{{ $ctDrive['icon'] }} clinical-link__icon"></i>
-                        <span class="clinical-link__label">{{ $ctDrive['label'] }}</span>
-                    </a>
+            <div class="imaging-findings-summary-card{{ $index > 0 ? ' mt-2' : '' }}">
+                <div class="imaging-findings-summary-card__title">
+                    <i class="ti ti-{{ $section['modality'] === 'ct' ? 'scan' : 'brain' }} me-1"></i>
+                    {{ $section['title'] }}
                 </div>
-            @endif
-            @if($section['mri_labels'] !== [])
-                <div class="small">{{ __('workflow.fields.mri_findings') }}: {{ implode(', ', $section['mri_labels']) }}</div>
-            @endif
-            @if(filled($mriDrive['url'] ?? null))
-                <div class="small">
-                    {{ __('workflow.fields.imaging_mri_drive_link') }}:
-                    <a href="{{ $mriDrive['url'] }}"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       class="clinical-link clinical-link--{{ $mriDrive['variant'] }}">
-                        <i class="ti ti-{{ $mriDrive['icon'] }} clinical-link__icon"></i>
-                        <span class="clinical-link__label">{{ $mriDrive['label'] }}</span>
-                    </a>
-                </div>
-            @endif
+
+                @if($section['labels'] !== [])
+                    <ul class="imaging-findings-summary-card__list">
+                        @foreach($section['labels'] as $label)
+                            <li>{{ $label }}</li>
+                        @endforeach
+                    </ul>
+                @endif
+
+                @if(filled($section['notes']))
+                    <div class="imaging-findings-summary-card__notes">
+                        <span class="text-muted fw-semibold">{{ __('workflow.fields.imaging_notes') }}:</span>
+                        <span class="text-break">{{ $section['notes'] }}</span>
+                    </div>
+                @endif
+
+                @if(filled($drive['url'] ?? null))
+                    <div class="imaging-findings-summary-card__drive small">
+                        <span class="text-muted">{{ $driveLabel }}:</span>
+                        <a href="{{ $drive['url'] }}"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="clinical-link clinical-link--{{ $drive['variant'] }}">
+                            <i class="ti ti-{{ $drive['icon'] }} clinical-link__icon"></i>
+                            <span class="clinical-link__label">{{ $drive['label'] }}</span>
+                        </a>
+                    </div>
+                @endif
+            </div>
         @endforeach
     </div>
 @endif

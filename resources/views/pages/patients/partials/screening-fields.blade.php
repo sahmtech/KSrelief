@@ -52,8 +52,6 @@
                         <x-imaging-findings-input
                             :name-prefix="$inputName"
                             :saved-value="$savedValue"
-                            :ct-options="$fieldDef['ct_options'] ?? []"
-                            :mri-options="$fieldDef['mri_options'] ?? []"
                         />
                     @elseif($inputType === 'textarea')
                         <textarea name="{{ $inputName }}" class="form-control form-control-sm" rows="3">{{ $savedValue }}</textarea>
