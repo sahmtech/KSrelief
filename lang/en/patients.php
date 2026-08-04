@@ -258,6 +258,35 @@ return [
         'show_title' => 'Import Batch',
         'show_subtitle' => 'Review and approve imported data',
         'download_template' => 'Download Template',
+        'file_hint' => 'Use the official template (.xlsx). Row 1 must match the column headers exactly.',
+        'column_required' => 'Required',
+        'column_optional' => 'Optional',
+
+        'template_table' => [
+            'column' => 'Column',
+            'label' => 'Label',
+            'required' => 'Required',
+            'rules' => 'Validation',
+        ],
+
+        'review_table' => [
+            'errors' => 'Errors / Notes',
+        ],
+
+        'column_hints' => [
+            'patient_name' => 'Optional. Max 255 characters. Empty rows use a generated name on approval.',
+            'date_of_birth' => 'Optional. YYYY-MM-DD or Excel date. Defaults to 2000-01-01 if empty.',
+            'gender' => 'Required. Use: male or female.',
+            'height_cm' => 'Optional. Number between 20 and 250.',
+            'weight_kg' => 'Optional. Number between 0.5 and 500.',
+            'contact_number' => 'Optional. Max 30 characters.',
+        ],
+
+        'default_notes' => [
+            'Empty patient name → "Imported patient (row X)" on approval.',
+            'Empty date of birth → 2000-01-01 on approval.',
+            'Eligibility status defaults to accepted.',
+        ],
 
         'status' => [
             'uploaded' => 'Uploaded',
@@ -301,12 +330,21 @@ return [
             'campaign' => 'Campaign',
             'file' => 'Excel File',
             'notes' => 'Notes',
+            'patient_name' => 'Patient Name',
+            'date_of_birth' => 'Date of Birth',
+            'gender' => 'Gender',
+            'height_cm' => 'Height (cm)',
+            'weight_kg' => 'Weight (kg)',
+            'contact_number' => 'Contact Number',
         ],
 
         'sections' => [
             'upload' => 'Upload File',
             'instructions' => 'Instructions',
             'reference' => 'Reference Codes',
+            'template_columns' => 'Template Columns',
+            'gender_values' => 'Gender Values',
+            'defaults' => 'Default Values',
             'statistics' => 'Import Statistics',
             'review' => 'Row Review',
             'approval' => 'Approval',
@@ -314,15 +352,17 @@ return [
 
         'instructions' => [
             'Select the target campaign before uploading the file.',
-            'Download the Excel template and fill in basic patient information only.',
-            'Required columns: patient_name, date_of_birth, gender, eligibility_status, admission_status.',
-            'Optional columns: file_number, height_cm, weight_kg, contact_number, stage, surgery_day_number, rank, surgical_side, approval_reason, patient_notes.',
-            'Clinical and screening data are not imported — add them later from the patient workflow.',
-            'Date of birth format: YYYY-MM-DD (e.g. 2015-06-20).',
+            'Download the official Excel template and keep row 1 exactly as exported.',
+            'Use one sheet only with these columns in order: patient_name, date_of_birth, gender, height_cm, weight_kg, contact_number.',
+            'Only gender is required on every patient row. All other columns are optional.',
+            'If a column has a value, it will be validated (date format, numeric height/weight, etc.).',
             'Gender must be: male or female.',
-            'Stage column is optional — leave blank to use the default admission stage.',
-            'File number must be unique within the same campaign.',
-            'Rows with errors will be rejected — valid rows can still be approved.',
+            'Date of birth format: YYYY-MM-DD (example: 2015-06-20). Excel date cells are also accepted.',
+            'Rows with validation errors are rejected; valid rows can still be approved.',
+        ],
+
+        'defaults' => [
+            'unnamed_patient' => 'Imported patient (row :row)',
         ],
 
         'campaign_workbook' => [
@@ -344,9 +384,17 @@ return [
             'queue_stuck' => 'Processing is taking longer than expected. Ask your administrator to run the queue worker, or set PATIENT_IMPORT_SYNC=true in .env.',
             'approved' => ':count patient(s) imported successfully.',
             'not_reviewable' => 'This batch is not in a reviewable state.',
-            'empty_file' => 'The file contains no data rows.',
+            'validation_failed_title' => 'File could not be imported',
+            'empty_file' => 'The file contains no patient rows. Row 1 must be the header and patient data must start from row 2. Required columns: :required. Expected column order: :columns.',
             'file_missing' => 'Import file not found on storage.',
+            'header_missing' => 'Row 1 is empty or missing column headers. Copy the header row exactly from the import template without changing column names or order. Expected columns: :columns. Required columns: :required.',
+            'invalid_template' => 'The file does not match the import template. Missing columns: :missing. Extra columns: :extra. Expected order: :expected. Found in row 1: :found. Required field on each row: :required. Download the template and paste your data starting from row 2 without changing the headers.',
+            'invalid_template_order' => 'Column order in row 1 is incorrect. Expected order: :expected. Found: :found. Do not rearrange or rename the template headers.',
             'missing_column' => 'Required column ":column" is missing from the file.',
+            'processing_failed' => 'An unexpected error occurred while processing the file. Please try again or contact support.',
+            'invalid_number' => '":field" must be a number.',
+            'out_of_range' => '":field" must be between :min and :max.',
+            'too_long' => '":field" must not exceed :max characters.',
             'required' => 'Field ":field" is required.',
             'invalid_date' => 'Invalid date format. Use YYYY-MM-DD.',
             'future_date' => 'Date of birth cannot be a future date.',
@@ -361,7 +409,7 @@ return [
             'duplicate_name_in_database' => 'Patient ":name" already exists in this campaign.',
             'campaign_required_workbook' => 'A campaign must be selected when importing a campaign workbook.',
             'campaign_required' => 'Please select a campaign before uploading.',
-            'workbook_not_supported' => 'Campaign workbook files are not supported. Use the basic patient import template instead.',
+            'workbook_not_supported' => 'This file looks like a campaign workbook (sheets found: :sheets). Patient import accepts only the basic single-sheet template. Download the template and use one sheet with these columns in order: :columns. Required columns: :required.',
             'no_importable_rows' => 'No valid rows found to import.',
             'confirm_approve' => 'Approve this import? This will create :count patient record(s) and cannot be undone.',
         ],

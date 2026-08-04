@@ -76,12 +76,12 @@ class CampaignOperationDefaultService
 
         $company = ImplantCompany::query()->find($implantCompanyId);
 
-        if (! $company || ! in_array($company->code, CampaignOperationDefaultCatalog::SUPPORTED_COMPANY_CODES, true)) {
+        if (! $company) {
             return null;
         }
 
         return $this->normalizePayload(
-            CampaignOperationDefaultCatalog::resolvePayloadForCompanyCode($company->code)
+            CampaignOperationDefaultCatalog::resolvePayloadForCompanyCode((string) $company->code)
         );
     }
 
@@ -124,11 +124,26 @@ class CampaignOperationDefaultService
 
     public function ensureDefaultsForCampaign(Campaign $campaign): void
     {
-        if (CampaignOperationDefault::query()->where('campaign_id', $campaign->id)->exists()) {
+        $existingCompanyIds = CampaignOperationDefault::query()
+            ->where('campaign_id', $campaign->id)
+            ->pluck('implant_company_id')
+            ->map(fn ($id): int => (int) $id)
+            ->all();
+
+        $missingCompanies = $this->supportedCompanies()
+            ->reject(fn (ImplantCompany $company): bool => in_array((int) $company->id, $existingCompanyIds, true));
+
+        if ($missingCompanies->isEmpty()) {
             return;
         }
 
-        $this->seedSystemDefaults($campaign);
+        $payload = [];
+
+        foreach ($missingCompanies as $company) {
+            $payload[(int) $company->id] = CampaignOperationDefaultCatalog::resolvePayloadForCompanyCode((string) $company->code);
+        }
+
+        $this->syncForCampaign($campaign, $payload);
     }
 
     /**
@@ -174,7 +189,6 @@ class CampaignOperationDefaultService
     {
         return ImplantCompany::query()
             ->active()
-            ->whereIn('code', CampaignOperationDefaultCatalog::SUPPORTED_COMPANY_CODES)
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get();

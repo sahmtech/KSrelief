@@ -19,13 +19,17 @@ class MemberRolesSeeder extends Seeder
         ];
 
         foreach ($roles as $role) {
-            MemberRole::query()->updateOrCreate(
+            $record = MemberRole::withTrashed()->updateOrCreate(
                 ['code' => $role['code']],
                 [
                     'name' => $role['name'],
                     'status' => 'active',
                 ]
             );
+
+            if ($record->trashed()) {
+                $record->restore();
+            }
         }
     }
 }

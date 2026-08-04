@@ -26,9 +26,14 @@ class ProcessPatientImportJob implements ShouldQueue
         try {
             $importService->processBatch($this->batch);
         } catch (\Throwable $e) {
-            $importService->markBatchFailed($this->batch, $e->getMessage());
+            $this->batch->refresh();
 
-            throw $e;
+            if ($this->batch->status?->value !== 'failed') {
+                $importService->markBatchFailed(
+                    $this->batch,
+                    __('patients.import.messages.processing_failed')
+                );
+            }
         }
     }
 }

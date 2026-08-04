@@ -22,7 +22,7 @@ class PatientStagesSeeder extends Seeder
         ];
 
         foreach ($stages as $stage) {
-            PatientStage::query()->updateOrCreate(
+            $record = PatientStage::withTrashed()->updateOrCreate(
                 ['code' => $stage['code']],
                 [
                     'name' => $stage['name'],
@@ -32,6 +32,10 @@ class PatientStagesSeeder extends Seeder
                     'status' => 'active',
                 ]
             );
+
+            if ($record->trashed()) {
+                $record->restore();
+            }
         }
     }
 }

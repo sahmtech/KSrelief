@@ -63,6 +63,7 @@
                     @error('file')
                         <div class="form-group-admin__error">{{ $message }}</div>
                     @enderror
+                    <div class="form-text">{{ __('patients.import.file_hint') }}</div>
                 </div>
 
                 <x-form-input :label="__('patients.import.fields.notes')" name="notes" type="textarea" :value="old('notes')" />
@@ -86,77 +87,56 @@
     </div>
 
     <div class="col-lg-7">
-        <x-card :title="__('patients.import.sections.reference')" :flush="true">
-            <ul class="nav nav-tabs border-0 px-3 pt-2" id="refTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="eligibility-ref-tab" data-bs-toggle="tab" data-bs-target="#eligibility-ref" type="button" role="tab">
-                        {{ __('patients.fields.eligibility_status') }}
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="stages-ref-tab" data-bs-toggle="tab" data-bs-target="#stages-ref" type="button" role="tab">
-                        {{ __('patients.fields.current_stage') }}
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="gender-ref-tab" data-bs-toggle="tab" data-bs-target="#gender-ref" type="button" role="tab">
-                        {{ __('patients.fields.gender') }}
-                    </button>
-                </li>
-            </ul>
-
-            <div class="tab-content" id="refTabsContent">
-                <div class="tab-pane fade show active" id="eligibility-ref" role="tabpanel">
-                    <div class="table-responsive">
-                        <table class="table table-sm table-hover mb-0">
-                            <thead><tr><th>{{ __('patients.fields.eligibility_status') }}</th><th>Code</th></tr></thead>
-                            <tbody>
-                                @foreach($eligibilityStatuses as $status)
-                                    <tr>
-                                        <td>
-                                            <span class="badge border" style="background-color: {{ $status->color }}20; color: {{ $status->color }};">{{ $status->name }}</span>
-                                        </td>
-                                        <td><code>{{ $status->code }}</code></td>
-                                    </tr>
-                                @endforeach
-                                <tr class="table-secondary">
-                                    <td colspan="2">
-                                        <code>admission_status</code>:
-                                        <code class="ms-2">admitted</code> /
-                                        <code class="ms-1">not_admitted</code>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="tab-pane fade" id="stages-ref" role="tabpanel">
-                    <div class="table-responsive">
-                        <table class="table table-sm table-hover mb-0">
-                            <thead><tr><th>{{ __('patients.fields.current_stage') }}</th><th>Code</th></tr></thead>
-                            <tbody>
-                                @foreach($patientStages as $stage)
-                                    <tr>
-                                        <td>{{ $stage->displayName() }} @if($stage->is_default)<span class="badge bg-primary-subtle text-primary ms-1">default</span>@endif</td>
-                                        <td><code>{{ $stage->code }}</code></td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="tab-pane fade" id="gender-ref" role="tabpanel">
-                    <div class="p-3">
-                        @foreach(\App\Enums\Gender::cases() as $gender)
-                            <div class="mb-2">
-                                {{ $gender->label() }} → <code>{{ $gender->value }}</code>
-                            </div>
+        <x-card :title="__('patients.import.sections.template_columns')" :flush="true">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>{{ __('patients.import.template_table.column') }}</th>
+                            <th>{{ __('patients.import.template_table.label') }}</th>
+                            <th>{{ __('patients.import.template_table.required') }}</th>
+                            <th>{{ __('patients.import.template_table.rules') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($templateColumns as $column)
+                            <tr>
+                                <td><code>{{ $column }}</code></td>
+                                <td>{{ __('patients.import.fields.'.$column) }}</td>
+                                <td>
+                                    @if(in_array($column, $requiredColumns, true))
+                                        <span class="badge bg-danger-subtle text-danger">{{ __('patients.import.column_required') }}</span>
+                                    @else
+                                        <span class="badge bg-secondary-subtle text-secondary">{{ __('patients.import.column_optional') }}</span>
+                                    @endif
+                                </td>
+                                <td class="text-muted" style="font-size: 0.8125rem;">
+                                    {{ __('patients.import.column_hints.'.$column) }}
+                                </td>
+                            </tr>
                         @endforeach
-                    </div>
-                </div>
+                    </tbody>
+                </table>
             </div>
+        </x-card>
+
+        <x-card :title="__('patients.import.sections.gender_values')" class="mt-3">
+            <div class="d-flex flex-wrap gap-3" style="font-size: 0.875rem;">
+                @foreach(\App\Enums\Gender::cases() as $gender)
+                    <div>
+                        <span class="text-muted">{{ $gender->label() }}</span>
+                        <code class="ms-1">{{ $gender->value }}</code>
+                    </div>
+                @endforeach
+            </div>
+        </x-card>
+
+        <x-card :title="__('patients.import.sections.defaults')" class="mt-3">
+            <ul class="mb-0 ps-3 text-muted" style="font-size: 0.875rem;">
+                @foreach(__('patients.import.default_notes') as $note)
+                    <li class="mb-2">{{ $note }}</li>
+                @endforeach
+            </ul>
         </x-card>
     </div>
 </div>

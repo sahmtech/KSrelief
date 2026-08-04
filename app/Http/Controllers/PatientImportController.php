@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PatientImportBatchStatus;
 use App\Http\Requests\Patient\ApprovePatientImportRequest;
 use App\Http\Requests\Patient\UploadPatientImportRequest;
 use App\Models\Campaign;
 use App\Models\PatientImportBatch;
-use App\Services\LookupService;
 use App\Services\PatientImportService;
 use App\Services\PatientImportStatisticsService;
 use Illuminate\Http\RedirectResponse;
@@ -19,7 +19,6 @@ class PatientImportController extends Controller
     public function __construct(
         private readonly PatientImportService $importService,
         private readonly PatientImportStatisticsService $statisticsService,
-        private readonly LookupService $lookupService
     ) {}
 
     public function index(Request $request): View
@@ -50,8 +49,8 @@ class PatientImportController extends Controller
         return view('pages.patients.import.create', [
             'campaigns' => Campaign::query()->orderBy('name')->get(['id', 'name', 'code']),
             'selectedCampaign' => $campaign,
-            'eligibilityStatuses' => $this->lookupService->getPatientEligibilityStatuses(),
-            'patientStages' => $this->lookupService->getPatientStages(),
+            'templateColumns' => config('patient_import.template_columns', []),
+            'requiredColumns' => config('patient_import.required_columns', []),
         ]);
     }
 
@@ -63,6 +62,14 @@ class PatientImportController extends Controller
             (int) $request->input('campaign_id'),
             $request->input('notes')
         );
+
+        $batch->refresh();
+
+        if ($batch->status === PatientImportBatchStatus::Failed) {
+            return redirect()
+                ->route('patients.import.show', $batch)
+                ->with('error', $batch->failure_reason);
+        }
 
         return redirect()
             ->route('patients.import.show', $batch)

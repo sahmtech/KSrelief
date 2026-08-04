@@ -30,16 +30,12 @@ class PatientImportErrorsExport implements FromArray, WithHeadings, WithTitle
     {
         return [
             'row_number',
-            'campaign_code',
             'patient_name',
-            'file_number',
             'date_of_birth',
             'gender',
-            'eligibility_status',
-            'admission_status',
-            'stage',
+            'height_cm',
+            'weight_kg',
             'contact_number',
-            'patient_notes',
             'errors',
             'duplicate_flag',
         ];

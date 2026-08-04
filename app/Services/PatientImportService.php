@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\AdmissionStatus;
 use App\Enums\Gender;
 use App\Enums\PatientImportBatchStatus;
+use App\Exports\PatientTemplateExport;
 use App\Jobs\ProcessPatientImportJob;
 use App\Models\Campaign;
 use App\Models\Patient;
@@ -74,23 +75,35 @@ class PatientImportService
         $path = $batch->storagePath();
 
         if (! Storage::disk('local')->exists($path)) {
-            throw new \RuntimeException(__('patients.import.messages.file_missing'));
+            $this->rejectBatch($batch, __('patients.import.messages.file_missing'));
+
+            return;
         }
 
         $fullPath = Storage::disk('local')->path($path);
         $batch->logs()->delete();
 
         if (! $batch->campaign_id) {
-            throw new \RuntimeException(__('patients.import.messages.campaign_required'));
+            $this->rejectBatch($batch, __('patients.import.messages.campaign_required'));
+
+            return;
         }
 
         $sheetNames = $this->workbookParser->sheetNames($fullPath);
 
         if ($this->workbookParser->isCampaignWorkbook($sheetNames)) {
-            throw new \RuntimeException(__('patients.import.messages.workbook_not_supported'));
+            $this->rejectBatch($batch, __('patients.import.messages.workbook_not_supported', [
+                'sheets' => implode(', ', $sheetNames),
+                'columns' => $this->templateColumnsLabel(),
+                'required' => $this->requiredColumnsLabel(),
+            ]));
+
+            return;
         }
 
-        $this->processTemplateImport($batch, $fullPath);
+        if (! $this->processTemplateImport($batch, $fullPath)) {
+            return;
+        }
 
         $this->refreshBatchCounts($batch);
 
@@ -257,18 +270,30 @@ class PatientImportService
             foreach ($logs as $log) {
                 $data = $log->raw_data;
 
+                $eligibilityStatusId = $data['resolved_eligibility_status_id']
+                    ?? PatientEligibilityStatus::query()->active()->where('code', 'accepted')->value('id')
+                    ?? PatientEligibilityStatus::query()->active()->ordered()->value('id');
+
+                $patientName = filled($data['patient_name'] ?? null)
+                    ? (string) $data['patient_name']
+                    : __('patients.import.defaults.unnamed_patient', ['row' => $log->row_number]);
+
+                $dateOfBirth = filled($data['date_of_birth'] ?? null)
+                    ? (string) $data['date_of_birth']
+                    : (string) config('patient_import.default_date_of_birth', '2000-01-01');
+
                 $patient = $this->patientService->createPatient([
                     'campaign_id' => $data['resolved_campaign_id'],
-                    'patient_name' => $data['patient_name'],
+                    'patient_name' => $patientName,
                     'file_number' => filled($data['file_number'] ?? null) ? $data['file_number'] : null,
-                    'date_of_birth' => $data['date_of_birth'],
+                    'date_of_birth' => $dateOfBirth,
                     'gender' => $data['gender'],
                     'height_cm' => filled($data['height_cm'] ?? null) ? $data['height_cm'] : null,
                     'weight_kg' => filled($data['weight_kg'] ?? null) ? $data['weight_kg'] : null,
                     'contact_number' => $data['contact_number'] ?? null,
-                    'eligibility_status_id' => $data['resolved_eligibility_status_id'],
+                    'eligibility_status_id' => $eligibilityStatusId,
                     'current_stage_id' => $data['resolved_stage_id'] ?? null,
-                    'admission_status' => $data['admission_status'],
+                    'admission_status' => $data['admission_status'] ?? AdmissionStatus::NotAdmitted->value,
                     'surgery_day_number' => filled($data['surgery_day_number'] ?? null) ? (int) $data['surgery_day_number'] : null,
                     'rank' => filled($data['rank'] ?? null) ? (int) $data['rank'] : null,
                     'surgical_side' => $data['surgical_side'] ?? null,
@@ -310,16 +335,12 @@ class PatientImportService
 
             return [
                 $log->row_number,
-                $log->raw_data['campaign_code'] ?? '',
                 $log->patient_name ?? '',
-                $log->file_number ?? '',
                 $log->raw_data['date_of_birth'] ?? '',
                 $log->raw_data['gender'] ?? '',
-                $log->raw_data['eligibility_status'] ?? '',
-                $log->raw_data['admission_status'] ?? '',
-                $log->raw_data['stage'] ?? '',
+                $log->raw_data['height_cm'] ?? '',
+                $log->raw_data['weight_kg'] ?? '',
                 $log->raw_data['contact_number'] ?? '',
-                $log->raw_data['patient_notes'] ?? '',
                 $errors,
                 $log->is_duplicate ? __('patients.import.row_status.duplicate') : '',
             ];
@@ -426,7 +447,7 @@ class PatientImportService
     private function isEmptyRow(array $data): bool
     {
         return collect($data)
-            ->only(['patient_name', 'file_number', 'campaign_code', 'date_of_birth'])
+            ->only(config('patient_import.template_columns', []))
             ->filter(fn ($value) => filled($value))
             ->isEmpty();
     }
@@ -463,33 +484,71 @@ class PatientImportService
             }
         }
 
-        if (! filled($data['patient_name'] ?? null)) {
-            $errors[] = __('patients.import.messages.required', ['field' => 'patient_name']);
-        }
-
-        if (! filled($data['date_of_birth'] ?? null)) {
-            $errors[] = __('patients.import.messages.required', ['field' => 'date_of_birth']);
-        } elseif ($data['date_of_birth'] === null) {
-            $errors[] = __('patients.import.messages.invalid_date');
-        } elseif (now()->parse($data['date_of_birth'])->isFuture()) {
-            $errors[] = __('patients.import.messages.future_date');
-        }
-
         if (! filled($data['gender'] ?? null)) {
-            $errors[] = __('patients.import.messages.required', ['field' => 'gender']);
+            $errors[] = __('patients.import.messages.required', [
+                'field' => $this->fieldLabel('gender'),
+            ]);
         } elseif (! in_array($data['gender'], Gender::values(), true)) {
             $errors[] = __('patients.import.messages.invalid_gender');
         }
 
-        if (! filled($data['eligibility_status'] ?? null)) {
-            $errors[] = __('patients.import.messages.required', ['field' => 'eligibility_status']);
-        } elseif (! $eligibilityMap->has($data['eligibility_status'])) {
+        if (filled($data['patient_name'] ?? null) && mb_strlen((string) $data['patient_name']) > 255) {
+            $errors[] = __('patients.import.messages.too_long', [
+                'field' => $this->fieldLabel('patient_name'),
+                'max' => 255,
+            ]);
+        }
+
+        if (filled($data['date_of_birth'] ?? null)) {
+            if ($data['date_of_birth'] === null) {
+                $errors[] = __('patients.import.messages.invalid_date');
+            } elseif (now()->parse($data['date_of_birth'])->isFuture()) {
+                $errors[] = __('patients.import.messages.future_date');
+            }
+        }
+
+        if (filled($data['height_cm'] ?? null) && ! is_numeric($data['height_cm'])) {
+            $errors[] = __('patients.import.messages.invalid_number', [
+                'field' => $this->fieldLabel('height_cm'),
+            ]);
+        } elseif (filled($data['height_cm'] ?? null)) {
+            $height = (float) $data['height_cm'];
+            if ($height < 20 || $height > 250) {
+                $errors[] = __('patients.import.messages.out_of_range', [
+                    'field' => $this->fieldLabel('height_cm'),
+                    'min' => 20,
+                    'max' => 250,
+                ]);
+            }
+        }
+
+        if (filled($data['weight_kg'] ?? null) && ! is_numeric($data['weight_kg'])) {
+            $errors[] = __('patients.import.messages.invalid_number', [
+                'field' => $this->fieldLabel('weight_kg'),
+            ]);
+        } elseif (filled($data['weight_kg'] ?? null)) {
+            $weight = (float) $data['weight_kg'];
+            if ($weight < 0.5 || $weight > 500) {
+                $errors[] = __('patients.import.messages.out_of_range', [
+                    'field' => $this->fieldLabel('weight_kg'),
+                    'min' => 0.5,
+                    'max' => 500,
+                ]);
+            }
+        }
+
+        if (filled($data['contact_number'] ?? null) && mb_strlen((string) $data['contact_number']) > 30) {
+            $errors[] = __('patients.import.messages.too_long', [
+                'field' => $this->fieldLabel('contact_number'),
+                'max' => 30,
+            ]);
+        }
+
+        if (filled($data['eligibility_status'] ?? null) && ! $eligibilityMap->has($data['eligibility_status'])) {
             $errors[] = __('patients.import.messages.invalid_eligibility', ['code' => $data['eligibility_status']]);
         }
 
-        if (! filled($data['admission_status'] ?? null)) {
-            $errors[] = __('patients.import.messages.required', ['field' => 'admission_status']);
-        } elseif (! in_array($data['admission_status'], AdmissionStatus::values(), true)) {
+        if (filled($data['admission_status'] ?? null) && ! in_array($data['admission_status'], AdmissionStatus::values(), true)) {
             $errors[] = __('patients.import.messages.invalid_admission');
         }
 
@@ -498,6 +557,13 @@ class PatientImportService
         }
 
         return $errors;
+    }
+
+    private function fieldLabel(string $field): string
+    {
+        $key = 'patients.import.fields.'.$field;
+
+        return __($key) !== $key ? __($key) : $field;
     }
 
     /**
@@ -552,26 +618,86 @@ class PatientImportService
         ]);
     }
 
-    private function processTemplateImport(PatientImportBatch $batch, string $fullPath): void
+    private function processTemplateImport(PatientImportBatch $batch, string $fullPath): bool
     {
         $sheets = Excel::toArray(new \stdClass, $fullPath);
         $rows = $sheets[0] ?? [];
 
         if (count($rows) < 2) {
-            throw new \RuntimeException(__('patients.import.messages.empty_file'));
+            $this->rejectBatch($batch, __('patients.import.messages.empty_file', [
+                'required' => $this->requiredColumnsLabel(),
+                'columns' => $this->templateColumnsLabel(),
+            ]));
+
+            return false;
         }
 
         $header = $this->normalizeHeaderRow($rows[0]);
 
-        foreach (config('patient_import.required_columns', []) as $column) {
-            if (! in_array($column, $header, true)) {
-                throw new \RuntimeException(__('patients.import.messages.missing_column', ['column' => $column]));
-            }
+        if ($message = $this->validateTemplateHeader($header)) {
+            $this->rejectBatch($batch, $message);
+
+            return false;
         }
 
         $parsedRows = $this->parseFile($rows, $header);
         $this->validateRows($batch, $parsedRows);
         $this->detectDuplicates($batch);
+
+        return true;
+    }
+
+    private function rejectBatch(PatientImportBatch $batch, string $reason): void
+    {
+        $this->markBatchFailed($batch, $reason);
+    }
+
+    private function templateColumnsLabel(): string
+    {
+        return implode(', ', PatientTemplateExport::columnHeadings());
+    }
+
+    private function requiredColumnsLabel(): string
+    {
+        return implode(', ', PatientTemplateExport::requiredColumnHeadings());
+    }
+
+    /**
+     * @param  list<string>  $header
+     */
+    private function validateTemplateHeader(array $header): ?string
+    {
+        $expected = PatientTemplateExport::columnHeadings();
+        $found = array_values(array_filter($header, fn (string $column): bool => $column !== ''));
+
+        if ($found === []) {
+            return __('patients.import.messages.header_missing', [
+                'columns' => $this->templateColumnsLabel(),
+                'required' => $this->requiredColumnsLabel(),
+            ]);
+        }
+
+        if ($found === $expected) {
+            return null;
+        }
+
+        $missing = array_values(array_diff($expected, $found));
+        $extra = array_values(array_diff($found, $expected));
+
+        if ($missing !== [] || $extra !== []) {
+            return __('patients.import.messages.invalid_template', [
+                'missing' => $missing === [] ? '—' : implode(', ', $missing),
+                'extra' => $extra === [] ? '—' : implode(', ', $extra),
+                'expected' => $this->templateColumnsLabel(),
+                'found' => implode(', ', $found),
+                'required' => $this->requiredColumnsLabel(),
+            ]);
+        }
+
+        return __('patients.import.messages.invalid_template_order', [
+            'expected' => $this->templateColumnsLabel(),
+            'found' => implode(', ', $found),
+        ]);
     }
 
     private function parseDate(mixed $value): ?string

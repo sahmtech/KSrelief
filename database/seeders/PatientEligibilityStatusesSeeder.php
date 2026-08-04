@@ -17,7 +17,7 @@ class PatientEligibilityStatusesSeeder extends Seeder
         ];
 
         foreach ($statuses as $status) {
-            PatientEligibilityStatus::query()->updateOrCreate(
+            $record = PatientEligibilityStatus::withTrashed()->updateOrCreate(
                 ['code' => $status['code']],
                 [
                     'name' => $status['name'],
@@ -26,6 +26,10 @@ class PatientEligibilityStatusesSeeder extends Seeder
                     'status' => 'active',
                 ]
             );
+
+            if ($record->trashed()) {
+                $record->restore();
+            }
         }
     }
 }

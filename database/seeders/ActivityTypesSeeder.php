@@ -21,7 +21,7 @@ class ActivityTypesSeeder extends Seeder
         ];
 
         foreach ($types as $type) {
-            ActivityType::query()->updateOrCreate(
+            $record = ActivityType::withTrashed()->updateOrCreate(
                 ['code' => $type['code']],
                 [
                     'name' => $type['name'],
@@ -29,6 +29,10 @@ class ActivityTypesSeeder extends Seeder
                     'status' => 'active',
                 ]
             );
+
+            if ($record->trashed()) {
+                $record->restore();
+            }
         }
     }
 }

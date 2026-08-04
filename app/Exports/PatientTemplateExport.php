@@ -9,41 +9,39 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 class PatientTemplateExport implements FromArray, WithHeadings, WithTitle
 {
     /**
-     * @return list<list<string>>
+     * @return list<string>
+     */
+    public static function columnHeadings(): array
+    {
+        return config('patient_import.template_columns', []);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function requiredColumnHeadings(): array
+    {
+        return config('patient_import.required_columns', []);
+    }
+
+    /**
+     * @return list<list<string|null>>
      */
     public function array(): array
     {
         return [
             [
                 'Ahmed Al-Zahrani',
-                '',
                 '2015-06-20',
                 'male',
                 '120',
                 '32.5',
                 '+966501234567',
-                'accepted',
-                'not_admitted',
-                'admission',
-                '1',
-                '1',
-                'right',
-                '',
-                'Pediatric cardiac case',
             ],
             [
                 'Sara Al-Otaibi',
-                '',
                 '2018-11-05',
                 'female',
-                '105',
-                '28',
-                '',
-                'accepted',
-                'not_admitted',
-                '',
-                '',
-                '',
                 '',
                 '',
                 '',
@@ -56,23 +54,7 @@ class PatientTemplateExport implements FromArray, WithHeadings, WithTitle
      */
     public function headings(): array
     {
-        return [
-            'patient_name',
-            'file_number',
-            'date_of_birth',
-            'gender',
-            'height_cm',
-            'weight_kg',
-            'contact_number',
-            'eligibility_status',
-            'admission_status',
-            'stage',
-            'surgery_day_number',
-            'rank',
-            'surgical_side',
-            'approval_reason',
-            'patient_notes',
-        ];
+        return self::columnHeadings();
     }
 
     public function title(): string

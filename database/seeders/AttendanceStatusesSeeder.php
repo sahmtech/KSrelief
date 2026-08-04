@@ -19,7 +19,7 @@ class AttendanceStatusesSeeder extends Seeder
         ];
 
         foreach ($statuses as $status) {
-            AttendanceStatus::query()->updateOrCreate(
+            $record = AttendanceStatus::withTrashed()->updateOrCreate(
                 ['code' => $status['code']],
                 [
                     'name' => $status['name'],
@@ -27,6 +27,10 @@ class AttendanceStatusesSeeder extends Seeder
                     'status' => 'active',
                 ]
             );
+
+            if ($record->trashed()) {
+                $record->restore();
+            }
         }
     }
 }

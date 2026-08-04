@@ -31,6 +31,23 @@
     </x-slot:actions>
 </x-page-header>
 
+@if($batch->status?->value === 'failed')
+    <div class="alert alert-danger border-0 shadow-sm mb-4">
+        <div class="d-flex gap-3">
+            <div class="flex-shrink-0">
+                <i class="ti ti-alert-circle fs-4"></i>
+            </div>
+            <div>
+                <h6 class="alert-heading mb-2">{{ __('patients.import.messages.validation_failed_title') }}</h6>
+                <p class="mb-2">{{ $batch->failure_reason }}</p>
+                <a href="{{ route('patients.import.template') }}" class="alert-link">
+                    <i class="ti ti-download me-1"></i>{{ __('patients.import.download_template') }}
+                </a>
+            </div>
+        </div>
+    </div>
+@endif
+
 {{-- Batch Information --}}
 <div class="row g-3 mb-4">
     <div class="col-md-6 col-xl-3">
@@ -167,11 +184,12 @@
                 <thead>
                     <tr>
                         <th style="width:60px;">#</th>
-                        <th>{{ __('patients.table.name') }}</th>
-                        <th>{{ __('patients.table.file_number') }}</th>
+                        <th>{{ __('patients.import.fields.patient_name') }}</th>
+                        <th>{{ __('patients.import.fields.date_of_birth') }}</th>
+                        <th>{{ __('patients.import.fields.gender') }}</th>
                         <th>{{ __('patients.import.table.status') }}</th>
                         <th>{{ __('patients.import.table.valid') }}</th>
-                        <th>Errors / Notes</th>
+                        <th>{{ __('patients.import.review_table.errors') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -179,7 +197,8 @@
                         <tr class="{{ $log->is_duplicate ? 'table-warning' : (! $log->is_valid ? 'table-danger' : '') }}">
                             <td><code>{{ $log->row_number }}</code></td>
                             <td>{{ $log->patient_name ?? '—' }}</td>
-                            <td><code>{{ $log->file_number ?? '—' }}</code></td>
+                            <td>{{ $log->raw_data['date_of_birth'] ?? '—' }}</td>
+                            <td><code>{{ $log->raw_data['gender'] ?? '—' }}</code></td>
                             <td>
                                 <span class="badge-status {{ $log->rowStatusBadgeClass() }}">{{ $log->rowStatusLabel() }}</span>
                                 @if($log->patient_id)

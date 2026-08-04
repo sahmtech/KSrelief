@@ -8,9 +8,6 @@ use App\Models\InsertionApproach;
 
 final class CampaignOperationDefaultCatalog
 {
-    /** @var list<string> */
-    public const SUPPORTED_COMPANY_CODES = ['cochlear', 'medel'];
-
     /**
      * @return array<string, array<string, mixed>>
      */
@@ -45,13 +42,18 @@ final class CampaignOperationDefaultCatalog
      */
     public static function resolvePayloadForCompanyCode(string $companyCode): array
     {
+        $company = ImplantCompany::query()->where('code', $companyCode)->first();
         $blueprint = self::blueprintByCompanyCode()[$companyCode] ?? null;
 
         if ($blueprint === null) {
-            return OperationFieldSupport::defaultTemplatePayload();
-        }
+            $payload = OperationFieldSupport::defaultTemplatePayload();
 
-        $company = ImplantCompany::query()->where('code', $companyCode)->first();
+            if ($company) {
+                $payload['implant_company_id'] = (string) $company->id;
+            }
+
+            return $payload;
+        }
 
         if (! $company) {
             return OperationFieldSupport::defaultTemplatePayload();

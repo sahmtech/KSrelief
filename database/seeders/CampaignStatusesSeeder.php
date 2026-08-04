@@ -18,7 +18,7 @@ class CampaignStatusesSeeder extends Seeder
         ];
 
         foreach ($statuses as $status) {
-            CampaignStatusRecord::query()->updateOrCreate(
+            $record = CampaignStatusRecord::withTrashed()->updateOrCreate(
                 ['code' => $status['code']],
                 [
                     'name' => $status['name'],
@@ -27,6 +27,10 @@ class CampaignStatusesSeeder extends Seeder
                     'status' => 'active',
                 ]
             );
+
+            if ($record->trashed()) {
+                $record->restore();
+            }
         }
     }
 }
