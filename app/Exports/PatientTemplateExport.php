@@ -40,8 +40,8 @@ class PatientTemplateExport implements FromArray, WithHeadings, WithTitle
             ],
             [
                 'Sara Al-Otaibi',
-                '2018-11-05',
-                'female',
+                '',
+                '',
                 '',
                 '',
                 '',

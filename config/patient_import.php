@@ -28,9 +28,11 @@ return [
     ],
 
     'required_columns' => [
-        'gender',
+        'patient_name',
     ],
 
     'default_date_of_birth' => '2000-01-01',
+
+    'default_gender' => 'male',
 
 ];

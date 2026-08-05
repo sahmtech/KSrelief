@@ -274,17 +274,17 @@ return [
         ],
 
         'column_hints' => [
-            'patient_name' => 'Optional. Max 255 characters. Empty rows use a generated name on approval.',
+            'patient_name' => 'Required. Max 255 characters.',
             'date_of_birth' => 'Optional. YYYY-MM-DD or Excel date. Defaults to 2000-01-01 if empty.',
-            'gender' => 'Required. Use: male or female.',
+            'gender' => 'Optional. Use: male or female. Defaults to male if empty.',
             'height_cm' => 'Optional. Number between 20 and 250.',
             'weight_kg' => 'Optional. Number between 0.5 and 500.',
             'contact_number' => 'Optional. Max 30 characters.',
         ],
 
         'default_notes' => [
-            'Empty patient name → "Imported patient (row X)" on approval.',
             'Empty date of birth → 2000-01-01 on approval.',
+            'Empty gender → male on approval.',
             'Eligibility status defaults to accepted.',
         ],
 
@@ -354,9 +354,9 @@ return [
             'Select the target campaign before uploading the file.',
             'Download the official Excel template and keep row 1 exactly as exported.',
             'Use one sheet only with these columns in order: patient_name, date_of_birth, gender, height_cm, weight_kg, contact_number.',
-            'Only gender is required on every patient row. All other columns are optional.',
-            'If a column has a value, it will be validated (date format, numeric height/weight, etc.).',
-            'Gender must be: male or female.',
+            'Only patient_name is required on every patient row. All other columns are optional.',
+            'If a column has a value, it will be validated (date format, gender, numeric height/weight, etc.).',
+            'Gender (if provided) must be: male or female.',
             'Date of birth format: YYYY-MM-DD (example: 2015-06-20). Excel date cells are also accepted.',
             'Rows with validation errors are rejected; valid rows can still be approved.',
         ],

@@ -188,7 +188,6 @@ class PatientImportService
 
             $campaignId = $log->raw_data['resolved_campaign_id'] ?? null;
             $fileNumber = $log->file_number;
-            $isWorkbook = ($log->raw_data['import_source'] ?? null) === 'campaign_workbook';
 
             if ($campaignId === null) {
                 continue;
@@ -217,7 +216,7 @@ class PatientImportService
                 continue;
             }
 
-            if (! $isWorkbook || ! filled($log->patient_name)) {
+            if (! filled($log->patient_name)) {
                 continue;
             }
 
@@ -274,20 +273,26 @@ class PatientImportService
                     ?? PatientEligibilityStatus::query()->active()->where('code', 'accepted')->value('id')
                     ?? PatientEligibilityStatus::query()->active()->ordered()->value('id');
 
-                $patientName = filled($data['patient_name'] ?? null)
-                    ? (string) $data['patient_name']
-                    : __('patients.import.defaults.unnamed_patient', ['row' => $log->row_number]);
+                $patientName = trim((string) ($data['patient_name'] ?? ''));
+
+                if ($patientName === '') {
+                    $patientName = __('patients.import.defaults.unnamed_patient', ['row' => $log->row_number]);
+                }
 
                 $dateOfBirth = filled($data['date_of_birth'] ?? null)
                     ? (string) $data['date_of_birth']
                     : (string) config('patient_import.default_date_of_birth', '2000-01-01');
+
+                $gender = filled($data['gender'] ?? null)
+                    ? (string) $data['gender']
+                    : (string) config('patient_import.default_gender', Gender::Male->value);
 
                 $patient = $this->patientService->createPatient([
                     'campaign_id' => $data['resolved_campaign_id'],
                     'patient_name' => $patientName,
                     'file_number' => filled($data['file_number'] ?? null) ? $data['file_number'] : null,
                     'date_of_birth' => $dateOfBirth,
-                    'gender' => $data['gender'],
+                    'gender' => $gender,
                     'height_cm' => filled($data['height_cm'] ?? null) ? $data['height_cm'] : null,
                     'weight_kg' => filled($data['weight_kg'] ?? null) ? $data['weight_kg'] : null,
                     'contact_number' => $data['contact_number'] ?? null,
@@ -484,19 +489,19 @@ class PatientImportService
             }
         }
 
-        if (! filled($data['gender'] ?? null)) {
+        if (! filled($data['patient_name'] ?? null)) {
             $errors[] = __('patients.import.messages.required', [
-                'field' => $this->fieldLabel('gender'),
+                'field' => $this->fieldLabel('patient_name'),
             ]);
-        } elseif (! in_array($data['gender'], Gender::values(), true)) {
-            $errors[] = __('patients.import.messages.invalid_gender');
-        }
-
-        if (filled($data['patient_name'] ?? null) && mb_strlen((string) $data['patient_name']) > 255) {
+        } elseif (mb_strlen(trim((string) $data['patient_name'])) > 255) {
             $errors[] = __('patients.import.messages.too_long', [
                 'field' => $this->fieldLabel('patient_name'),
                 'max' => 255,
             ]);
+        }
+
+        if (filled($data['gender'] ?? null) && ! in_array($data['gender'], Gender::values(), true)) {
+            $errors[] = __('patients.import.messages.invalid_gender');
         }
 
         if (filled($data['date_of_birth'] ?? null)) {
