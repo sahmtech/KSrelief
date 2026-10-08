@@ -94,6 +94,7 @@ return [
     'errors' => [
         'member_not_assigned' => 'العضو غير معيّن للحملة المحددة.',
         'duplicate_record' => 'يوجد سجل حضور لهذا العضو في نفس التاريخ والوردية.',
+        'campaign_required_for_quick' => 'معرّف الحملة (campaign_id) مطلوب لورقة الحضور السريع.',
     ],
 
     'member' => [

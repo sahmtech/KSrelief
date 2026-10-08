@@ -463,6 +463,14 @@ return [
         ],
     ],
 
+    'api' => [
+        'messages' => [
+            'logged_out' => 'تم تسجيل الخروج بنجاح.',
+            'patient_not_in_campaign' => 'لا يمكنك الوصول إلى مرضى هذه الحملة.',
+            'campaign_not_accessible' => 'لا يمكنك الوصول إلى هذه الحملة.',
+        ],
+    ],
+
     'messages' => [
         'created' => 'تم تسجيل المريض بنجاح.',
         'updated' => 'تم تحديث المريض بنجاح.',

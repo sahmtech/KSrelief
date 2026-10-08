@@ -94,6 +94,7 @@ return [
     'errors' => [
         'member_not_assigned' => 'Member is not assigned to the selected campaign.',
         'duplicate_record' => 'Attendance already exists for this member, date, and shift.',
+        'campaign_required_for_quick' => 'campaign_id is required for the quick attendance sheet.',
     ],
 
     'member' => [

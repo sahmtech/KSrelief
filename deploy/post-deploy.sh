@@ -3,8 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-echo "==> Removing stale config (if any)"
-rm -f config/sanctum.php
+echo "==> Removing stale Vite hot file (if any)"
 rm -f public/hot
 
 echo "==> Installing PHP dependencies"

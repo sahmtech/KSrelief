@@ -463,6 +463,14 @@ return [
         ],
     ],
 
+    'api' => [
+        'messages' => [
+            'logged_out' => 'Logged out successfully.',
+            'patient_not_in_campaign' => 'You do not have access to patients in this campaign.',
+            'campaign_not_accessible' => 'You do not have access to this campaign.',
+        ],
+    ],
+
     'messages' => [
         'created' => 'Patient registered successfully.',
         'updated' => 'Patient updated successfully.',
