@@ -82,6 +82,13 @@ return [
         'submit' => 'Update Password',
     ],
 
+    'validation' => [
+        'password_hint' => 'At least 8 characters with uppercase, lowercase, and a number.',
+        'password_required' => 'Enter a new password.',
+        'password_confirmed' => 'Password confirmation does not match.',
+        'password_rules' => 'Password must be at least 8 characters and include uppercase, lowercase, and a number.',
+    ],
+
     'messages' => [
         'created' => 'User created successfully.',
         'updated' => 'User updated successfully.',

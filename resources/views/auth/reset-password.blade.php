@@ -26,6 +26,9 @@
         name="password"
         type="password"
         :placeholder="__('auth.new_password_placeholder')"
+        autocomplete="new-password"
+        :hint="__('users.validation.password_hint')"
+        :revealable="true"
         required
     />
 
@@ -34,6 +37,8 @@
         name="password_confirmation"
         type="password"
         :placeholder="__('auth.confirm_password_placeholder')"
+        autocomplete="new-password"
+        :revealable="true"
         required
     />
 

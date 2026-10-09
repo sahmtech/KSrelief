@@ -110,15 +110,18 @@
 
     &__logo {
         display: block;
-        width: auto;
-        max-width: 13.75rem;
+        width: min(100%, 12.5rem);
+        min-width: 9.5rem;
         height: auto;
-        max-height: 14rem;
+        max-height: 17.5rem;
         object-fit: contain;
         object-position: start center;
         margin-bottom: 1.75rem;
 
         @media (max-width: 991.98px) {
+            width: min(100%, 11rem);
+            min-width: 8.5rem;
+            max-height: 15rem;
             margin-inline: auto;
             object-position: center center;
         }

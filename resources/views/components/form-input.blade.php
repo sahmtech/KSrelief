@@ -7,6 +7,7 @@
     'required' => false,
     'hint' => null,
     'icon' => null,
+    'revealable' => false,
 ])
 
 @php
@@ -40,6 +41,29 @@
         >
             {{ $slot }}
         </select>
+    @elseif($type === 'password' && $revealable)
+        <div class="password-field">
+            <input
+                type="password"
+                id="{{ $inputId }}"
+                name="{{ $name }}"
+                value="{{ old($name, $value) }}"
+                class="form-group-admin__input password-field__input {{ $hasError ? 'is-invalid' : '' }}"
+                placeholder="{{ $placeholder }}"
+                autocomplete="{{ $attributes->get('autocomplete', 'current-password') }}"
+                {{ $required ? 'required' : '' }}
+                {{ $attributes->except(['class', 'rows', 'autocomplete']) }}
+            >
+            <button
+                type="button"
+                class="password-field__toggle"
+                aria-label="{{ __('auth.toggle_password_visibility') }}"
+                aria-pressed="false"
+                data-password-toggle
+            >
+                <i class="ti ti-eye" aria-hidden="true"></i>
+            </button>
+        </div>
     @else
         <input
             type="{{ $type }}"

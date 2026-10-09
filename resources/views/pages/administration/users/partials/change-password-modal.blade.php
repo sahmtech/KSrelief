@@ -10,12 +10,17 @@
                 :label="__('users.fields.password')"
                 name="password"
                 type="password"
+                autocomplete="new-password"
+                :hint="__('users.validation.password_hint')"
+                :revealable="true"
                 required
             />
             <x-form-input
                 :label="__('users.fields.password_confirmation')"
                 name="password_confirmation"
                 type="password"
+                autocomplete="new-password"
+                :revealable="true"
                 required
             />
         </form>

@@ -9,6 +9,7 @@ return [
     'email_placeholder' => 'you@organization.com',
     'password' => 'Password',
     'password_placeholder' => 'Enter your password',
+    'toggle_password_visibility' => 'Show or hide password',
     'remember_me' => 'Remember me',
     'forgot_password' => 'Forgot password?',
     'forgot_password_title' => 'Forgot password?',

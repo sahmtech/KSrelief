@@ -20,6 +20,19 @@
     </x-slot:actions>
 </x-page-header>
 
+@if($errors->has('password') || $errors->has('password_confirmation'))
+    <div class="alert alert-danger mb-4" role="alert">
+        <ul class="mb-0 ps-3">
+            @foreach($errors->get('password') as $message)
+                <li>{{ $message }}</li>
+            @endforeach
+            @foreach($errors->get('password_confirmation') as $message)
+                <li>{{ $message }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 <x-card :title="__('users.filters.title')" :compact="true" class="mb-4">
     <form method="GET" action="{{ route('administration.users.index') }}" class="row g-3 align-items-end">
         <div class="col-md-4">
@@ -158,8 +171,8 @@
             <form method="POST" action="{{ route('administration.users.password.update', $user) }}" id="changePasswordForm{{ $user->id }}">
                 @csrf
                 @method('PUT')
-                <x-form-input :label="__('users.fields.password')" name="password" type="password" required />
-                <x-form-input :label="__('users.fields.password_confirmation')" name="password_confirmation" type="password" required />
+                <x-form-input :label="__('users.fields.password')" name="password" type="password" autocomplete="new-password" :hint="__('users.validation.password_hint')" :revealable="true" required />
+                <x-form-input :label="__('users.fields.password_confirmation')" name="password_confirmation" type="password" autocomplete="new-password" :revealable="true" required />
             </form>
             <x-slot:footer>
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('common.cancel') }}</button>
@@ -168,4 +181,18 @@
         </x-modal>
     @endcan
 @endforeach
+
+@php($openPasswordUserId = session('open_change_password_user_id'))
+@if($openPasswordUserId)
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const modalEl = document.getElementById('changePasswordModal{{ $openPasswordUserId }}');
+                if (modalEl && window.bootstrap?.Modal) {
+                    window.bootstrap.Modal.getOrCreateInstance(modalEl).show();
+                }
+            });
+        </script>
+    @endpush
+@endif
 @endsection

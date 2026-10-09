@@ -9,6 +9,7 @@ return [
     'email_placeholder' => 'you@organization.com',
     'password' => 'كلمة المرور',
     'password_placeholder' => 'أدخل كلمة المرور',
+    'toggle_password_visibility' => 'إظهار أو إخفاء كلمة المرور',
     'remember_me' => 'تذكرني',
     'forgot_password' => 'نسيت كلمة المرور؟',
     'forgot_password_title' => 'نسيت كلمة المرور؟',

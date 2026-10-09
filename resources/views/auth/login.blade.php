@@ -26,6 +26,8 @@
         name="password"
         type="password"
         :placeholder="__('auth.password_placeholder')"
+        autocomplete="current-password"
+        :revealable="true"
         required
     />
 

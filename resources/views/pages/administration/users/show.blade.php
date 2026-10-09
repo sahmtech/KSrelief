@@ -44,6 +44,8 @@
                     <a href="{{ route('administration.users.edit', $user) }}" class="btn btn-primary btn-sm">
                         <i class="ti ti-pencil me-1"></i> {{ __('users.actions.edit') }}
                     </a>
+                @endcan
+                @can('changePassword', $user)
                     <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
                         <i class="ti ti-key me-1"></i> {{ __('users.actions.change_password') }}
                     </button>
@@ -266,4 +268,17 @@
 </div>
 
 @include('pages.administration.users.partials.change-password-modal', ['user' => $user])
+
+@if($errors->has('password') || $errors->has('password_confirmation') || (int) session('open_change_password_user_id') === $user->id)
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const modalEl = document.getElementById('changePasswordModal');
+                if (modalEl && window.bootstrap?.Modal) {
+                    window.bootstrap.Modal.getOrCreateInstance(modalEl).show();
+                }
+            });
+        </script>
+    @endpush
+@endif
 @endsection

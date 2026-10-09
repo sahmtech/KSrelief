@@ -43,10 +43,10 @@
                 </div>
                 <div class="row g-0">
                     <div class="col-md-6 pe-md-2">
-                        <x-form-input :label="__('users.fields.password')" name="password" type="password" required />
+                        <x-form-input :label="__('users.fields.password')" name="password" type="password" autocomplete="new-password" :hint="__('users.validation.password_hint')" :revealable="true" required />
                     </div>
                     <div class="col-md-6 ps-md-2">
-                        <x-form-input :label="__('users.fields.password_confirmation')" name="password_confirmation" type="password" required />
+                        <x-form-input :label="__('users.fields.password_confirmation')" name="password_confirmation" type="password" autocomplete="new-password" :revealable="true" required />
                     </div>
                 </div>
             </x-card>

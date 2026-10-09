@@ -580,6 +580,43 @@ $datatable-padding-y: 0.875rem;
     }
 }
 
+.password-field {
+    position: relative;
+
+    &__input {
+        padding-inline-end: 2.75rem;
+    }
+
+    &__toggle {
+        position: absolute;
+        top: 50%;
+        inset-inline-end: 0.5rem;
+        transform: translateY(-50%);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        padding: 0;
+        border: 0;
+        border-radius: $border-radius;
+        background: transparent;
+        color: $gray-500;
+        cursor: pointer;
+        transition: $transition-base;
+
+        &:hover {
+            color: $primary;
+            background: rgba($primary, 0.08);
+        }
+
+        &:focus-visible {
+            outline: 2px solid rgba($primary, 0.35);
+            outline-offset: 1px;
+        }
+    }
+}
+
 // ─── Modal ─────────────────────────────────────────────────
 .modal-admin {
     .modal-content {

@@ -87,6 +87,8 @@ class UserService
         $user->update([
             'password' => $password,
         ]);
+
+        $user->tokens()->delete();
     }
 
     /**

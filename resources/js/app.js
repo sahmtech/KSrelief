@@ -21,6 +21,7 @@ import { initSpecialtyPickers } from './specialty-picker';
 import { initActivityParticipantMultiselects } from './activity-participants';
 import { initTableDropdowns, resetTableDropdowns } from './table-dropdown';
 import { initPatientNavbarSearch } from './patient-search';
+import { initPasswordToggles } from './password-toggle';
 import './clinical-aud-fields';
 import './follow-up-template';
 import './pre-operation-fields';
@@ -67,6 +68,8 @@ function stripColspanPlaceholderRows(table) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    initPasswordToggles();
+
     const i18n = getBodyI18n();
     const chevronPrev = i18n.isRtl ? 'ti-chevron-right' : 'ti-chevron-left';
     const chevronNext = i18n.isRtl ? 'ti-chevron-left' : 'ti-chevron-right';

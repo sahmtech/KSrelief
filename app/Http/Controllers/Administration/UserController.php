@@ -168,8 +168,12 @@ class UserController extends Controller
 
     public function updatePassword(ChangePasswordRequest $request, User $user): RedirectResponse
     {
+        $this->authorize('changePassword', $user);
+
         $this->userService->updatePassword($user, $request->validated('password'));
 
-        return back()->with('success', __('users.messages.password_updated'));
+        return redirect()
+            ->route('administration.users.show', $user)
+            ->with('success', __('users.messages.password_updated'));
     }
 }
