@@ -21,11 +21,16 @@ Esghaa — Cloudways Upload Guide
    nano .env
    (fill DB_* and APP_URL, then save)
 
-5) Run post-deploy script:
-   chmod +x deploy/post-deploy.sh
+5) Install PHP packages (REQUIRED — zip does not include vendor/):
+   chmod +x deploy/fix-vendor.sh
+   bash deploy/fix-vendor.sh
+
+   If the site shows "HasApiTokens not found", run fix-vendor.sh again.
+
+6) Optional full post-deploy (includes db:seed — skip on live DB if not needed):
    bash deploy/post-deploy.sh
 
-6) Login:
+7) Login:
    Email: superadmin@ksrelife.com
    Password: ks123456relife
 
