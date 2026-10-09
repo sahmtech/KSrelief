@@ -1,18 +1,22 @@
 <aside class="admin-sidebar" id="adminSidebar">
     <a href="{{ route('dashboard') }}" class="admin-sidebar__brand">
         <img
-            src="{{ asset('images/ksrelief-logo-horizontal.png') }}"
+            src="{{ asset('images/esghaa-logo-horizontal.png') }}"
             alt="{{ __('layout.brand_alt') }}"
             class="admin-sidebar__brand-image"
-            width="300"
-            height="99"
+            width="260"
+            height="auto"
+            loading="eager"
+            decoding="async"
         >
         <img
-            src="{{ asset('images/ksrelief-logo-icon.png') }}"
+            src="{{ asset('images/esghaa-logo-icon.png') }}"
             alt="{{ __('layout.brand_alt') }}"
             class="admin-sidebar__brand-icon"
-            width="36"
-            height="36"
+            width="40"
+            height="40"
+            loading="eager"
+            decoding="async"
         >
     </a>
 

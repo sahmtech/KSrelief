@@ -58,6 +58,11 @@ class User extends Authenticatable
         return $this->hasOne(Member::class);
     }
 
+    public function devicePushTokens(): HasMany
+    {
+        return $this->hasMany(DevicePushToken::class);
+    }
+
     public function primaryRoleLabel(): string
     {
         $role = $this->roles->first();

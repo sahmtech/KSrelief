@@ -1,10 +1,11 @@
 <div class="auth-card__brand">
     <img
-        src="{{ asset('images/ksrelief-logo-horizontal.png') }}"
+        src="{{ asset('images/esghaa-logo-vertical.png') }}"
         alt="{{ __('layout.brand_alt') }}"
         class="auth-card__logo"
-        width="300"
-        height="99"
+        width="220"
+        loading="eager"
+        decoding="async"
     >
 
     <p class="auth-card__welcome">{{ __('auth.welcome_back') }}</p>

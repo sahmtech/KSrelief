@@ -63,7 +63,11 @@ class PatientWorkflowService
 
             // Future: dispatch(new AuditEvent(self::AUDIT_STAGE_CHANGED, $patient, $user));
 
-            return $history->load(['fromStage', 'toStage', 'changedBy']);
+            $history = $history->load(['fromStage', 'toStage', 'changedBy']);
+
+            app(\App\Services\Push\DoctorPushNotifier::class)->patientStageChanged($patient->fresh(), $history, $user);
+
+            return $history;
         });
     }
 

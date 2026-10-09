@@ -5,6 +5,8 @@ use App\Http\Controllers\Api\V1\ActivityParticipantController as ApiActivityPart
 use App\Http\Controllers\Api\V1\AttendanceController as ApiAttendanceController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BootstrapController;
+use App\Http\Controllers\Api\V1\DevicePushTokenController;
+use App\Http\Controllers\Api\V1\PushNotificationController;
 use App\Http\Controllers\Api\V1\MedicalRecordController;
 use App\Http\Controllers\Api\V1\OperationsBootstrapController;
 use App\Http\Controllers\Api\V1\PatientActivityController;
@@ -24,6 +26,15 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
         Route::get('auth/me', [AuthController::class, 'me'])->name('auth.me');
+
+        Route::post('device-tokens', [DevicePushTokenController::class, 'store'])->name('device-tokens.store');
+        Route::delete('device-tokens', [DevicePushTokenController::class, 'destroy'])->name('device-tokens.destroy');
+
+        Route::prefix('push-notifications')->name('push.')->group(function (): void {
+            Route::get('recipients', [PushNotificationController::class, 'recipients'])->name('recipients');
+            Route::post('broadcast', [PushNotificationController::class, 'broadcast'])->name('broadcast');
+            Route::get('history', [PushNotificationController::class, 'history'])->name('history');
+        });
 
         Route::get('bootstrap/patients-module', [BootstrapController::class, 'patientsModule'])
             ->name('bootstrap.patients-module');

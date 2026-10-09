@@ -42,7 +42,11 @@ class MedicalRecordService
 
             // Future: dispatch(new AuditEvent(self::AUDIT_CREATED, $record, $user));
 
-            return $record->load(['stage', 'submitter', 'specialty']);
+            $record = $record->load(['stage', 'submitter', 'specialty', 'patient']);
+
+            app(\App\Services\Push\DoctorPushNotifier::class)->medicalRecordCreated($record, $user);
+
+            return $record;
         });
     }
 

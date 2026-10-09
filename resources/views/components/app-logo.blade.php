@@ -14,8 +14,8 @@
     $height = $sizes[$size] ?? $sizes['md'];
 
     $src = $variant === 'full'
-        ? asset('images/ksrelief-logo.png')
-        : asset('images/ksrelief-logo-icon.png');
+        ? asset('images/esghaa-logo-horizontal.png')
+        : asset('images/esghaa-logo-icon.png');
 @endphp
 
 <img

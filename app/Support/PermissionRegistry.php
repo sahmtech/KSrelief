@@ -189,6 +189,9 @@ final class PermissionRegistry
             'dashboard.view',
             'campaign_dashboard.view',
         ],
+        'push_notifications' => [
+            'push.broadcast',
+        ],
     ];
 
     /** @var array<string, string|list<string>> */
@@ -196,6 +199,7 @@ final class PermissionRegistry
         'super_admin' => '*',
         'campaign_manager' => [
             'dashboard',
+            'push_notifications',
             'campaigns',
             'patients',
             'medical_records',
@@ -227,6 +231,7 @@ final class PermissionRegistry
             'dashboard.view',
             'campaign_dashboard.view',
             'campaign.view',
+            'push.broadcast',
             'patients',
             'medical_records',
             'medical_stages',

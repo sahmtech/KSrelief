@@ -40,9 +40,10 @@ class PatientService
         array $data,
         User $user,
         array $attachments = [],
-        ?UploadedFile $photo = null
+        ?UploadedFile $photo = null,
+        bool $notifyDoctors = true,
     ): Patient {
-        return DB::transaction(function () use ($data, $user, $attachments, $photo): Patient {
+        return DB::transaction(function () use ($data, $user, $attachments, $photo, $notifyDoctors): Patient {
             $prepared = $this->preparePatientData($data);
 
             if (! filled($prepared['file_number'])) {
@@ -76,13 +77,19 @@ class PatientService
                 );
             }
 
-            return $patient->load([
+            $patient = $patient->load([
                 'campaign',
                 'eligibilityStatus',
                 'currentStage',
                 'attachments',
                 'creator',
             ]);
+
+            if ($notifyDoctors) {
+                app(\App\Services\Push\DoctorPushNotifier::class)->patientCreated($patient, $user);
+            }
+
+            return $patient;
         });
     }
 

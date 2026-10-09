@@ -155,7 +155,15 @@ class TransportationService
 
             // Future: dispatch audit event self::AUDIT_PASSENGER_ADDED
 
-            return $passenger->load(['member.memberRole', 'patient']);
+            $passenger = $passenger->load(['member.memberRole', 'patient']);
+
+            app(\App\Services\Push\DoctorPushNotifier::class)->transportationPassengerAdded(
+                $trip->fresh(),
+                $passenger,
+                $user
+            );
+
+            return $passenger;
         });
     }
 
@@ -196,12 +204,16 @@ class TransportationService
 
             // Future: dispatch audit event self::AUDIT_STATUS_CHANGED
 
-            return $trip->fresh([
+            $trip = $trip->fresh([
                 'campaign',
                 'fromLocation',
                 'toLocation',
                 'statusLogs.changedBy',
             ]);
+
+            app(\App\Services\Push\DoctorPushNotifier::class)->transportationStatusChanged($trip, $user);
+
+            return $trip;
         });
     }
 

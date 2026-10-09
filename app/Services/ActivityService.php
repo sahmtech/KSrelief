@@ -66,7 +66,11 @@ class ActivityService
 
             // Future: dispatch audit event self::AUDIT_CREATED
 
-            return $activity->load(['campaign', 'activityType', 'patientStage', 'creator']);
+            $activity = $activity->load(['campaign', 'activityType', 'patientStage', 'creator']);
+
+            app(\App\Services\Push\DoctorPushNotifier::class)->activityCreated($activity, $user);
+
+            return $activity;
         });
     }
 
@@ -166,7 +170,15 @@ class ActivityService
             // Future: self::SYNC_ATTENDANCE_PLACEHOLDER
             // Future: dispatch audit event self::AUDIT_PARTICIPANT_ADDED
 
-            return $participant->load(['member.memberRole', 'patient']);
+            $participant = $participant->load(['member.memberRole', 'patient']);
+
+            app(\App\Services\Push\DoctorPushNotifier::class)->activityParticipantAdded(
+                $activity->fresh(),
+                $participant,
+                $user
+            );
+
+            return $participant;
         });
     }
 
@@ -254,7 +266,11 @@ class ActivityService
             // Future: self::SYNC_ATTENDANCE_PLACEHOLDER on complete
             // Future: dispatch audit event self::AUDIT_STATUS_CHANGED
 
-            return $activity->fresh(['campaign', 'activityType', 'statusLogs.changedBy']);
+            $activity = $activity->fresh(['campaign', 'activityType', 'statusLogs.changedBy']);
+
+            app(\App\Services\Push\DoctorPushNotifier::class)->activityStatusChanged($activity, $user);
+
+            return $activity;
         });
     }
 

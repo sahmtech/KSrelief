@@ -305,7 +305,7 @@ class PatientImportService
                     'approval_reason' => $data['approval_reason'] ?? null,
                     'notes' => $data['patient_notes'] ?? null,
                     'screening_data' => [],
-                ], $user);
+                ], $user, [], null, false);
 
                 $log->update(['patient_id' => $patient->id]);
                 $imported++;
@@ -316,6 +316,16 @@ class PatientImportService
                 'imported_count' => $imported,
             ]);
         });
+
+        if ($imported > 0) {
+            $batch->loadMissing('campaign');
+            app(\App\Services\Push\DoctorPushNotifier::class)->patientImportApproved(
+                (int) $batch->campaign_id,
+                (string) ($batch->campaign?->name ?? ''),
+                $imported,
+                $user
+            );
+        }
 
         return $imported;
     }
