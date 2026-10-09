@@ -7,6 +7,8 @@ echo "==> Removing stale Vite hot file (if any)"
 rm -f public/hot
 
 echo "==> Installing PHP dependencies"
+export COMPOSER_CACHE_DIR="${COMPOSER_CACHE_DIR:-/tmp/composer-cache}"
+mkdir -p "$COMPOSER_CACHE_DIR"
 composer install --no-dev --optimize-autoloader
 
 if ! grep -q '^APP_KEY=base64:' .env 2>/dev/null; then

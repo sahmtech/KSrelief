@@ -32,4 +32,14 @@ Esghaa — Cloudways Upload Guide
 Notes:
 - Do NOT upload vendor/ or node_modules/ — composer installs vendor on server.
 - public/build/ is already included in the zip (CSS/JS ready).
-- If composer fails, delete config/sanctum.php if it exists (old file).
+- You do NOT need npm on the server. Run "npm run build" only on your PC inside deploy/package.ps1.
+- If you use "git pull" on the server, PHP/code updates but NOT CSS/JS — either run deploy/package.ps1
+  locally and upload esghaa-deploy.zip, or upload only the public/ folder from that zip.
+- Optional after zip deploy (no seed on production if DB already live):
+  export COMPOSER_CACHE_DIR=/tmp/composer-cache && mkdir -p /tmp/composer-cache
+  composer install --no-dev && php artisan migrate --force && php artisan config:cache && php artisan view:cache
+
+- If "Class Laravel\\Sanctum\\Sanctum not found" during composer install:
+  export COMPOSER_CACHE_DIR=/tmp/composer-cache && mkdir -p /tmp/composer-cache
+  composer require laravel/sanctum:^4.3 --no-dev --optimize-autoloader
+  (Then upload latest zip with fixed config/sanctum.php, or git pull that file.)

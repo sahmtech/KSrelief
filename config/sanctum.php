@@ -3,7 +3,6 @@
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Laravel\Sanctum\Http\Middleware\AuthenticateSession;
-use Laravel\Sanctum\Sanctum;
 
 return [
 
@@ -18,12 +17,23 @@ return [
     |
     */
 
-    'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
-        '%s%s',
-        'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1',
-        Sanctum::currentApplicationUrlWithPort(),
-        // Sanctum::currentRequestHost(),
-    ))),
+    'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', (static function (): string {
+        $domains = 'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1';
+        $appUrl = (string) env('APP_URL', '');
+
+        if ($appUrl === '') {
+            return $domains;
+        }
+
+        $host = parse_url($appUrl, PHP_URL_HOST);
+        $port = parse_url($appUrl, PHP_URL_PORT);
+
+        if (is_string($host) && $host !== '') {
+            $domains .= ','.$host.($port ? ':'.$port : '');
+        }
+
+        return $domains;
+    })())),
 
     /*
     |--------------------------------------------------------------------------
