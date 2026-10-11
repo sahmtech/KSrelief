@@ -27,6 +27,10 @@ Esghaa — Cloudways Upload Guide
 
    If the site shows "HasApiTokens not found", run fix-vendor.sh again.
 
+   If Flutter/mobile gets 404 on /api/v1/auth/me — production code is old or route cache stale.
+   After a fresh zip extract, fix-vendor.sh fails loudly if api/v1 routes are missing.
+   Quick check: php artisan route:list --path=api/v1/auth
+
 6) Optional full post-deploy (includes db:seed — skip on live DB if not needed):
    bash deploy/post-deploy.sh
 

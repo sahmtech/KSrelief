@@ -34,8 +34,15 @@ fi
 echo "==> Sanctum OK: $(composer show laravel/sanctum --no-ansi 2>/dev/null | head -1 || true)"
 
 php artisan config:clear
+php artisan route:clear
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+
+if ! php artisan route:list --path=api/v1/auth/me --no-ansi 2>/dev/null | grep -q 'api/v1/auth/me'; then
+    echo "ERROR: Mobile API routes missing. Upload latest esghaa-deploy.zip (routes/api.php + bootstrap/app.php)."
+    echo "Check: grep api bootstrap/app.php && head -30 routes/api.php"
+    exit 1
+fi
 
 echo "==> Done. Reload the site in your browser."
