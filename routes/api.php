@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\V1\BootstrapController;
 use App\Http\Controllers\Api\V1\DevicePushTokenController;
 use App\Http\Controllers\Api\V1\PushNotificationController;
 use App\Http\Controllers\Api\V1\MedicalRecordController;
+use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\PatientExportController;
 use App\Http\Controllers\Api\V1\OperationsBootstrapController;
 use App\Http\Controllers\Api\V1\PatientActivityController;
 use App\Http\Controllers\Api\V1\PatientAttachmentController;
@@ -35,6 +37,8 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             Route::post('broadcast', [PushNotificationController::class, 'broadcast'])->name('broadcast');
             Route::get('history', [PushNotificationController::class, 'history'])->name('history');
         });
+
+        Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
 
         Route::get('bootstrap/patients-module', [BootstrapController::class, 'patientsModule'])
             ->name('bootstrap.patients-module');
@@ -96,6 +100,9 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         });
 
         Route::get('patients/search', PatientSearchController::class)->name('patients.search');
+
+        Route::post('patients/export', [PatientExportController::class, 'store'])
+            ->name('patients.export');
 
         Route::prefix('patients/import')->name('patients.import.')->group(function (): void {
             Route::get('meta', [PatientImportController::class, 'meta'])->name('meta');

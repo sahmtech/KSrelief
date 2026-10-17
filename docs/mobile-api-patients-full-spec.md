@@ -472,7 +472,7 @@ Global activities CRUD remains under `/api/v1/operations/activities` (separate s
 | Method | Path | Permission | Status |
 |--------|------|------------|--------|
 | GET | `/api/v1/reports/patients` | `report.view` | 🔵 placeholder (web empty) |
-| POST | `/api/v1/patients/export` | `patient.export` | 🔵 file download |
+| POST | `/api/v1/patients/export` | `patient.export` | 🟢 file download |
 
 ---
 
@@ -880,7 +880,29 @@ Expose under patient show aggregate or dedicated sub-routes.
 | `/reports/patients` | **Placeholder** empty view |
 | Patient Excel export | `POST patients/export` — `PatientExportService`, permission `patient.export` |
 
-Mobile: treat reports as **future**; implement export as file download endpoint.
+Mobile: treat reports as **future**; export is implemented as Excel download.
+
+### `POST /api/v1/patients/export`
+
+**Body (JSON):**
+
+```json
+{
+  "campaign_id": 1,
+  "include_all_stages": true
+}
+```
+
+Or select stages explicitly:
+
+```json
+{
+  "campaign_id": 1,
+  "stages": ["pre_operation", "operation"]
+}
+```
+
+Empty `{}` returns **422** (`campaign_id` required). Response is `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` (`.xlsx`).
 
 ---
 

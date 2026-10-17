@@ -67,6 +67,18 @@ php artisan db:seed --class=RolesAndPermissionsSeeder --force
 
 Call after every login and when FCM token refreshes (`onTokenRefresh`).
 
+### In-app feed — `GET /api/v1/notifications`
+
+**Auth:** Bearer Sanctum  
+
+Paginated inbox (database notifications), populated when pushes are dispatched to the user.
+
+Query: `per_page` (1–50, default 20).
+
+**Response:** `data[]` with `id`, `title`, `body`, `type`, `data`, `read_at`, `created_at`; `meta.unread_count`.
+
+Requires migration `notifications` table (`php artisan migrate`).
+
 ### `DELETE /api/v1/device-tokens`
 
 **Body (optional):**

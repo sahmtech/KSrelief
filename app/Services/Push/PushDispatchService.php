@@ -7,6 +7,7 @@ use App\Jobs\DeliverPushNotificationJob;
 use App\Models\DevicePushToken;
 use App\Models\PushNotificationDispatch;
 use App\Models\User;
+use App\Notifications\InAppPushNotification;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
@@ -104,6 +105,10 @@ final class PushDispatchService
             'data' => $data,
             'target_users' => $users->count(),
         ]);
+
+        foreach ($users as $user) {
+            $user->notify(new InAppPushNotification($title, $body, $data, $type->value));
+        }
 
         if (! config('push_notifications.enabled', true) || (! $force && ! $this->fcm->isConfigured())) {
             Log::info('Push skipped (disabled or FCM not configured)', ['type' => $type->value]);
