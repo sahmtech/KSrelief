@@ -469,6 +469,10 @@ return [
             'patient_not_in_campaign' => 'You do not have access to patients in this campaign.',
             'campaign_not_accessible' => 'You do not have access to this campaign.',
         ],
+        'export' => [
+            'validation_failed' => 'Patient export could not start. Select a campaign (see available_campaigns).',
+            'campaign_required' => 'The campaign id field is required when you have access to more than one campaign.',
+        ],
     ],
 
     'messages' => [

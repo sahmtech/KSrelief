@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\Campaign;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class PatientAccessService
 {
@@ -115,5 +117,43 @@ class PatientAccessService
             'mode' => $allowed === null ? 'all' : 'assigned_campaigns',
             'campaign_ids' => $allowed ?? [],
         ];
+    }
+
+    /**
+     * @return Collection<int, Campaign>
+     */
+    public function exportableCampaigns(User $user): Collection
+    {
+        $query = Campaign::query()->orderBy('name');
+        $allowed = $this->allowedCampaignIds($user);
+
+        if ($allowed !== null) {
+            if ($allowed === []) {
+                return collect();
+            }
+
+            $query->whereIn('id', $allowed);
+        }
+
+        return $query->get(['id', 'name', 'code']);
+    }
+
+    public function defaultExportCampaignId(User $user): ?int
+    {
+        $campaigns = $this->exportableCampaigns($user);
+
+        if ($campaigns->isEmpty()) {
+            return null;
+        }
+
+        if ($campaigns->count() === 1) {
+            return (int) $campaigns->first()->id;
+        }
+
+        if ($this->canViewAllCampaigns($user)) {
+            return (int) $campaigns->first()->id;
+        }
+
+        return null;
     }
 }

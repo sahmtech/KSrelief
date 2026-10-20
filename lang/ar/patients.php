@@ -469,6 +469,10 @@ return [
             'patient_not_in_campaign' => 'لا يمكنك الوصول إلى مرضى هذه الحملة.',
             'campaign_not_accessible' => 'لا يمكنك الوصول إلى هذه الحملة.',
         ],
+        'export' => [
+            'validation_failed' => 'تعذّر بدء التصدير. اختر حملة (راجع available_campaigns).',
+            'campaign_required' => 'حقل الحملة مطلوب عندما يكون لديك أكثر من حملة واحدة.',
+        ],
     ],
 
     'messages' => [

@@ -101,6 +101,8 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
 
         Route::get('patients/search', PatientSearchController::class)->name('patients.search');
 
+        Route::get('patients/export/meta', [PatientExportController::class, 'meta'])
+            ->name('patients.export.meta');
         Route::post('patients/export', [PatientExportController::class, 'store'])
             ->name('patients.export');
 

@@ -882,9 +882,23 @@ Expose under patient show aggregate or dedicated sub-routes.
 
 Mobile: treat reports as **future**; export is implemented as Excel download.
 
+### `GET /api/v1/patients/export/meta`
+
+**Permission:** `patient.export`
+
+Returns `campaigns`, `exportable_stages`, and `defaults` (`campaign_id` when unambiguous, `include_all_stages: true`).
+
 ### `POST /api/v1/patients/export`
 
-**Body (JSON):**
+**Permission:** `patient.export` — response is `.xlsx` (binary), not JSON.
+
+**Empty body `{}` (mobile quick export):**
+
+- Sets `include_all_stages: true` automatically.
+- Sets `campaign_id` when the user has **exactly one** accessible campaign, or when they are **super_admin / campaign_manager** (first campaign by name).
+- Other users with **multiple assigned** campaigns get **422 JSON** with `errors`, `available_campaigns`, and `defaults` — send `campaign_id` in the body or `?campaign_id=` on the URL.
+
+**Explicit body example:**
 
 ```json
 {
@@ -892,17 +906,6 @@ Mobile: treat reports as **future**; export is implemented as Excel download.
   "include_all_stages": true
 }
 ```
-
-Or select stages explicitly:
-
-```json
-{
-  "campaign_id": 1,
-  "stages": ["pre_operation", "operation"]
-}
-```
-
-Empty `{}` returns **422** (`campaign_id` required). Response is `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` (`.xlsx`).
 
 ---
 
