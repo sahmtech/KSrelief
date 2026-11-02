@@ -116,9 +116,19 @@ class MedicalRecordService
             }
         }
 
-        // Also support explicit 'fields' key from API
+        // Mobile/API: nested `fields` object (same keys as fields_json, not field_* prefix)
         if (isset($data['fields']) && is_array($data['fields'])) {
-            $fields = array_merge($fields, $data['fields']);
+            foreach ($data['fields'] as $fieldKey => $value) {
+                if (! is_string($fieldKey)) {
+                    continue;
+                }
+
+                $fields[$fieldKey] = $this->normalizeFieldValue(
+                    $fieldKey,
+                    $value,
+                    $stageFieldDefinitions[$fieldKey] ?? []
+                );
+            }
         }
 
         return $fields;

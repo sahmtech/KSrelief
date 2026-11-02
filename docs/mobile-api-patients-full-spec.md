@@ -680,6 +680,9 @@ Use **`PatientStageHistoryResource`** for JSON.
 
 ## 12. Medical records (full)
 
+**Dedicated Flutter/Cursor spec (web parity, create/edit/show, schema, composites):**  
+[mobile-api-medical-records-full-spec.md](./mobile-api-medical-records-full-spec.md)
+
 ### 12.1 Record model
 
 Table `medical_records`: `patient_id`, `stage_id`, `specialty_id`, `record_date`, `fields_json` (object), `notes`, `submitted_by`, timestamps.

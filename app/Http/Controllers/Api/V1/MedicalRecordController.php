@@ -256,18 +256,20 @@ class MedicalRecordController extends Controller
             'implant_company_id' => ['required', 'integer', 'exists:implant_companies,id'],
         ]);
 
-        $payload = $this->campaignOperationDefaultService->getForCampaignCompany(
+        $defaults = $this->campaignOperationDefaultService->getForCampaignCompany(
             $patient->campaign,
             (int) $validated['implant_company_id']
         );
 
-        if ($payload === null) {
+        if ($defaults === null) {
             return response()->json(['has_defaults' => false]);
         }
 
+        $data = $this->campaignOperationDefaultService->templateForForm($defaults);
+
         return response()->json([
             'has_defaults' => true,
-            'data' => OperationFieldSupport::payloadWithApplyLabels($payload),
+            'data' => OperationFieldSupport::payloadWithApplyLabels($data),
         ]);
     }
 
