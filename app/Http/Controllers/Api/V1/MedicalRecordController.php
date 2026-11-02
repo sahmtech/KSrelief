@@ -21,6 +21,7 @@ use App\Services\PatientService;
 use App\Services\PostOperationFormDefaultService;
 use App\Services\PreOperationFormDefaultService;
 use App\Support\OperationFieldSupport;
+use App\Support\PreOperationFormMetaBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -76,7 +77,7 @@ class MedicalRecordController extends Controller
         $stageCode = $selectedStage?->code ?? ($stages->first()?->code ?? 'pre_operation');
         $companyId = $request->integer('implant_company_id') ?: null;
 
-        return response()->json([
+        $payload = [
             'stage_id' => $selectedStage?->id,
             'stage_code' => $stageCode,
             'stages' => $stages->map(fn (PatientStage $stage) => [
@@ -108,6 +109,22 @@ class MedicalRecordController extends Controller
                 'has_post_operation_defaults' => $this->postOperationDefaultService->hasForUser($request->user()),
                 'has_campaign_operation_defaults' => $this->campaignOperationDefaultService->hasForCampaign($patient->campaign),
             ],
+        ];
+
+        if ($stageCode === 'pre_operation') {
+            $payload['pre_operation_form'] = app(PreOperationFormMetaBuilder::class)->build();
+        }
+
+        return response()->json($payload);
+    }
+
+    public function preOperationFormMeta(Patient $patient): JsonResponse
+    {
+        $this->authorize('viewAny', [MedicalRecord::class, $patient]);
+        $this->assertPatientAccessible($patient);
+
+        return response()->json([
+            'data' => app(PreOperationFormMetaBuilder::class)->build(),
         ]);
     }
 

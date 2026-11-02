@@ -6,6 +6,10 @@
 **Version:** 1.0.0 — 2026-11-02  
 **Related:** [mobile-api-patients-full-spec.md](./mobile-api-patients-full-spec.md) (patient CRUD, permissions, campaign scope)
 
+**Stage-specific (100% web parity):**
+
+- [Pre-Operation — full form spec](./mobile-api-medical-records-pre-operation-full-spec.md) ← **start here for pre_op**
+
 ---
 
 ## 0. Instructions for Cursor / Flutter (read first)
