@@ -194,6 +194,6 @@ Resolve `stage_id` from `schema.stages` where `code === "anesthesia"`.
 
 ---
 
-**Next spec (planned):** Operation, Follow-up, Post-operation, Admission, …
+**Related:** [Operation (Intra-Operative) — full form spec](./mobile-api-medical-records-operation-full-spec.md)
 
 **End of Anesthesia medical record specification.**

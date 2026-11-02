@@ -226,6 +226,10 @@ class MedicalRecordService
             return PostOperationFieldSupport::normalizeNotes($value);
         }
 
+        if ($type === 'yes_no') {
+            return PostOperationFieldSupport::normalizeCounselling($value);
+        }
+
         return $value;
     }
 

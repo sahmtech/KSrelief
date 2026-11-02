@@ -10,6 +10,10 @@
 
 - [Pre-Operation — full form spec](./mobile-api-medical-records-pre-operation-full-spec.md) ← **start here for pre_op**
 - [Anesthesia — full form spec](./mobile-api-medical-records-anesthesia-full-spec.md)
+- [Operation (Intra-Operative) — full form spec](./mobile-api-medical-records-operation-full-spec.md)
+- [Post op / Switch On — full form spec](./mobile-api-medical-records-post-operation-full-spec.md)
+- [Follow Up — full form spec](./mobile-api-medical-records-follow-up-full-spec.md)
+- [Completed — full form spec](./mobile-api-medical-records-completed-full-spec.md)
 
 ---
 
@@ -107,6 +111,12 @@ Base: **`/api/v1/patients/{patientId}/records`**
 |--------|------|------|----------------|
 | GET | `/` | index | records index |
 | GET | `/schema` | schema | stage-fields (JSON) |
+| GET | `/pre-operation-form-meta` | pre-operation-form-meta | pre-op UI catalog |
+| GET | `/anesthesia-form-meta` | anesthesia-form-meta | anesthesia UI catalog |
+| GET | `/operation-form-meta` | operation-form-meta | operation UI catalog |
+| GET | `/post-operation-form-meta` | post-operation-form-meta | post-op UI catalog |
+| GET | `/follow-up-form-meta` | follow-up-form-meta | follow-up UI catalog |
+| GET | `/completed-form-meta` | completed-form-meta | completed (header-only) UI catalog |
 | POST | `/` | store | store |
 | GET | `/{recordId}` | show | show |
 | PUT | `/{recordId}` | update | update |
@@ -343,6 +353,7 @@ All **`stage_fields`** keys **except** hidden: `admission`, `activation`, `rehab
 | `operation` | intra_op | `operation_date`, `surgeon`, `implant_company_id`, `electrode_type_id`, `insertion_approach_id`, `side_of_surgery`, `insertion_depth`, `time_in_surgery`, `time_out_surgery`, `audio_test`, `intra_op_findings`, `operation_notes` |
 | `follow_up` | follow_up | `clinical_assessment`, `audiology_assessment`, `speech_assessment`, `follow_up_notes` |
 | `post_operation` | post_op | `physician_assessment`, `clinical_aud`, `counselling`, `post_op_notes` |
+| `completed` | — | **None** (header-only record: `stage_id`, `record_date`, `notes`; `fields_json` `{}`) |
 
 ### 6.2 Hidden from dropdown (legacy / workflow-only)
 

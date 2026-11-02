@@ -22,6 +22,10 @@ use App\Services\PostOperationFormDefaultService;
 use App\Services\PreOperationFormDefaultService;
 use App\Support\OperationFieldSupport;
 use App\Support\AnesthesiaFormMetaBuilder;
+use App\Support\OperationFormMetaBuilder;
+use App\Support\CompletedFormMetaBuilder;
+use App\Support\FollowUpFormMetaBuilder;
+use App\Support\PostOperationFormMetaBuilder;
 use App\Support\PreOperationFormMetaBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -120,6 +124,22 @@ class MedicalRecordController extends Controller
             $payload['anesthesia_form'] = app(AnesthesiaFormMetaBuilder::class)->build($patient);
         }
 
+        if ($stageCode === 'operation') {
+            $payload['operation_form'] = app(OperationFormMetaBuilder::class)->build($patient);
+        }
+
+        if ($stageCode === 'post_operation') {
+            $payload['post_operation_form'] = app(PostOperationFormMetaBuilder::class)->build();
+        }
+
+        if ($stageCode === 'follow_up') {
+            $payload['follow_up_form'] = app(FollowUpFormMetaBuilder::class)->build();
+        }
+
+        if ($stageCode === 'completed') {
+            $payload['completed_form'] = app(CompletedFormMetaBuilder::class)->build();
+        }
+
         return response()->json($payload);
     }
 
@@ -140,6 +160,46 @@ class MedicalRecordController extends Controller
 
         return response()->json([
             'data' => app(AnesthesiaFormMetaBuilder::class)->build($patient),
+        ]);
+    }
+
+    public function operationFormMeta(Patient $patient): JsonResponse
+    {
+        $this->authorize('viewAny', [MedicalRecord::class, $patient]);
+        $this->assertPatientAccessible($patient);
+
+        return response()->json([
+            'data' => app(OperationFormMetaBuilder::class)->build($patient),
+        ]);
+    }
+
+    public function postOperationFormMeta(Patient $patient): JsonResponse
+    {
+        $this->authorize('viewAny', [MedicalRecord::class, $patient]);
+        $this->assertPatientAccessible($patient);
+
+        return response()->json([
+            'data' => app(PostOperationFormMetaBuilder::class)->build(),
+        ]);
+    }
+
+    public function followUpFormMeta(Patient $patient): JsonResponse
+    {
+        $this->authorize('viewAny', [MedicalRecord::class, $patient]);
+        $this->assertPatientAccessible($patient);
+
+        return response()->json([
+            'data' => app(FollowUpFormMetaBuilder::class)->build(),
+        ]);
+    }
+
+    public function completedFormMeta(Patient $patient): JsonResponse
+    {
+        $this->authorize('viewAny', [MedicalRecord::class, $patient]);
+        $this->assertPatientAccessible($patient);
+
+        return response()->json([
+            'data' => app(CompletedFormMetaBuilder::class)->build(),
         ]);
     }
 
