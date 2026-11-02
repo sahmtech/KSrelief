@@ -9,6 +9,7 @@
 **Stage-specific (100% web parity):**
 
 - [Pre-Operation — full form spec](./mobile-api-medical-records-pre-operation-full-spec.md) ← **start here for pre_op**
+- [Anesthesia — full form spec](./mobile-api-medical-records-anesthesia-full-spec.md)
 
 ---
 

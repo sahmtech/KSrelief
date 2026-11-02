@@ -132,6 +132,8 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             Route::get('schema', [MedicalRecordController::class, 'schema'])->name('schema');
             Route::get('pre-operation-form-meta', [MedicalRecordController::class, 'preOperationFormMeta'])
                 ->name('pre-operation-form-meta');
+            Route::get('anesthesia-form-meta', [MedicalRecordController::class, 'anesthesiaFormMeta'])
+                ->name('anesthesia-form-meta');
             Route::get('electrode-types', [MedicalRecordController::class, 'electrodeTypes'])->name('electrode-types');
             Route::get('follow-up-defaults', [MedicalRecordController::class, 'followUpDefaults'])->name('follow-up-defaults');
             Route::get('operation-defaults', [MedicalRecordController::class, 'operationDefaults'])->name('operation-defaults');

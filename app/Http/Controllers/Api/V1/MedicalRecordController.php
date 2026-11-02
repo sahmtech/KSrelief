@@ -21,6 +21,7 @@ use App\Services\PatientService;
 use App\Services\PostOperationFormDefaultService;
 use App\Services\PreOperationFormDefaultService;
 use App\Support\OperationFieldSupport;
+use App\Support\AnesthesiaFormMetaBuilder;
 use App\Support\PreOperationFormMetaBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -115,6 +116,10 @@ class MedicalRecordController extends Controller
             $payload['pre_operation_form'] = app(PreOperationFormMetaBuilder::class)->build();
         }
 
+        if ($stageCode === 'anesthesia') {
+            $payload['anesthesia_form'] = app(AnesthesiaFormMetaBuilder::class)->build($patient);
+        }
+
         return response()->json($payload);
     }
 
@@ -125,6 +130,16 @@ class MedicalRecordController extends Controller
 
         return response()->json([
             'data' => app(PreOperationFormMetaBuilder::class)->build(),
+        ]);
+    }
+
+    public function anesthesiaFormMeta(Patient $patient): JsonResponse
+    {
+        $this->authorize('viewAny', [MedicalRecord::class, $patient]);
+        $this->assertPatientAccessible($patient);
+
+        return response()->json([
+            'data' => app(AnesthesiaFormMetaBuilder::class)->build($patient),
         ]);
     }
 
