@@ -10,6 +10,7 @@ return [
     'specialties' => 'Specialties',
     'patients' => 'Patients',
     'patients_list' => 'Patients',
+    'beneficiary_applications' => 'Registration requests',
     'patient_imports' => 'Patient Imports',
     'medical_stages' => 'Medical Stages',
     'operations' => 'Operations',

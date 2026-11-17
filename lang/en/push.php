@@ -21,6 +21,8 @@ return [
         'transportation_passenger_added' => 'Transportation',
         'transportation_status_changed' => 'Trip update',
         'patient_import_approved' => 'Patients imported',
+        'beneficiary_application_submitted' => 'New registration request',
+        'beneficiary_application_accepted' => 'Registration accepted',
     ],
 
     'bodies' => [
@@ -33,5 +35,7 @@ return [
         'transportation_passenger_added' => ':patient added to trip :trip.',
         'transportation_status_changed' => 'Trip :trip — :status.',
         'patient_import_approved' => ':count patients imported to :campaign.',
+        'beneficiary_application_submitted' => ':name submitted a beneficiary registration request.',
+        'beneficiary_application_accepted' => ':name was accepted into :campaign.',
     ],
 ];

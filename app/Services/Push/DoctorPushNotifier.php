@@ -6,6 +6,7 @@ use App\Enums\PassengerType;
 use App\Enums\PushNotificationType;
 use App\Models\Activity;
 use App\Models\ActivityParticipant;
+use App\Models\BeneficiaryApplication;
 use App\Models\MedicalRecord;
 use App\Models\Patient;
 use App\Models\PatientStageHistory;
@@ -223,6 +224,48 @@ final class DoctorPushNotifier
             [
                 'campaign_id' => $campaignId,
                 'patients_count' => $patientCount,
+            ],
+            $actor,
+        );
+    }
+
+    public function beneficiaryApplicationSubmitted(BeneficiaryApplication $application): void
+    {
+        $this->dispatch->notifyPermissionHolders(
+            'beneficiary_application.review',
+            PushNotificationType::BeneficiaryApplicationSubmitted,
+            __('push.titles.beneficiary_application_submitted'),
+            __('push.bodies.beneficiary_application_submitted', [
+                'name' => $application->full_name,
+            ]),
+            [
+                'application_id' => $application->id,
+                'application_uuid' => $application->uuid,
+                'extra_type' => $application->extra_type,
+            ],
+        );
+    }
+
+    public function beneficiaryApplicationAccepted(BeneficiaryApplication $application, User $actor): void
+    {
+        $campaignId = (int) ($application->accepted_campaign_id ?? 0);
+
+        if ($campaignId <= 0) {
+            return;
+        }
+
+        $this->dispatch->notifyCampaign(
+            $campaignId,
+            PushNotificationType::BeneficiaryApplicationAccepted,
+            __('push.titles.beneficiary_application_accepted'),
+            __('push.bodies.beneficiary_application_accepted', [
+                'name' => $application->full_name,
+                'campaign' => $application->acceptedCampaign?->name ?? '',
+            ]),
+            [
+                'application_id' => $application->id,
+                'patient_id' => $application->accepted_patient_id,
+                'campaign_id' => $campaignId,
             ],
             $actor,
         );

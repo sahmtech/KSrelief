@@ -28,6 +28,10 @@ final class PermissionRegistry
             'patient.import_history',
             'patient.export',
         ],
+        'beneficiary_applications' => [
+            'beneficiary_application.view',
+            'beneficiary_application.review',
+        ],
         'medical_records' => [
             'medical_record.view',
             'medical_record.create',
@@ -202,6 +206,7 @@ final class PermissionRegistry
             'push_notifications',
             'campaigns',
             'patients',
+            'beneficiary_applications',
             'medical_records',
             'medical_stages',
             'members',
@@ -233,6 +238,7 @@ final class PermissionRegistry
             'campaign.view',
             'push.broadcast',
             'patients',
+            'beneficiary_applications',
             'medical_records',
             'medical_stages',
             'attendance',
@@ -245,6 +251,8 @@ final class PermissionRegistry
         ],
         'doctor' => [
             'patient.view',
+            'beneficiary_application.view',
+            'beneficiary_application.review',
             'medical_record.view',
             'stage.view',
         ],

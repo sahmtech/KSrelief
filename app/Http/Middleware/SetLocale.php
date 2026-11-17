@@ -15,12 +15,12 @@ class SetLocale
 
     public function handle(Request $request, Closure $next): Response
     {
-        $locale = config('admin.show_locale_switcher', true)
-            ? session('locale', config('app.locale'))
-            : config('app.locale');
+        // Honor session choice for public pages (e.g. /register) even when the
+        // admin navbar locale switcher is hidden.
+        $locale = session('locale', config('app.locale', 'ar'));
 
         if (! in_array($locale, $this->supported, true)) {
-            $locale = config('app.fallback_locale', 'en');
+            $locale = config('app.fallback_locale', 'ar');
         }
 
         App::setLocale($locale);

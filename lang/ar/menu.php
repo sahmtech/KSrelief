@@ -10,6 +10,7 @@ return [
     'specialties' => 'التخصصات',
     'patients' => 'المرضى',
     'patients_list' => 'المرضى',
+    'beneficiary_applications' => 'طلبات التسجيل',
     'patient_imports' => 'استيراد المرضى',
     'medical_stages' => 'المراحل الطبية',
     'operations' => 'العمليات',

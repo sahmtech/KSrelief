@@ -46,6 +46,8 @@ return [
         'transportation_passenger_added' => true,
         'transportation_status_changed' => true,
         'patient_import_approved' => true,
+        'beneficiary_application_submitted' => true,
+        'beneficiary_application_accepted' => true,
     ],
 
     'queue' => env('PUSH_NOTIFICATIONS_QUEUE', true),

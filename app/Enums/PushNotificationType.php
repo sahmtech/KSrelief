@@ -14,6 +14,8 @@ enum PushNotificationType: string
     case TransportationPassengerAdded = 'transportation_passenger_added';
     case TransportationStatusChanged = 'transportation_status_changed';
     case PatientImportApproved = 'patient_import_approved';
+    case BeneficiaryApplicationSubmitted = 'beneficiary_application_submitted';
+    case BeneficiaryApplicationAccepted = 'beneficiary_application_accepted';
     case AdminBroadcast = 'admin_broadcast';
 
     public function configKey(): string

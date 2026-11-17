@@ -21,6 +21,8 @@ return [
         'transportation_passenger_added' => 'نقل',
         'transportation_status_changed' => 'تحديث رحلة',
         'patient_import_approved' => 'استيراد مرضى',
+        'beneficiary_application_submitted' => 'طلب تسجيل جديد',
+        'beneficiary_application_accepted' => 'قبول طلب تسجيل',
     ],
 
     'bodies' => [
@@ -33,5 +35,7 @@ return [
         'transportation_passenger_added' => 'تمت إضافة :patient إلى الرحلة :trip.',
         'transportation_status_changed' => 'الرحلة :trip — :status.',
         'patient_import_approved' => 'تم استيراد :count مريض إلى :campaign.',
+        'beneficiary_application_submitted' => 'قدّم :name طلب تسجيل مستفيد.',
+        'beneficiary_application_accepted' => 'تم قبول :name في حملة :campaign.',
     ],
 ];

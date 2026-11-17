@@ -38,6 +38,15 @@ return [
             'report' => false,
         ],
 
+        'beneficiary_applications' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/beneficiary_applications'),
+            'serve' => false,
+            'throw' => false,
+            'report' => false,
+            'visibility' => 'private',
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

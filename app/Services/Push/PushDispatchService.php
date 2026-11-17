@@ -40,6 +40,31 @@ final class PushDispatchService
 
     /**
      * @param  array<string, mixed>  $data
+     */
+    public function notifyPermissionHolders(
+        string $permission,
+        PushNotificationType $type,
+        string $title,
+        string $body,
+        array $data = [],
+        ?User $actor = null,
+    ): void {
+        if (! $this->shouldSendEvent($type)) {
+            return;
+        }
+
+        $users = User::query()
+            ->where('status', \App\Enums\UserStatus::Active)
+            ->permission($permission)
+            ->when($actor?->id, fn ($q) => $q->where('id', '!=', $actor->id))
+            ->with('devicePushTokens')
+            ->get();
+
+        $this->deliverToUsers($users, $type, $title, $body, $data, $actor);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
      * @param  list<int>|null  $userIds
      */
     public function adminBroadcast(

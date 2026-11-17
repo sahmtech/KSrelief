@@ -54,6 +54,7 @@ return [
             'icon' => 'ti ti-user-heart',
             'children' => [
                 ['key' => 'patients_list', 'route' => 'patients.index', 'permission' => 'patient.view'],
+                ['key' => 'beneficiary_applications', 'route' => 'beneficiary-applications.index', 'permission' => 'beneficiary_application.view'],
                 ['key' => 'patient_imports', 'route' => 'patients.import.index', 'permission' => 'patient.import_history'],
             ],
         ],

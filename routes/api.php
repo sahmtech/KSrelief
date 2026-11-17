@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\ActivityController as ApiActivityController;
 use App\Http\Controllers\Api\V1\ActivityParticipantController as ApiActivityParticipantController;
 use App\Http\Controllers\Api\V1\AttendanceController as ApiAttendanceController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\BeneficiaryApplicationController as ApiBeneficiaryApplicationController;
 use App\Http\Controllers\Api\V1\BootstrapController;
 use App\Http\Controllers\Api\V1\DevicePushTokenController;
 use App\Http\Controllers\Api\V1\PushNotificationController;
@@ -100,6 +101,16 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         });
 
         Route::get('patients/search', PatientSearchController::class)->name('patients.search');
+
+        Route::prefix('beneficiary-applications')->name('beneficiary-applications.')->group(function (): void {
+            Route::get('meta', [ApiBeneficiaryApplicationController::class, 'meta'])->name('meta');
+            Route::get('/', [ApiBeneficiaryApplicationController::class, 'index'])->name('index');
+            Route::get('{beneficiary_application}', [ApiBeneficiaryApplicationController::class, 'show'])->name('show');
+            Route::post('{beneficiary_application}/accept', [ApiBeneficiaryApplicationController::class, 'accept'])->name('accept');
+            Route::post('{beneficiary_application}/reject', [ApiBeneficiaryApplicationController::class, 'reject'])->name('reject');
+            Route::get('{beneficiary_application}/attachments/{attachment}/download', [ApiBeneficiaryApplicationController::class, 'downloadAttachment'])
+                ->name('attachments.download');
+        });
 
         Route::get('patients/export/meta', [PatientExportController::class, 'meta'])
             ->name('patients.export.meta');

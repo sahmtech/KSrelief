@@ -5,6 +5,8 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\BeneficiaryApplicationController;
+use App\Http\Controllers\BeneficiaryRegistrationController;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocaleController;
@@ -44,6 +46,18 @@ Route::middleware('guest')->group(function () {
     Route::get('reset-password/{token}', [ResetPasswordController::class, 'create'])->name('password.reset');
     Route::post('reset-password', [ResetPasswordController::class, 'store'])->name('password.update');
 });
+
+$registrationThrottle = (int) config('beneficiary_registration.throttle.max_attempts', 5)
+    .','
+    .(int) config('beneficiary_registration.throttle.decay_minutes', 60);
+
+Route::get('register', [BeneficiaryRegistrationController::class, 'create'])
+    ->name('register');
+Route::post('register', [BeneficiaryRegistrationController::class, 'store'])
+    ->middleware('throttle:'.$registrationThrottle)
+    ->name('register.store');
+Route::get('register/thanks/{uuid}', [BeneficiaryRegistrationController::class, 'thanks'])
+    ->name('register.thanks');
 
 Route::post('logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
 
@@ -158,6 +172,24 @@ Route::middleware('auth')->group(function () {
                 ->middleware('permission:member.assign_campaign')
                 ->name('campaigns.remove');
         });
+    });
+
+    Route::prefix('beneficiary-applications')->name('beneficiary-applications.')->group(function () {
+        Route::get('/', [BeneficiaryApplicationController::class, 'index'])
+            ->middleware('permission:beneficiary_application.view')
+            ->name('index');
+        Route::get('{beneficiary_application}', [BeneficiaryApplicationController::class, 'show'])
+            ->middleware('permission:beneficiary_application.view')
+            ->name('show');
+        Route::post('{beneficiary_application}/accept', [BeneficiaryApplicationController::class, 'accept'])
+            ->middleware('permission:beneficiary_application.review')
+            ->name('accept');
+        Route::post('{beneficiary_application}/reject', [BeneficiaryApplicationController::class, 'reject'])
+            ->middleware('permission:beneficiary_application.review')
+            ->name('reject');
+        Route::get('{beneficiary_application}/attachments/{attachment}/download', [BeneficiaryApplicationController::class, 'downloadAttachment'])
+            ->middleware('permission:beneficiary_application.view')
+            ->name('attachments.download');
     });
 
     // Patients
